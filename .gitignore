@@ -1,0 +1,98 @@
+###############################################################################
+# Repo policy for `/root/autodl-tmp/model`
+#
+# Goal:
+# - Track code + small experiment records (`.py .txt .md ...`)
+# - Do NOT track bulky artifacts, caches, environments, model weights, or
+#   high-cardinality outputs (e.g. many CIFs).
+#
+# Note:
+# - This file controls what gets *added*. It does not remove already-tracked
+#   large files from history; use `git rm --cached <path>` for that.
+###############################################################################
+
+# --- Python / tooling ---
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.coverage*
+htmlcov/
+
+# --- OS / editor ---
+.DS_Store
+.idea/
+.vscode/
+
+# --- Environments / packages (never commit) ---
+miniconda3/
+conda/
+conda_envs/
+.conda/
+venv/
+.venv/
+ENV/
+env/
+
+# --- Caches (never commit) ---
+cache/
+hf/
+pip-cache/
+torch-cache/
+torch-extensions/
+triton-cache/
+vllm-cache/
+cuda-cache/
+xdg-cache/
+
+# --- Large artifacts / binaries (never commit) ---
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.bin
+*.onnx
+*.h5
+*.npz
+*.npy
+*.pkl
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.7z
+
+# --- Local backups / survivors ---
+CrystaLLM_survivor_*/
+*_survivor_*/
+SURVIVOR_*.tar.gz
+CrystaLLM_survivor_*.tar.gz
+
+# --- CrystaLLM experiments: keep records, ignore heavy outputs ---
+# Heavy/high-cardinality dirs
+CrystaLLM/experiments/**/cifs/
+CrystaLLM/experiments/**/best_structures/
+CrystaLLM/experiments/**/structures/
+CrystaLLM/experiments/**/best_structures_*/
+CrystaLLM/experiments/**/wandb/
+
+# CIFs tend to be many; ignore by default, then allow a small curated subset.
+CrystaLLM/**/*.cif
+!CrystaLLM/sample_*.cif
+!CrystaLLM/samples/**/*.cif
+
+# If CrystaLLM's own nested `.gitignore` ignores logs, re-allow experiment logs here.
+!CrystaLLM/experiments/**/*.log
+!CrystaLLM/experiments/**/*.txt
+!CrystaLLM/experiments/**/*.md
+!CrystaLLM/experiments/**/*.json
+!CrystaLLM/experiments/**/*.yaml
+!CrystaLLM/experiments/**/*.yml
+
+
+

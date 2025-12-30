@@ -1,0 +1,15 @@
+常用命令（全都在数据盘）：
+
+cd /root/autodl-tmp/qwen3_vllm
+
+# 关闭并释放显存（推荐你现在就执行）
+bash qwen3_vllmctl.sh stop
+
+# 需要用时再启动（默认省显存：MAX_MODEL_LEN=8192, GPU_MEMORY_UTILIZATION=0.80）
+bash qwen3_vllmctl.sh start
+
+# 看状态/看日志/自检
+bash qwen3_vllmctl.sh status
+bash qwen3_vllmctl.sh logs
+bash qwen3_vllmctl.sh test
+想更省显存：直接改 /root/autodl-tmp/qwen3_vllm/config.env 里的 MAX_MODEL_LEN（比如 4096）和/或 GPU_MEMORY_UTILIZATION（比如 0.70），然后 bash qwen3_vllmctl.sh restart

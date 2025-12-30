@@ -1,0 +1,33 @@
+mkdir -p samples && mv sample_*.cif samples/
+python bin/postprocess.py samples/ samples_pp/
+tar czf samples_pp.tar.gz -C samples_pp .
+python bin/evaluate_cifs.py samples_pp.tar.gz -o smoke_eval.csv
+
+
+
+
+python bin/identify_starts.py \
+  --dataset_fname tokens_v1_train_val.tar.gz \
+  --out_fname     starts_v1_train.pkl
+
+
+"http.proxy":"http://127.0.0.1:7890",
+"https.proxy": "http://127.0.0.1:7890",
+"http.proxyStrictSSL":false,
+"remote.SSH.useLocalServer":false
+
+
+{
+    "python.analysis.typeCheckingMode": "standard",
+    "remote.SSH.configFile": "D:\\SSH\\config",
+    "remote.SSH.remotePlatform": {
+        "alias": "linux",
+        "ssh -p 16481 root@connect.westd.seetacloud.com": "linux"
+    },
+    "security.workspace.trust.untrustedFiles": "open",
+    "git.autofetch": true,
+    "http.proxy":"http://127.0.0.1:7890",
+    "https.proxy": "http://127.0.0.1:7890",
+    "http.proxyStrictSSL":false,
+    "remote.SSH.useLocalServer":false
+}

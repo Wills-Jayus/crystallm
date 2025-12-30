@@ -1,0 +1,216 @@
+CrystaLLM × ALIGNN × Qwen 闭环实验聊天日志（总分总）
+日期：2025-12-29
+位置：/root/autodl-tmp/model/EXPERIMENT_LOG_CrystaLLM_Qwen_ClosedLoop_2025-12-29.txt
+
+说明
+----
+本文件将本次对话中的“问题定位 → 证据收集 → 代码修复 → 验证 → 运行指导 → 复盘总结”整理成一份实验日志。
+日志内容以“当时对话中实际做过的事”为主，并记录关键命令输出的结论性信息，方便复盘与后续接手。
+
+
+===============================================================================
+一、总览（结论先行）
+===============================================================================
+本次对话围绕 CrystaLLM 的闭环实验（生成 CIF → 过滤器验证 → ALIGNN 评分 → Qwen 输出下一轮 prompt）做了三条主线工作：
+
+1) 追踪并修复 space_group_check_error（symmetry_dataset_unavailable）：
+   - 发现 na2cl2_qwen_v5_small 的 round_01 仍存在 symmetry_dataset_unavailable（too close distance between atoms）。
+   - 根据既有分析报告，落地“too close distance”场景的恢复逻辑：对 Structure 做 merge_sites(tol=symprec, mode="delete") 后重试对称性分析。
+   - 实测：典型失败样本在 clean 后可恢复得到 symmetry dataset，space_group_ok 从 None 恢复为 True/False，避免 space_group_check_error。
+
+2) 将 CIF 质量检查中“成分/计量一致性”做成可切换开关：
+   - 需求动机：某些实验目标是“追求高带隙”，不希望 composition/multiplicity 作为硬门槛过滤掉候选。
+   - 交付：提供 CLI 开关（开启/关闭），关闭时不再影响 validation_ok，并且终端统计不再输出成分/计量相关行。
+   - 给出打开/关闭两种命令示例，并纠正用户命令里路径断裂与反斜杠缺失导致参数不生效的问题。
+
+3) 复盘闭环信息链路与优化器输入信息密度：
+   - 澄清：LLM 的 analysis 报告是“Round 级汇总 + 少量代表样本”的分析，不是逐个 CIF 的详细分析。
+   - 发现：当 top_structures 都是 validation_ok=True 时，validation_reasons 为空是预期行为；若要让 Qwen“看到失败集中在哪类”，需要把失败原因分布作为 round 级字段显式加入 evaluator_summary。
+   - 交付补充：提供一个无需 pandas 的后处理脚本，将失败原因 Top-N 与失败样本示例写入 evaluator_summary.json，便于在闭环或事后分析中喂给 Qwen。
+
+
+===============================================================================
+二、详细过程（按主题/时间推进）
+===============================================================================
+
+-------------------------------------------------------------------------------
+2.1 环境与约束（对排障/实现有影响）
+-------------------------------------------------------------------------------
+- 工作目录：/root/autodl-tmp
+- 网络：restricted（本次不依赖外网）
+- 工具差异：
+  - ripgrep（rg）不可用，文件搜索改用 grep/find。
+  - 默认 python 环境缺 pandas；需要统计时改用 csv/json/ast 的标准库实现，或切换到 conda 环境。
+- conda 环境：
+  - 曾用 /root/autodl-tmp/miniconda3/envs/crystallm_env 做 pymatgen/spglib 验证。
+  - 版本确认：pymatgen.core.__version__=2023.3.23，spglib=2.6.0。
+
+
+-------------------------------------------------------------------------------
+2.2 检查最新实验 v5_small 是否仍存在 symmetry_dataset_unavailable
+-------------------------------------------------------------------------------
+用户目标：
+- “看看 /root/autodl-tmp/model/CrystaLLM/experiments/na2cl2_qwen_v5_small 目录下是否还存在 space_group_check_error（symmetry_dataset_unavailable）”
+
+采取动作：
+- 递归搜索关键词：
+  - space_group_check_error
+  - symmetry_dataset_unavailable
+
+结论（关键发现）：
+- v5_small round_01 中确实存在 symmetry_dataset_unavailable（too close distance between atoms），样本集中在：
+  - sample_1.cif / sample_2.cif / sample_5.cif / sample_8.cif
+- v5_small round_02 也存在 space_group_check_error，但原因不是 symmetry_dataset_unavailable，而是：
+  - parse_structure: ValueError: Invalid cif file with no structures!
+- v5_small round_03 未检索到 space_group_check_error。
+
+意义：
+- symmetry_dataset_unavailable 的根因需要从“对称性展开导致近重叠原子”方向修复；
+- parse_structure failed 属于另一类问题（CIF 不可解析），应独立处理。
+
+
+-------------------------------------------------------------------------------
+2.3 阅读历史分析报告并确认根因链条（v4_small 专项报告）
+-------------------------------------------------------------------------------
+阅读文件：
+- model/CrystaLLM/docs/report_symmetry_dataset_unavailable_na2cl2_qwen_v4_small.txt
+
+报告给出的“强因果”链条（摘要）：
+1) 生成的 CIF 往往声明了高对称空间群（如 P4/mmm），但对称操作 loop 可能仅包含恒等操作。
+2) 清洗阶段会用 replace_symmetry_operators 强制补全该空间群的对称操作（如 P4/mmm 16 条 ops）。
+3) pymatgen 解析 CIF 会展开等价位点；若原始坐标不满足该空间群约束，会产生极近/近重叠原子。
+4) spglib 发现 “too close distance between atoms” 时返回 dataset=None，从而出现 consistent=None → space_group_check_error。
+
+报告建议的工程修复方向（摘要）：
+- 在对称性检查前做 merge_sites(tol=symprec) 或仅在检测到 too close 时走该分支；
+- 或实现 symprec 重试策略（0.1→0.05→0.01）等。
+
+
+-------------------------------------------------------------------------------
+2.4 代码修复：too close distance 场景恢复 symmetry dataset
+-------------------------------------------------------------------------------
+目标：
+- 当 spglib 报错 “too close distance between atoms” 时，不直接返回 symmetry_dataset_unavailable，而是尝试修复近重叠位点并重新获取 dataset。
+
+实现路径（核心文件）：
+- model/CrystaLLM/crystallm/_metrics.py
+  - space_group_consistency_details()：
+    - dataset=None 时补充 spglib error message 与 min_neighbor_dist（用于可解释诊断）。
+    - 新增恢复分支：若 spglib_err 包含 “too close distance”，则：
+      - merged = structure.copy()
+      - merged.merge_sites(tol=symprec, mode="delete")
+      - dataset = SpacegroupAnalyzer(merged, symprec=symprec).get_symmetry_dataset()
+      - 成功则继续判定 detected_space_group，并记录 recovered_from_too_close_distance=True。
+
+实现中的关键坑与处理：
+- 直接 merge_sites(tol=0.1) 会在某些样本上抛：
+  - ValueError: Species occupancies sum to more than 1!
+- 原因：近重叠位点合并后占位相加 > 1。
+- 解决：使用 merge_sites(mode="delete")（删除近重叠位点）避免 occupancy 相加问题。
+
+验证方式（在 crystallm_env 中实测）：
+- 对 v4_small/v5_small round_01 的典型失败样本 sample_1/2/5/8：
+  - clean_cif 后调用 space_group_consistency_details(symprec=0.1)
+  - 修复前：consistent=None，error=...symmetry_dataset_unavailable: too close...
+  - 修复后：consistent=True，detected=P4/mmm，error=None，recovered_from_too_close_distance=True
+- 端到端验证 validate_cif：space_group_ok 不再为 None，space_group_check_error 不再出现（仍可能因其它原因不通过，例如 bond lengths 不合理）。
+
+
+-------------------------------------------------------------------------------
+2.5 检查 v6_small 是否还存在 symmetry_dataset_unavailable
+-------------------------------------------------------------------------------
+用户目标：
+- “看看 /root/autodl-tmp/model/CrystaLLM/experiments/na2cl2_qwen_v6_small 目录下是否还存在 symmetry_dataset_unavailable”
+
+结论：
+- v6_small 没有检索到 symmetry_dataset_unavailable（或 too close distance）这一类错误。
+- 仍存在一次 space_group_check_error，但原因是 parse_structure 失败（Invalid cif file with no structures）。
+
+解释：
+- 这说明“too close distance → dataset=None”的那类问题已被有效规避/修复；
+- 但 CIF 本体不可解析（no structures）仍需独立的上游约束/清洗策略。
+
+
+-------------------------------------------------------------------------------
+2.6 新需求：把成分/计量一致性做成开关（可随时开/关）
+-------------------------------------------------------------------------------
+需求原文（要点）：
+- 成分/计量两项希望能开关控制：
+  - 有时目标是高带隙，不关心是否严格满足原始化学计量；
+  - 关闭后不在终端出现相关指标；
+  - 关闭后 validation_ok 判定不包含这两项。
+
+实现思路（当时的实现要点）：
+1) 在验证入口增加参数：check_composition: bool = True
+2) 当 check_composition=False：
+   - 跳过 is_formula_consistent / is_atom_site_multiplicity_consistent
+   - formula_ok / atom_site_multiplicity_ok 置为 None（表示“未检查”）
+   - valid 判定时不再把这两项作为门槛
+3) CLI 暴露双向开关：
+   - --validation-check-composition（开启）
+   - --no-validation-check-composition（关闭）
+4) 终端统计输出与 cif_quality_summary.txt 同步受控：
+   - 关闭时不输出 formula/multiplicity 统计行。
+
+对用户命令的纠错（关键点）：
+- 修正 initial-prompt-file 路径中断裂（tab/空格导致 experiments 拼写被拆开）。
+- 修正多行命令中缺少反斜杠 \ 导致最后一个参数被当作新命令执行。
+
+
+-------------------------------------------------------------------------------
+2.7 闭环机制澄清：Qwen 的 analysis 是“整体汇总”而非“逐 CIF”
+-------------------------------------------------------------------------------
+核心结论：
+- Qwen/LLM 的输入是 round 级 evaluator_summary（整体指标 + 少量 top_structures），不是 8 个 CIF 全文逐条输入。
+- 所以 analysis 报告是“本轮整体情况的短评 + 下一步建议”，最多引用 top_structures 作为例子。
+
+
+-------------------------------------------------------------------------------
+2.8 信息密度问题：top_structures reasons 为空是“预期”，但确实不利于让 Qwen 学到失败分布
+-------------------------------------------------------------------------------
+为什么 reasons 会为空：
+- top_structures 通常从 validation_ok=True 的候选里挑（或至少优先挑），因此 validation_reasons 本来就是 []。
+
+你真正想要的是：
+- Qwen 能看到“失败主要集中在哪些原因”（例如 bond length 不合理、space group inconsistent、parse_structure failed 等）。
+
+解决方案（建议/实现方向）：
+- 在 evaluator_summary 中新增 round 级字段：
+  - validation_failure_reasons_top（Top-N 原因 + 计数）
+  - validation_failure_examples（若干“高分但失败”的样本，附 score + reasons）
+
+本文件所附带的落地工具（无需 pandas）：
+- model/CrystaLLM/tools/augment_evaluator_summary.py
+  - 作用：给任意 round_XX/evaluator_summary.json 补齐 failure reasons Top-N 与 failure examples
+  - 用法示例：
+    python model/CrystaLLM/tools/augment_evaluator_summary.py \
+      /root/autodl-tmp/model/CrystaLLM/experiments/na2cl2_qwen_v7_small/round_01
+    或对整个实验目录批量处理：
+    python model/CrystaLLM/tools/augment_evaluator_summary.py \
+      /root/autodl-tmp/model/CrystaLLM/experiments/na2cl2_qwen_v7_small
+
+注意：
+- 若闭环主脚本在构造 evaluator_summary 后、调用 Qwen 前插入该脚本（或其同等逻辑），Qwen 就能实时看到失败分布。
+
+
+===============================================================================
+三、总结（复盘与下一步）
+===============================================================================
+本次对话的关键价值点：
+1) 把 symmetry_dataset_unavailable 从“黑盒报错”变成“可解释 + 可恢复”的工程问题，并给出可重复的修复与验证方法。
+2) 把“成分/计量一致性”从固定硬门槛改为可配置开关，更符合“探索高带隙候选”的实验需求。
+3) 明确了闭环里“优化器 LLM 输入摘要”存在的信息盲区，并给出可落地的补齐方案（失败原因分布与失败样本示例）。
+
+推荐的下一步（按优先级）：
+- P0：分类处理 parse_structure: Invalid cif file with no structures（这类不是 spglib too close，通常是 CIF 结构块缺失/格式坏/占位冲突）。
+- P1：把 failure_reason_counts / failure_examples 纳入 LLM 输入摘要（evaluator_summary），让 Qwen 的修改更“对症下药”。
+- P2：生成侧约束（Wyckoff/只生成不等价位点等）以减少“声明高对称但坐标不对称”的样本，从根上降低对称展开冲突。
+
+
+===============================================================================
+四、附录：本次对话涉及的关键路径（便于跳转）
+===============================================================================
+- 对称性问题专项报告：model/CrystaLLM/docs/report_symmetry_dataset_unavailable_na2cl2_qwen_v4_small.txt
+- 对称性恢复逻辑所在：model/CrystaLLM/crystallm/_metrics.py
+- evaluator_summary 补齐工具：model/CrystaLLM/tools/augment_evaluator_summary.py
+

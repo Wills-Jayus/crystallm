@@ -1,0 +1,227 @@
+CrystaLLM 实验排障日志（聊天记录整理版，含复现与改动）
+对象：/root/autodl-tmp/model/CrystaLLM/experiments/na2cl2_qwen_v4_small
+日期：2025-12-29
+作者：Cursor Coding Agent（GPT-5.2）+ 用户交互
+
+================================================================================
+一、总（背景、目标、结论摘要）
+================================================================================
+
+1) 背景
+- 用户请求：读取最新实验结果目录 `/root/autodl-tmp/model/CrystaLLM/experiments/na2cl2_qwen_v4_small`，分析“生成不通过结构”的原因，深入解释失败链条。
+
+2) 目标
+- 解释每轮结构为何未通过（validation 不通过）的主要原因与证据链。
+- 针对 `space_group_check_error / symmetry_dataset_unavailable` 给出可复现的根因（含 spglib 真实错误信息）。
+- 产出一份可读的报告落盘到 docs，并对代码做必要的可解释性增强。
+
+3) 结论摘要（关键发现）
+- Round 2/3 大面积失败的“决定性”原因不是 ALIGNN 打分器，而是 Llama/Qwen 的“提示改写”导致 `data_` 行出现小数点：`data_Na2.1Cl1.9`。
+  - 当前 `extract_data_formula` 只允许 `[A-Za-z0-9]+`，遇到 `.` 会直接报 “could not find data_”，从而让 `formula_check` 与 `strict_valid` 连锁失败（Round 2/3 `validation_stats.passed=0`）。
+- Round 1 的失败主要来自“生成体系跑偏”（data 行写 Na2Cl2，但实际 `_chemical_formula_sum` 等变成 Ba/Cu/Si/O 等），以及键长合理性不足、空间群一致性不满足等。
+- `symmetry_dataset_unavailable` 并非总是“空间群完全算不出”，而是 spglib 在某些输入下返回 dataset=None。经本机复现，核心触发原因是 spglib 错误：`too close distance between atoms`（结构展开后产生极近/重叠位点，symmetry dataset 直接不可用）。
+- 为提升可解释性，我们对 `crystallm/_metrics.py` 做了增强：当 dataset=None 时，把 spglib 错误信息 + 碰撞尺度（min_neighbor_dist）写入 error 字段，便于定位。
+
+4) 输出物（落盘）
+- 已生成报告（更聚焦 space_group_check_error 根因与修复建议）：
+  - `model/CrystaLLM/docs/report_symmetry_dataset_unavailable_na2cl2_qwen_v4_small.txt`
+
+================================================================================
+二、分（全过程时间线、证据、复现、代码改动）
+================================================================================
+
+0) 实验概览读取
+- 读取文件：
+  - `.../experiment_config.json`
+  - `.../final_report.json`
+  - `.../round_01/evaluator_summary.json`
+- 关键字段（来自 config / report）：
+  - rounds=3, samples_per_round=8
+  - alignn_host=127.0.0.1, alignn_port=5555
+  - alignn_properties=[formation_energy, bandgap]
+  - score_property=bandgap, score_goal=max
+  - validation_bond_cutoff=1.0
+  - 初始 prompt lines：`data_Na2Cl2` + `P4/mmm`
+- 结果摘要（final_report.json）：
+  - Round1：validation_stats.passed=1/8
+  - Round2：validation_stats.passed=0/8
+  - Round3：validation_stats.passed=0/8
+  - best_overall：round_01/cifs/sample_6.cif（validation_ok=true，bandgap≈4.2189）
+
+1) Round 1：失败原因分类（cif_quality.json）
+- 读取：`round_01/cif_quality.json`
+- 观察到的典型失败 reason：
+  - composition inconsistent（最常见）
+  - unreasonable bond lengths (~xx% flagged)
+  - space_group_check_error（当时文件里显示 symmetry_dataset_unavailable）
+  - space group inconsistent（少数）
+- 关键现象：
+  - `formula_ok` 低（很多样本在 data 行写 Na2Cl2，但 `_chemical_formula_sum`/`_structural` 变成别的体系）
+  - `formula_ok_relaxed` 高（说明 `_chemical_formula_sum` 与 atom_site 往往自洽，但与 data 行不一致）
+
+2) Round 2/3：失败原因定位（data_ 解析失败 + 体系跑偏）
+2.1 直接证据：Round 1 的 llama_output 改写 prompt
+- 读取：`round_01/llama_output.json`
+- 发现 `next_prompt_lines` 被改为：
+  - `data_Na2.1Cl1.9`
+  - `_symmetry_space_group_name_H-M   P4/mmm`
+- 进一步确认：
+  - `round_02/prompt.txt` 与 `round_03/prompt.txt` 确实就是上述两行。
+
+2.2 解析失败根因：extract_data_formula 的正则不接受小数点
+- 读取：`model/CrystaLLM/crystallm/_utils.py`
+- 关键代码：
+  - `extract_data_formula(cif_str)` 使用 `re.search(r"data_([A-Za-z0-9]+)\\n", cif_str)`
+  - 因此 `data_Na2.1Cl1.9` 不匹配，抛异常：
+    - `Exception: could not find data_ in: ...`
+- 影响链条（由 validate/is_valid 调用关系导致）：
+  - `validate_cif` -> `is_formula_consistent` -> `extract_data_formula` 抛异常 => formula_ok=False + 记录 formula_check failed
+  - `strict_valid` -> `is_valid` -> `is_formula_consistent` 再次触发同样异常 => strict_valid=None + 记录 strict_valid failed
+  - 最终 Round2/3 大面积 `validation_ok=false`，并在报告中表现为 passed=0。
+
+2.3 Round2/3 还伴随“体系跑偏”
+- 读取示例：`round_02/cifs/sample_8.cif`
+  - data 行是 Na/Cl 小数，但 `_chemical_formula_sum` 变成 Sr/Mg/Cl（非目标体系），进一步导致 composition 相关判定失败。
+
+3) 重点问题：space_group_check_error / symmetry_dataset_unavailable 的真实含义与复现
+3.1 先澄清概念
+- 在 `crystallm/_metrics.py` 的 `space_group_consistency_details()` 中：
+  - `consistent=True`：声明空间群 == 检测空间群
+  - `consistent=False`：两者都有值但不一致（即“space group inconsistent”）
+  - `consistent=None`：无法判定（解析/对称性分析失败），此时 error 字段会包含原因（历史版本里是 `symmetry_dataset_unavailable`）。
+
+3.2 环境与导入排查（避免“同名包干扰”）
+- 发现系统 Python3.13 无 pymatgen；项目实际使用 conda env `crystallm_env`（Python3.10）。
+- conda 中 `crystallm` 是 editable 安装，实际映射到：
+  - `/root/autodl-tmp/model/CrystaLLM/crystallm`
+- 同时 workspace 下存在 `/root/autodl-tmp/crystallm/cif_cleaning.py`（非完整包），在 cwd=/root/autodl-tmp 时会干扰 import。
+- 解决方式：在复现脚本中 `cd /root/autodl-tmp/model/CrystaLLM` 再运行，确保导入的 `crystallm` 来自正确目录。
+
+3.3 复现（抓取 spglib 真实错误信息）
+复现脚本核心做法：
+- 对样本 CIF：
+  1) 直接 `Structure.from_str(cif)` 并跑 SpacegroupAnalyzer（对照）
+  2) 先执行 `replace_symmetry_operators(cif, 'P4/mmm')`（模拟 clean_cif 的行为），再跑 SpacegroupAnalyzer
+  3) 同步调用 `spglib.get_symmetry_dataset(cell, symprec=...)` 并读取 `spglib.get_error_message()`
+
+关键复现结果（symprec=0.1）：
+- sample_1（替换后）：
+  - pymatgen dataset=None
+  - spglib dataset=None
+  - spglib error message：`too close distance between atoms`
+  - 碰撞尺度：min_neighbor_dist<0.1Å≈0.0300Å
+- sample_5（替换后）：
+  - spglib error message：`too close distance between atoms`
+  - 碰撞尺度：min_neighbor_dist<0.1Å≈0.0805Å
+- sample_6（通过对照）：
+  - dataset 正常，检测空间群 `P4/mmm`。
+
+3.4 几何体检（替换对称操作前后最小原子间距）
+- sample_1：
+  - before_replace：nsites=5,  min_dist≈1.3872Å
+  - after_replace ：nsites=44, min_dist≈0.0300Å
+- sample_5：
+  - before_replace：nsites=9,   min_dist≈0.5479Å
+  - after_replace ：nsites=118, min_dist≈0.0805Å
+- sample_6：
+  - before/after：nsites=4, min_dist≈2.9567Å（稳定）
+
+结论：`symmetry_dataset_unavailable` 的“物理根因”是结构展开后产生极近/重叠位点，spglib 直接拒绝给 dataset。
+
+3.5 验证一个可行的“碰撞恢复”思路（实验验证）
+- 对替换后产生碰撞的结构，执行：
+  - `Structure.merge_sites(tol=0.1, mode='delete')`
+- 观察：
+  - sample_1 替换后结构在 merge_sites(tol=0.1) 后，spglib 在 symprec=0.1 下恢复正常（error 变为 no error，能检测到空间群）
+- 说明：merge_sites 可作为“可选修复”策略（是否落地需进一步评估对物理意义的影响）。
+
+备注（重要）：
+- 本次代码落地的是“错误信息增强”（见下一节），并未在代码中自动执行 merge_sites 修复；
+  用户后续在报告文本中补充了“merge_sites 已落地”的描述，但该描述需要与实际代码实现核对后再确认。
+
+4) 代码改动（已落地）
+4.1 改动目的
+- 让 `symmetry_dataset_unavailable` 不再是黑盒，直接暴露 spglib 的具体错误原因与碰撞尺度，方便定位与统计。
+
+4.2 改动内容
+- 文件：`model/CrystaLLM/crystallm/_metrics.py`
+- 修改点：在 `space_group_consistency_details()` 中，若 dataset 为空：
+  - 调用 spglib 取 `spglib.get_error_message()`
+  - 计算 `min_neighbor_dist`（在 r=symprec 范围内的最小邻居距离）
+  - 将 `error` 字段从 `"symmetry_dataset_unavailable"` 升级为：
+    - `"symmetry_dataset_unavailable: <spglib_err>: min_neighbor_dist<...Å≈...Å"`
+
+4.3 修改后示例输出（验证）
+- sample_1（替换后）：
+  - `error = symmetry_dataset_unavailable: too close distance between atoms: min_neighbor_dist<0.1Å≈0.0300Å`
+- sample_5（替换后）：
+  - `error = symmetry_dataset_unavailable: too close distance between atoms: min_neighbor_dist<0.1Å≈0.0805Å`
+
+5) 文档输出（已落地）
+- 报告文件写入：
+  - `model/CrystaLLM/docs/report_symmetry_dataset_unavailable_na2cl2_qwen_v4_small.txt`
+- 报告内容包含：
+  - 根因链条
+  - 复现实验与证据（spglib 错误字符串）
+  - 已落地的代码改动说明
+  - 可执行的解决方案建议（merge_sites、symprec 重试、生成侧约束等）
+
+================================================================================
+三、总（整体方案回顾、后续行动项）
+================================================================================
+
+1) 对“未通过结构”的整体归因（按影响面排序）
+- A. Prompt 被 Llama/Qwen 改为小数 data 行（`data_Na2.1Cl1.9`）+ `extract_data_formula` 不支持 `.`：
+  - 直接导致 Round2/3 `formula_check` 与 `strict_valid` 连锁失败
+  - 还会诱发生成分布漂移（更多非目标元素体系）
+- B. Round1 生成体系跑偏（data 行写 Na2Cl2，但 `_chemical_formula_sum`/`_structural` 等变成其他材料体系）：
+  - 引发 composition inconsistent
+- C. 几何/晶体学质量问题（键长不合理、空间群不一致、或 spglib 因碰撞导致 dataset=None）：
+  - 需要更鲁棒的后处理/约束策略
+
+2) 建议的工程方案（分层）
+生成侧（Prompt/策略）：
+- 禁止/避免 `data_` 行出现小数点或非标准字符；强制使用可被解析的配方标识。
+- 加强提示约束：同时给 `_chemical_formula_sum`/模板位点/Wyckoff 约束，减少体系跑偏与几何噪声。
+
+过滤与验证侧（代码/鲁棒性）：
+- 已落地：当 spglib dataset 不可用时，输出具体错误原因（too close 等）与碰撞尺度。
+- 建议评估落地：
+  - 若 spglib_err=too close，可选做 `merge_sites(tol=symprec)` 再重试；
+  - 或实施 symprec 扫描/重试策略（在不破坏物理意义前提下）。
+
+评分侧（ALIGNN）：
+- ALIGNN 输出包括：`ok`、`error/errors`、每个 property 的数值（formation_energy、bandgap）。
+- 评分器整体未发现导致 Round2/3 全失败的主因；主要失败发生在过滤/验证链路（formula/strict_valid）。
+
+3) 后续建议的验证清单
+- 修复/约束 prompt 后，重新跑一轮小样本：
+  - 检查 Round2/3 `formula_ok` 是否恢复
+  - 检查 `space_group_check_error` 是否显著减少，且 error 是否可解释（too close 等）
+  - 统计 `bond_length_score` 分布是否提升
+
+================================================================================
+附录：本次排障过程中涉及的关键文件列表（部分）
+================================================================================
+
+实验输出：
+- experiments/na2cl2_qwen_v4_small/final_report.json
+- experiments/na2cl2_qwen_v4_small/experiment_config.json
+- experiments/na2cl2_qwen_v4_small/round_01/cif_quality.json
+- experiments/na2cl2_qwen_v4_small/round_01/llama_output.json
+- experiments/na2cl2_qwen_v4_small/round_02/prompt.txt
+- experiments/na2cl2_qwen_v4_small/round_03/prompt.txt
+
+过滤器与指标：
+- crystallm/cif_cleaning.py
+- crystallm/_metrics.py
+- crystallm/_utils.py
+
+ALIGNN（客户端/服务端）：
+- bin/alignn_client.py
+- resources/alignn_zmq_server_multi.py
+
+文档：
+- docs/report_symmetry_dataset_unavailable_na2cl2_qwen_v4_small.txt
+
+

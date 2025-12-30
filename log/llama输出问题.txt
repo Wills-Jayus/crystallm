@@ -1,0 +1,152 @@
+LLaMA 输出不正常问题排查报告（本地 m3rg-iitd/llamat-3-chat，CrystaLLM 闭环）
+
+最后更新：2025-12-16
+
+1. 问题概述（客观事实）
+---------------------
+在 CrystaLLM + ALIGNN + LLaMA 闭环实验中，LLaMA 阶段用于“优化下一轮 prompt lines”，但近期多次实验中：
+
+- LLaMA 返回内容不符合我们设计的输出协议（最初的“严格 JSON”，以及后续的“三段文本模板”）。
+- 典型症状：
+  1) 输出中夹杂大量对话分隔/控制标记（例如 <|end|>、<|im_start|>answer、<|im_end|>），导致解析失败。
+  2) 即使通过服务端过滤/禁止后不再出现 <|im_start|>，模型仍会输出与协议无关的结构（例如 basemats/dopants/dopants2basemats），以及 JSON/类 JSON 片段，导致客户端模板解析器失败并回退。
+- 最终表现为：闭环脚本在 LLaMA 环节“解析失败 -> 回退”，导致 next_prompt_lines 始终沿用上一轮 prompt，闭环优化器实际不生效。
+
+证据文件（示例）：
+- /root/autodl-tmp/model/CrystaLLM/experiments/na2cl2_json_loop_v14_small/round_01/llama_output.json
+  - output.analysis = "Template parse failed; using fallback."
+  - raw_text 中包含 <|end|> / <|im_start|>answer / <|im_end|> 反复块
+- /root/autodl-tmp/model/CrystaLLM/experiments/na2cl2_json_loop_v16_small/round_01/llama_output.json
+  - output.analysis = "Template parse failed; using fallback."
+  - raw_text 含 basemats/dopants/dopants2basemats 等 schema，以及 NEXT_PROMPT_LINES: 后输出 []（空数组）
+- /root/autodl-tmp/model/CrystaLLM/experiments/na2cl2_json_loop_v17_small/round_02/llama_output.json
+  - output.analysis = "Template parse failed; using fallback."
+  - raw_text 仍含 basemats/dopants/dopants2basemats，且出现 "<|...>s" 片段
+
+
+2. 原始协议与失败模式演进
+-----------------------
+2.1 初期：严格 JSON 协议（失败）
+- 目标：让模型直接输出合法 JSON：{"analysis": "...", "next_prompt_lines": [...]}
+- 结果：模型经常输出乱码或混合文本，服务端/客户端都不得不回退。
+
+2.2 后期：三段文本模板 + 本地解析（仍失败）
+- 目标：降低结构化难度，不要求模型直接输出 JSON，而要求输出固定三段：
+
+  ANALYSIS:
+  <文本>
+  NEXT_PROMPT_LINES:
+  <逐行 prompt>
+  END
+
+- 本地解析器按段头/逐行提取 next_prompt_lines，再在本地构造 JSON。
+- 结果：模型仍不遵守模板，经常输出：
+  - 回显 user JSON（last_prompt_lines/evaluator_summary）
+  - JSON/类 JSON 结构，甚至 NEXT_PROMPT_LINES: 后输出 [] 这种空数组
+  - basemats/dopants/dopants2basemats 这类与我们协议无关的 schema
+  - 或输出包含 <|...|> 风格片段
+  -> 导致模板解析失败，触发回退。
+
+
+3. “是否把 prompt + generation 混在一起 decode”的验证结论
+------------------------------------------------------
+我们实现了服务端日志调试，记录 input_len / total_len，以及 prompt/generation 分段的解码头部。
+
+日志文件：
+- /root/autodl-tmp/model/CrystaLLM/llama_raw_generation.log
+
+典型日志片段（示意）：
+- [DEBUG] input_len=640, total_len=896
+- [DEBUG] prompt_head[:200]=<|begin_of_text|><|start_header_id|>system...
+- [DEBUG] gen_text[:200]={...last_prompt_lines...evaluator_summary...}
+
+结论：
+- prompt_head 显示的是系统消息模板（Llama3 风格的 <|start_header_id|> 等），不包含那坨回显 JSON；
+- 回显 JSON 出现在 gen_text（生成部分）开头；
+=> 可以确定“回显/异常 schema”是模型自己生成的，不是服务端把提示词和生成混在一起 decode（不是 return_full_text 的副作用）。
+
+
+4. 关键代码位置与当前实现
+-----------------------
+4.1 客户端（闭环侧）system prompt 与解析逻辑
+- 文件：/root/autodl-tmp/model/CrystaLLM/bin/llama_client.py
+- 发送结构：messages = [{"role":"system","content":DEFAULT_SYSTEM_PROMPT}, {"role":"user","content":json.dumps(payload)}]
+- 解析逻辑：_parse_template(text)
+  - 识别 ANALYSIS:、NEXT_PROMPT_LINES:、END
+  - 失败则回退：analysis="Template parse failed; using fallback."，next_prompt_lines=last_prompt_lines
+
+近期修改（重点）：
+- 删除占位符 <...> 的提示写法，改为要求真实句子：
+  - "Write 1-3 concrete sentences..."
+  - "Do not use placeholders like <...>."
+- 强制至少原样返回 last_prompt_lines：
+  - "If you are unsure... copy last_prompt_lines exactly..."
+  - "Never output an empty list like [] and never leave NEXT_PROMPT_LINES empty."
+
+4.2 服务端（本地 LLaMA API）
+- 文件：/root/autodl-tmp/model/llama_local_api.py
+- 路由：POST /v1/chat/completions（OpenAI 兼容）
+- 调用 tokenizer.apply_chat_template 构造 chat prompt，随后进行 generate。
+
+关键调试/防护逻辑：
+1) 记录原始生成（以及调试信息）到：
+   - /root/autodl-tmp/model/CrystaLLM/llama_raw_generation.log
+
+2) 输出 system prompt 证明没有被替换（用于解释 basemats/dopants 的来源）：
+   - [DEBUG] roles=['system','user']
+   - [DEBUG] system_prompt[:400]=...
+   - [DEBUG] prompt_text[:200]=...（apply_chat_template 后的 prompt 头部）
+
+3) 停止条件与禁止 token：
+   - eos_ids 同时包含 end_of_text 和 <|eot_id|>（Llama3 的 end-of-turn）
+   - stopping_criteria：匹配 "\nEND"（若模型确实输出 END）
+   - bad_words_ids：禁止输出 '<', '{', '}'（用于压制 <|...|> 以及 JSON 回显）
+
+注意：bad_words_ids 会显著改变模型可用输出空间，可能引入奇怪替代字符串（例如 "<|...>s"）或让模型输出其它 schema。
+
+
+5. 关键实验与结果（按时间线）
+---------------------------
+5.1 实验：最小请求（去掉 user JSON，只给一句话看是否听 system）
+- 请求：system 为三段模板，user 为 “Please only output template... NEXT_PROMPT_LINES only data_test”
+- 结果：模型仍输出伪 JSON/重复 answer 块，未出现 ANALYSIS/NEXT_PROMPT_LINES/END。
+- 结论：不是仅仅因为 user JSON 太复杂；模型本身对“严格模板”服从度很差。
+
+5.2 实验：切换服务端生成方式（pipeline -> model.generate）并记录 token 分段
+- 目的：验证是否 decode 混在一起、是否 return_full_text 等导致回显。
+- 结果：prompt_head 和 gen_text 分离正常，回显来自生成段。
+
+5.3 实验：服务端记录 system prompt 以排除“system 被换掉”
+- 日志显示 system_prompt[:400] 确实是我们发送的 DEFAULT_SYSTEM_PROMPT。
+- 结论：basemats/dopants 并非 system prompt 被替换导致，而是模型生成偏好/数据分布导致。
+
+5.4 实验：v16_small / v17_small（闭环）
+- v16：raw_text 出现 basemats/dopants2basemats，NEXT_PROMPT_LINES 输出 [] 等，解析失败回退。
+- v17：仍出现 basemats/dopants，并出现 "<|...>s" 类片段，解析失败回退。
+
+
+6. 结论：最新“问题定位”
+---------------------
+目前 LLaMA 输出不正常的根因不是“乱码编码/解码”或“prompt 与生成混在一起 decode”，而是：
+
+1) 模型对我们定义的输出协议（无论 JSON 或三段模板）服从度不足；
+2) 模型倾向于回显输入 JSON 或生成与训练语料相关的 schema（basemats/dopants...），并且会生成对话/控制样式文本；
+3) 停止条件（END）并不能保证模型一定会输出 END；因此容易继续滚雪球生成额外块；
+4) 即便禁止 '<' '{' '}'，模型仍可能绕过（例如输出 "<|...>s"），或改用其它结构，导致解析失败。
+
+
+
+
+
+8. 附录：与 CIF <unk> 问题的区分
+------------------------------
+本报告只讨论 LLaMA 输出不正常。
+另一个独立问题是 CrystaLLM 采样生成 CIF 时出现 _symmetry_space_group_name_H-M P4/<unk>：
+- <unk> 来自 CrystaLLM 的 CIFTokenizer UNK token；
+- 已在 CrystaLLM GPT.generate 中禁用 unk token，并在 sample.py 写文件前对空间群行做兜底替换。
+
+相关文件：
+- /root/autodl-tmp/model/CrystaLLM/crystallm/_tokenizer.py
+- /root/autodl-tmp/model/CrystaLLM/crystallm/_model.py
+- /root/autodl-tmp/model/CrystaLLM/bin/sample.py
+

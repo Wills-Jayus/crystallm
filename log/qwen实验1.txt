@@ -1,0 +1,194 @@
+CrystaLLM + ALIGNN(GPU) + Qwen3(vLLM) 闭环实验报告（na2cl2_qwen_v1_small）
+生成时间：2025-12-18
+
+1. 实验目标（做了什么）
+--------------------
+本实验验证一个三轮闭环流程是否能稳定运行，并将“优化器 LLM”从原先 LLaMA 切换为 Qwen3（通过 vLLM OpenAI API 方式提供服务）。
+
+闭环每一轮的逻辑是：
+  (1) 用 CrystaLLM 根据 prompt（少量 CIF 高层行）生成若干 CIF 候选；
+  (2) 对每个 CIF 做“清洗 + 物理/晶体学验证”（过滤器），记录哪些结构可信；
+  (3) 调用 ALIGNN（ZMQ 服务）对每个 CIF 预测 formation_energy、bandgap 并汇总统计；
+  (4) 把“上一轮 prompt + 本轮摘要”发给 Qwen，让 Qwen给出 next_prompt_lines（下一轮 prompt），进入下一轮。
+
+实验输出目录：
+  /root/autodl-tmp/model/CrystaLLM/experiments/na2cl2_qwen_v1_small
+
+
+2. 关键配置（experiment_config.json 摘要）
+-----------------------------------------
+配置文件：
+  /root/autodl-tmp/model/CrystaLLM/experiments/na2cl2_qwen_v1_small/experiment_config.json
+
+CrystaLLM：
+  - model_dir: /root/autodl-tmp/model/CrystaLLM/crystallm_v1_small
+  - device: cuda
+  - dtype: bfloat16
+  - rounds: 3
+  - samples_per_round: 8
+  - temperature: 0.8
+  - top_k: 10
+  - max_new_tokens: 2048
+  - seed: 1337
+
+ALIGNN（GPU 打分器）：
+  - alignn_host: 127.0.0.1
+  - alignn_port: 5555
+  - properties: formation_energy, bandgap
+  - timeout: 60s, retries: 3
+
+优化目标（用于挑选 top_structures / best_overall）：
+  - score_property: bandgap
+  - score_goal: max  （越大越好）
+
+Qwen（作为优化器 LLM，通过 vLLM API 调用）：
+  - llama_api_base: http://127.0.0.1:8000/v1
+  - llama_model: Qwen3-30B-A3B-Instruct-2507
+  - llama_temperature: 0.2
+  - llama_max_tokens: 256
+
+初始 prompt（resolved）：
+  data_Na2Cl2
+  _symmetry_space_group_name_H-M   P4/mmm
+
+
+3. 目录结构与关键产物（每轮都能看到什么）
+----------------------------------------
+每轮目录（round_01/round_02/round_03）内主要文件：
+  - prompt.txt：该轮实际用于 CrystaLLM 生成的 prompt（高层行）
+  - cifs/sample_*.cif：CrystaLLM 生成的 CIF 候选（数量=8）
+  - cif_quality.json / cif_quality.csv：过滤器对每个 CIF 的清洗+验证结果（是否通过、失败原因等）
+  - cif_quality_summary.txt：过滤器统计摘要（通过率、常见失败点等）
+  - scores.csv：ALIGNN 预测结果（formation_energy、bandgap 等），并合并了过滤器关键字段
+  - summary.json：该轮汇总统计（均值/极值、通过率、Top structures 等）
+  - evaluator_summary.json：给优化器 LLM 的“压缩摘要”（关键指标 + top 结构）
+  - llama_output.json：仅在 round_01/round_02 存在（因为 round_03 是最后一轮）
+
+全局文件：
+  - final_report.json：全流程汇总 + best_overall
+  - best_structures/：复制出来的候选（命名带 round/rank/score）
+
+
+4. 每轮结果概览（打分器输出 + 过滤器输出 + Qwen 输出）
+---------------------------------------------------
+说明：
+  - “total/ok”来自 ALIGNN 预测的成功数（ok=True 表示预测成功返回数值）
+  - “validation_ok”来自过滤器（是否认为 CIF 在化学计量、空间群、多重度、键长等方面一致）
+  - top_structures 是按 score_property/goal 从候选里挑选（流程会偏向保留“更可信/可解释”的结构）
+
+Round 01
+  路径：/root/autodl-tmp/model/CrystaLLM/experiments/na2cl2_qwen_v1_small/round_01
+  prompt.txt：
+    - data_Na2Cl2
+    - _symmetry_space_group_name_H-M   P4/mmm
+  ALIGNN 打分（summary.json）：
+    - total/ok: 8/8
+    - bandgap: mean=1.6589, min=0.2956, max=4.2189
+    - formation_energy: mean=-0.5914, min=-1.3414, max=0.3304
+  过滤器（cif_quality_summary.txt）：
+    - validation_ok: 1/8 (0.125)
+    - space_group_ok: 3/8 (0.375)
+    - atom_site_multiplicity_ok: 4/8 (0.500)
+    - bond_lengths_reasonable: 3/8 (0.375)
+    - formula_ok: 2/8 (0.250)
+  Top 结构（summary.json 的 top_structures）：
+    - rank1: cifs/sample_6.cif
+      bandgap=4.2189, formation_energy=-1.3414
+      validation_ok=True（该轮唯一通过过滤器的结构）
+  Qwen 输出（llama_output.json，output 部分）：
+    - protocol: relaxed_v0
+    - analysis（摘录）：提到“带隙较高”，但同时出现“探索更低带隙”的表述（与目标 max bandgap 有偏差）
+    - next_prompt_lines（解析后生效）：
+        data_Na2Cl3
+        _symmetry_space_group_name_H-M   P4/mmm
+
+Round 02
+  路径：/root/autodl-tmp/model/CrystaLLM/experiments/na2cl2_qwen_v1_small/round_02
+  prompt.txt：
+    - data_Na2Cl3
+    - _symmetry_space_group_name_H-M   P4/mmm
+  ALIGNN 打分（summary.json）：
+    - total/ok: 8/8
+    - bandgap: mean=1.0648, min=-0.0032, max=3.2317
+    - formation_energy: mean=-0.5887, min=-1.3602, max=0.3728
+  过滤器（cif_quality_summary.txt）：
+    - validation_ok: 0/8 (0.000)  （这一轮没有任何结构通过过滤器）
+    - space_group_ok: 7/8 (0.875)
+    - atom_site_multiplicity_ok: 6/8 (0.750)
+    - formula_ok: 0/8 (0.000)  （主要瓶颈：化学计量相关）
+  Top structures（仍会列出 bandgap 较高者，但都未通过验证）：
+    - rank1: cifs/sample_5.cif
+      bandgap=3.2317, formation_energy=-1.3602
+      validation_ok=False，原因包含：
+        - composition inconsistent
+        - atom site multiplicity inconsistent
+  Qwen 输出（llama_output.json，output 部分）：
+    - protocol: relaxed_v0
+    - analysis：指出“化学式与空间群/多重度不匹配”导致验证失败（方向基本正确）
+    - next_prompt_lines（解析后生效）：
+        data_Na2Cl2
+        _symmetry_space_group_name_H-M   P4/mmm
+
+Round 03
+  路径：/root/autodl-tmp/model/CrystaLLM/experiments/na2cl2_qwen_v1_small/round_03
+  prompt.txt：
+    - data_Na2Cl2
+    - _symmetry_space_group_name_H-M   P4/mmm
+  ALIGNN 打分（summary.json）：
+    - total/ok: 8/8
+    - bandgap: mean=0.9830, min=-0.0115, max=4.0453
+    - formation_energy: mean=-0.7387, min=-1.6578, max=0.7362
+  过滤器（cif_quality_summary.txt）：
+    - validation_ok: 1/8 (0.125)
+    - space_group_ok: 7/8 (0.875)
+    - atom_site_multiplicity_ok: 7/8 (0.875)
+    - formula_ok: 1/8 (0.125)
+  Top 结构（summary.json）：
+    - rank1: cifs/sample_7.cif
+      bandgap=-0.0115（接近 0，但为负值），formation_energy=-0.7217
+      validation_ok=True（这一轮唯一通过过滤器的结构）
+  说明：round_03 为最后一轮，因此没有 llama_output.json。
+
+
+5. 最终产物（best_overall / best_structures）
+--------------------------------------------
+文件：
+  /root/autodl-tmp/model/CrystaLLM/experiments/na2cl2_qwen_v1_small/final_report.json
+
+best_overall（全局候选）：
+  - rank 1（round_01/cifs/sample_6.cif）
+    bandgap=4.2189，formation_energy=-1.3414，且验证通过（validation_ok=True）
+  - rank 2（round_03/cifs/sample_7.cif）
+    bandgap=-0.0115，formation_energy=-0.7217，且验证通过（validation_ok=True）
+
+对应复制文件（best_structures/）示例：
+  /root/autodl-tmp/model/CrystaLLM/experiments/na2cl2_qwen_v1_small/best_structures/round01_rank01_bandgap_4.2189_sample_6.cif
+  /root/autodl-tmp/model/CrystaLLM/experiments/na2cl2_qwen_v1_small/best_structures/round03_rank02_bandgap_-0.0115_sample_7.cif
+
+解释：流程在挑选候选时会明显偏向“通过过滤器的结构”。如果某一轮只有 1 个结构通过验证，它仍会被纳入候选，即使 bandgap 不高。
+
+
+6. 重点观察与问题定位（本实验暴露了什么）
+----------------------------------------
+(1) Qwen 输出稳定、可解析、能驱动闭环
+  - round_01/round_02 的 Qwen 输出都能生成 next_prompt_lines，并确实影响下一轮 prompt.txt。
+  - 使用 relaxed_v0 协议时，不要求严格 JSON/固定模板，降低了“模型不服从导致全盘失败”的风险。
+
+(2) ALIGNN GPU 打分已正常工作
+  - 每轮 total/ok 都是 8/8，说明 ZMQ 服务可用且返回数值。
+
+(3) 过滤器通过率偏低，主要卡在“化学计量一致性”
+  - round_02 更是 0/8 通过。
+  - 常见失败原因包含：
+    - composition inconsistent（CIF 内不同字段/位点统计的化学式对不上）
+    - atom site multiplicity inconsistent（位点多重度统计出来的原子总数与化学式对不上）
+  - 这说明：仅靠 data_ 行提示很难让生成的 CIF 在多个字段上保持自洽；需要后续在 prompt 或后处理上“更强约束/更强修复”。
+
+(4) Qwen 的目标表述存在偏差
+  - round_01 的分析中出现“探索更低带隙”的措辞，与当前目标（max bandgap）相矛盾。
+  - 但它给出的 next_prompt_lines 仍然可用；后续应在输入提示中更明确地写死目标方向（bandgap 越大越好）。
+
+(5) 少量样本出现验证阶段异常
+  - round_01 的部分样本在 validation_reasons 中出现：
+      "validation_failed: 'NoneType' object is not subscriptable"
+  - 这更像是过滤器实现遇到某些 CIF 边界格式时的异常（导致直接判 invalid），建议后续单独排查这类 CIF 的格式特征并修复验证逻辑的鲁棒性。

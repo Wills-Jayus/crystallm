@@ -1,0 +1,233 @@
+CrystaLLM + ALIGNN + LLaMat3（m3rg-iitd/llamat-3-chat）本次会话实验日志（总-分-总）
+日期：2025-12-29
+工作目录：/root/autodl-tmp/model/CrystaLLM（及其上级 /root/autodl-tmp/model）
+
+============================================================
+【总览（结论先行）】
+============================================================
+1) 目标与范围
+- 目标：围绕 CrystaLLM 项目（CIF 生成 + ALIGNN 评分 + 外部 LLM 优化器）梳理实验结果、定位失败原因、完善文档、设计并执行隔离实验、清理大体积缓存，保证 experiments 数据保留。
+- 主要关注任务：Na2Cl2（space group P4/mmm）闭环实验（生成→物理化学过滤→ALIGNN→LLM 反馈→下一轮）。
+
+2) 关键发现
+- Baseline / 早期闭环失败的主要原因有两类：
+  A. 生成的 CIF 在“空间群符号/化学计量”上不合法或不一致（例如 P4/<unk>、composition inconsistent），导致清洗/验证不过。
+  B. ALIGNN 接口调用存在版本/签名不匹配（出现 get_prediction() 参数错误），造成物性打分阶段失败或不稳定。
+- 针对 LLaMA（m3rg-iitd/llamat-3-chat）优化器：
+  - 模型本体在自由问答场景下可正常生成连贯回答；
+  - 但在“严格 JSON 输出/模板化输出”约束下极不稳定，频繁回显输入/产生乱码，触发服务端或客户端回退，导致闭环提示词难以更新。
+
+3) 阶段性产出
+- 分析并对比了 experiments 下多个实验目录（baseline + json_loop 多版本）的配置与结果；
+- 明确 CIF 体检（物理化学过滤器）失败模式，并给出真实样例；
+- 设计并执行两组 LLaMA 隔离实验（JSON sanity / freeform），产出 sandbox 目录与报告；
+- 生成/补充多份项目文档与报告：
+  - /root/autodl-tmp/model/CrystaLLM/docs/physical_chem_filters_module_zh.md
+  - /root/autodl-tmp/model/CrystaLLM/sandbox/llama_isolation_experiments_report.md
+  - /root/autodl-tmp/model/CrystaLLM/sandbox/llama_json_sanity/README.md
+- 清理了占用 30GB 的 LLaMA transformers 缓存（仅删缓存/权重，不动 experiments）。
+
+4) 风险提示
+- 清理缓存后，后续若再次启动本地 LLaMA 服务，会触发重新下载/重新缓存，磁盘占用会再次增长。
+
+============================================================
+【分述（过程与细节：按主题/时间线整理）】
+============================================================
+
+一、experiments 目录实验梳理与结论
+------------------------------------------------------------
+A. 目录与核心文件
+- 目标目录：/root/autodl-tmp/model/CrystaLLM/experiments
+- 主要实验子目录：
+  - na2cl2_alignn_baseline
+  - na2cl2_json_loop
+  - na2cl2_json_loop_v2
+  - na2cl2_json_loop_v3
+  （后续又发现并涉及 v4/v6_Large/v7_Large/v8/v9/v13/v14 等更晚期实验目录）
+
+B. baseline（na2cl2_alignn_baseline）关键配置与结果
+- 配置要点（experiment_config.json）：
+  - model_dir: crystallm_v1_small
+  - rounds: 1, samples_per_round: 8
+  - alignn_properties: [formation_energy, bandgap]
+  - score_property: bandgap (max)
+  - validation_bond_cutoff: 1.0
+- 汇总结果（final_report.json）：
+  - round_1 total=8, ok=0
+  - validation_stats: passed=0/8
+  - top_structures/best_overall 为空
+- CIF 质量失败根因（cif_quality.json）：
+  - 全部样本 cleaning_failed: Bad international symbol P4/<unk>
+- 进一步发现：scores.csv 中 ALIGNN 调用错误：
+  - get_prediction() got an unexpected keyword argument 'device'
+  => 说明：即便 CIF 合法，ALIGNN 调用接口也存在参数不兼容风险。
+
+C. json_loop（na2cl2_json_loop）多轮演化（3 轮）
+- Round 1：与 baseline 同类错误（P4/<unk> 导致清洗失败）→ 0/8
+- Round 2：空间群与键长相关指标明显改善，但主要失败变为 composition inconsistent
+  - space_group_ok=1.0、bond_length_score=1.0（多数样本）
+  - 仍然 formula_ok=0.0，validation_ok=0/8
+- Round 3：出现 1/8 完全通过的样本（sample_7.cif）
+  - validation_ok=True, formula_ok=True, space_group_ok=True, atom_site_multiplicity_ok=True, bond_length_score=1.0
+  - 其余样本仍多为 composition inconsistent / bond length 异常 / CIF 无结构等
+- 对比样例：
+  - 通过样本 sample_7：space group 为 P4/mmm，formula 与 atom_site 一致
+  - 失败样本 sample_1：元素体系偏移（例如 Na-Ru），直接 composition inconsistent
+
+D. v2/v3
+- v2 与 v3 的 round_03 指标与样本级原因基本与 json_loop 相同（高度一致），表现为重复/小变体实验。
+
+E. 后续更晚期实验（v6_Large/v7_Large/v9_Large/v13_small 等）中抽取的关键结论
+- v7_Large round_01 llama_output.json 仍显示 LLaMA 输出不可解析，触发回退；
+- v9_Large round_03 evaluator_summary.json 显示：
+  - n_structures=8
+  - n_scored_ok=6
+  - valid_physical_ratio=0.25（2/8 物理验证通过）
+  - bandgap max=1.9267 eV
+  - Top1/Top2 均 validation_ok=true，且各子指标（bond_length_score/formula_ok/space_group_ok/multiplicity_ok/strict_valid）均为 1.0
+  => 说明：最新实验在“物理过滤通过率”和“可用高带隙候选”方面相对早期有明显改善。
+- v13_small 讨论点：
+  - 用户终端日志片段显示“CIF 质量检查通过 0/8”，但读取 cif_quality.csv 发现 sample_6 validation_ok=True（1/8）。
+  - 可能原因：日志片段对应不同一次运行/不同阈值/文件后来被更新。建议后续写报告时以轮次目录内最终落盘的 cif_quality.csv/json 为准。
+
+
+二、典型报错定位与解决（命令行/流程问题）
+------------------------------------------------------------
+A. prompt_optimization_loop.py 命令报错（反斜杠续行）
+- 现象：prompt_optimization_loop.py 提示 unrecognized arguments，bash 报 --rounds: command not found。
+- 根因：行尾的续行符 "\" 后面多了一个空格，导致 bash 不再续行，后续参数被当成新命令。
+- 解决：确保每一行末尾的 "\" 后不带任何空格，或将命令写成单行。
+
+B. sample.py 报错 top_p 不支持
+- 现象：KeyError: "'top_p' is not a supported option"。
+- 根因：bin/sample.py 的配置 dataclass SampleDefaults 不包含 top_p 字段，parse_config 不接受该 override。
+- 解决：去掉 top_p 参数；若确需 top_p，需要修改 SampleDefaults 与 generate 调用链以支持。
+
+C. evaluate_cifs.py 报错 FileNotFoundError: 'cifs'
+- 现象：python bin/evaluate_cifs.py cifs --out tmp_eval.csv 报错。
+- 根因：evaluate_cifs.py 期望输入为 .tar.gz 文件路径，而非目录名；且上一步 sample.py 失败也会导致输出文件不存在。
+- 解决：先生成 sample_*.cif，再打包为 tar.gz，然后 evaluate。
+
+D. lspci 命令缺失
+- 现象：bash: lspci: command not found。
+- 根因：容器未安装 pciutils。
+- 解决：安装 pciutils（apt/yum），或改用 ip a / /proc/net/dev 获取网卡信息。
+
+
+三、LLaMA（m3rg-iitd/llamat-3-chat）格式/模板排查与“乱码”定位
+------------------------------------------------------------
+A. 模型是否有输入输出模板要求？
+- 通过本地 transformers 缓存中的 tokenizer_config.json（chat_template）确认：
+  - 使用 Llama3 风格的 chat_template（<|start_header_id|>role<|end_header_id|>...<|eot_id|>）。
+  - 仓库示例 run_llamat3_chat.py 使用 tokenizer.apply_chat_template 构造 prompt。
+  - 结论：模型输入应采用 messages（system/user）→ apply_chat_template 展平；模型输出本身不强制 JSON，JSON 属于我们自定义协议。
+
+B. 为什么闭环中 LLaMA 输出仍“乱码”？
+- 现象（llama_output.json）：
+  - output.analysis 固定为回退文案；next_prompt_lines 沿用上一轮；_raw 充满杂乱片段。
+- 关键点：服务端 llama_local_api.py 会尝试解析 JSON；解析失败则回退并把 raw 塞入 _raw。
+- 结论：
+  - 乱码本质是模型生成的自由文本/回显/杂质 token；
+  - 由于严格 JSON 协议（或模板协议）无法被模型稳定遵守，触发回退导致闭环提示不更新。
+
+C. 设计并执行隔离实验验证上述判断
+
+(1) 隔离实验一：JSON sanity
+- 目录：/root/autodl-tmp/model/CrystaLLM/sandbox/llama_json_sanity
+- 输入：payload_round1.json（包含 input: {last_prompt_lines, evaluator_summary}）
+- 运行：温度 0.0/0.2/0.5 调用 bin/llama_single_test.py，输出保存到 runs/t*_response.log。
+- 结果：三组均触发服务端 fallback JSON；_raw 仍混杂奇怪 token（如 ucwords/cement_composition/JADX PROXY 等），无法解析为干净 JSON。
+- 结论：在最小输入和低温下仍无法稳定结构化输出，问题不依赖闭环复杂度。
+
+(2) 隔离实验二：freeform（不要求 JSON 的普通问答）
+- 目录：/root/autodl-tmp/model/CrystaLLM/sandbox/llama_freeform_test
+- 输入：system="You are a helpful assistant..."，user="Explain band gap..."，temperature=0.2。
+- 结果：模型在 _raw 中给出连贯的自然语言解释，但服务端仍尝试按 JSON 解析而回退，把自然语言塞进 _raw。
+- 结论：模型本体能正常回答；主要冲突在于“服务端强制 JSON 解析 / 协议约束”与模型服从度不足。
+
+D. 文档化与产出
+- 将两组隔离实验写入报告：
+  - /root/autodl-tmp/model/CrystaLLM/sandbox/llama_isolation_experiments_report.md
+- 对 LLaMA 乱码问题复盘文档进行补充（后来用户又自行改写为英文并最终删除旧文件）：
+  - 曾涉及 /root/autodl-tmp/model/CrystaLLM/llama_output_garbled_analysis.md（最终被删除）
+
+
+四、物理化学过滤器（CIF 体检）模块梳理与文档
+------------------------------------------------------------
+A. 过滤器核心能力（当前版本）
+- 基本检查：
+  - 配方一致性（data / formula_sum / structural）
+  - 位点多重度与元素计数一致性
+  - 键长合理性评分（基于 CrystalNN 近邻，0~1）
+  - 空间群一致性（声明 vs SpacegroupAnalyzer 检测）
+- 清洗：
+  - 针对 P4/<unk> 做兜底修正为 P4/mmm
+  - 体积 sanity check
+  - 对称操作替换（对合法空间群）
+  - 去除 atom props block
+- 输出：cif_quality.csv/json + summary.txt
+
+B. 过滤结果如何进入闭环
+- 每轮生成后先运行 CIF 质量检查；
+- 清洗成功时覆盖写回 cif 文件，然后再送入 ALIGNN 打分；
+- 打分表与质量表合并后，优先从“物理通过+打分成功”的结构中选 Top-K；
+- 构造 evaluator_summary（包含通过率、物性统计、Top 样本失败原因）作为 LLaMA 输入。
+
+C. 文档产出
+- 已将过滤器模块说明整理为中文文档：
+  - /root/autodl-tmp/model/CrystaLLM/docs/physical_chem_filters_module_zh.md
+
+
+五、开题/答辩/PPT支持性内容产出
+------------------------------------------------------------
+- 提供“专家 LLM 闭环反馈”PPT页内容：
+  - 先给通俗版，再根据要求改为学术严谨版，再压缩成一页结构化提纲。
+- 提供“当前进度与实验分析”PPT页结构，基于 docs 日志提炼：
+  - 系统集成完成情况、关键现象（过滤通过率、LLM 不稳定）、阶段性结果（如 v9_Large 的通过率与高带隙候选）、后续计划。
+- 提供“最新实验结构化指标提取”：
+  - v9_Large round_03：8 个结构、6 个打分成功、2 个物理通过（25%）、bandgap max 1.9267 eV。
+
+
+六、缓存与权重清理（确保实验数据保留）
+------------------------------------------------------------
+目标：删除 llama 模型缓存/权重等占空间目录，保留全部 experiments。
+
+执行结果：
+- 已确认 experiments 目录仍保留：/root/autodl-tmp/model/CrystaLLM/experiments（约 4.2MB）。
+- 已删除主要占用空间目录：
+  - /root/autodl-tmp/cache/transformers/models--m3rg-iitd--llamat-3-chat（约 30GB）
+  - /root/autodl-tmp/cache/transformers/.locks/models--m3rg-iitd--llamat-3-chat（锁目录）
+- 删除后 transformers cache 剩余约 8KB。
+
+备注：
+- /root/.cache/huggingface/hub 在当前环境中不存在（未发现该处的模型大缓存）。
+
+
+============================================================
+【总结（阶段性结论 + 下一步建议）】
+============================================================
+1) 阶段性结论
+- 闭环系统的关键链路（生成→过滤→打分→汇总→反馈）已跑通，并能在部分最新实验中产生“物理通过 + 高带隙”的候选结构。
+- 当前主要瓶颈集中在：
+  - 生成侧：仍存在一定比例的配方/一致性问题；
+  - 优化侧：LLaMA 对严格结构化输出的服从度不足，导致闭环提示更新不稳定。
+
+2) 下一步建议（面向继续迭代）
+- 优先提升 LLM 输出可控性：
+  - 降温/降低 top_p，加入更强 few-shot；
+  - 实现真正 stop/StoppingCriteria（匹配完整 END 序列）或引入 grammar/JSON constrained decoding；
+  - 或者改为“自由文本→本地解析→结构化”的更鲁棒协议。
+- 针对生成侧提升物理通过率：
+  - 强化 prompt 中对元素集合与计量的硬约束；
+  - 扩展 evaluator_summary 的失败统计粒度，指导 LLM 针对性修复。
+
+3) 本次会话主要新增/产物路径（便于复现与审计）
+- docs：
+  - /root/autodl-tmp/model/CrystaLLM/docs/physical_chem_filters_module_zh.md
+- sandbox：
+  - /root/autodl-tmp/model/CrystaLLM/sandbox/llama_json_sanity/**
+  - /root/autodl-tmp/model/CrystaLLM/sandbox/llama_freeform_test/**
+  - /root/autodl-tmp/model/CrystaLLM/sandbox/llama_isolation_experiments_report.md
+- 本日志：
+  - /root/autodl-tmp/model/CHAT_LOG_2025-12-29_CrystaLLM_SESSION.txt
+

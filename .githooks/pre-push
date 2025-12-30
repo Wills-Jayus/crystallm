@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Pre-push safety net: re-check what is about to be pushed for oversized blobs.
+# Install: `git config core.hooksPath .githooks`
+#
+# Input: lines "local_ref local_sha remote_ref remote_sha"
+
+max_file_mb="${GIT_MAX_FILE_MB:-5}"
+max_file_bytes=$((max_file_mb * 1024 * 1024))
+
+deny_ext() {
+  local p="$1"
+  case "$p" in
+    *.pt|*.pth|*.ckpt|*.safetensors|*.bin|*.onnx|*.h5|*.npz|*.npy|*.pkl|*.tar|*.tar.gz|*.tgz|*.zip|*.7z) return 0 ;;
+  esac
+  return 1
+}
+
+deny_path() {
+  local p="$1"
+  case "$p" in
+    CrystaLLM/experiments/*/cifs/*|CrystaLLM/experiments/*/*/cifs/*) return 0 ;;
+    CrystaLLM/experiments/*/best_structures/*|CrystaLLM/experiments/*/*/best_structures/*) return 0 ;;
+    CrystaLLM/experiments/*/structures/*|CrystaLLM/experiments/*/*/structures/*) return 0 ;;
+    CrystaLLM/experiments/*/wandb/*|CrystaLLM/experiments/*/*/wandb/*) return 0 ;;
+  esac
+  return 1
+}
+
+# Iterate ref updates being pushed.
+while read -r local_ref local_sha remote_ref remote_sha; do
+  # Deleting a ref
+  if [ "$local_sha" = "0000000000000000000000000000000000000000" ]; then
+    continue
+  fi
+
+  # New branch/tag
+  range="$remote_sha..$local_sha"
+  if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
+    range="$local_sha"
+  fi
+
+  # List objects introduced by the range and validate blobs that have paths.
+  # `git rev-list --objects` emits "<sha> <path>" only for blobs; commits/trees have no path.
+  while IFS=$'\t' read -r obj path; do
+    [ -n "$obj" ] || continue
+    [ -n "$path" ] || continue
+
+    if deny_path "$path"; then
+      echo "ERROR: forbidden path to push: $path"
+      exit 1
+    fi
+    if deny_ext "$path"; then
+      echo "ERROR: forbidden file type to push: $path"
+      exit 1
+    fi
+
+    size="$(git cat-file -s "$obj" 2>/dev/null || echo 0)"
+    if [ "$size" -gt "$max_file_bytes" ]; then
+      echo "ERROR: blob too large to push: $path (${size} bytes > ${max_file_bytes})"
+      exit 1
+    fi
+  done < <(git rev-list --objects "$range" 2>/dev/null | awk 'NF>=2{sha=$1; $1=""; sub(/^ /,""); print sha\"\\t\"$0}')
+done

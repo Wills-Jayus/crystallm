@@ -1,0 +1,175 @@
+CrystaLLM 实验问题分析报告：symmetry_dataset_unavailable（space_group_check_error）
+实验：na2cl2_qwen_v4_small
+日期：2025-12-18
+
+
+0. 背景与结论（一句话）
+在 na2cl2_qwen_v4_small 的 Round 1 中出现的 `symmetry_dataset_unavailable` 并非“原始 CIF 完全无法算空间群”，而是清洗阶段 `clean_cif()` 强制将对称操作替换为目标空间群（P4/mmm）后，结构被展开产生极近/近重叠原子，spglib 返回 None 并设置错误信息 `too close distance between atoms`，从而触发 `space_group_check_error`。
+
+
+1. 现象：什么叫 symmetry_dataset_unavailable？
+代码位置：`model/CrystaLLM/crystallm/_metrics.py` -> `space_group_consistency_details()`
+
+当调用：
+  SpacegroupAnalyzer(structure, symprec=...).get_symmetry_dataset()
+返回空/None 时，系统认为“无法判定空间群一致性”，返回：
+  - consistent = None
+  - detected_space_group = None
+  - error = "symmetry_dataset_unavailable"（原始版本）
+
+这与“空间群不一致”不同：
+  - 不一致：consistent=False（检测到的空间群与声明不一致）
+  - 不可判定：consistent=None（spglib/pymatgen 无法生成 dataset）
+
+
+2. 根因链条（强因果）
+2.1 原始 CIF 往往只包含 1 条对称操作（只写了恒等操作）
+很多失败样本的 CIF 声明了 `_symmetry_space_group_name_H-M   P4/mmm`，
+但 `_symmetry_equiv_pos_as_xyz` 只包含一条 `x, y, z`（或等价的极简对称操作）。
+这意味着 CIF 文本层面“宣称的空间群”和“给出的对称操作块”并不匹配。
+
+2.2 清洗阶段会强制替换对称操作为目标空间群全套 ops
+代码位置：`model/CrystaLLM/crystallm/cif_cleaning.py` -> `clean_cif()`
+关键逻辑：
+  - 读取 `_symmetry_space_group_name_H-M`
+  - 若不是 "P 1" 且不含明显非法 token，则调用：
+      replace_symmetry_operators(cif_str, space_group_symbol)
+
+代码位置：`model/CrystaLLM/crystallm/_utils.py` -> `replace_symmetry_operators()`
+它会把 CIF 中的对称操作 loop 替换成由 `SpaceGroup(space_group_symbol)` 生成的全套 ops。
+例如 P4/mmm 会生成 16 条 `_symmetry_equiv_pos_as_xyz`。
+
+2.3 替换对称操作后，pymatgen 解析 CIF 会展开等价原子，导致“过近原子”碰撞
+在 P4/mmm 这类高对称空间群下，展开后的原子数会显著增多。
+对于原始坐标不满足该空间群对称性的样本，展开后会产生非常接近甚至近重叠的原子对。
+当 spglib 发现“原子间距太近”，会：
+  - 返回 dataset=None（或空对象）
+  - 设置内部错误字符串：`too close distance between atoms`
+
+
+3. 复现与证据（本机复现：pymatgen==2023.3.23, spglib==2.6.0）
+环境：conda env `crystallm_env`
+
+3.1 样本对比（Round 1）
+对三个样本做对比（失败样本 1、失败样本 5、通过样本 6）：
+  - sample_1（失败）：替换对称操作前后最小原子间距：
+      before_replace: nsites=5,  min_dist≈1.3872 Å
+      after_replace : nsites=44, min_dist≈0.0300 Å  <-- 极近/近重叠
+  - sample_5（失败）：替换对称操作前后最小原子间距：
+      before_replace: nsites=9,   min_dist≈0.5479 Å
+      after_replace : nsites=118, min_dist≈0.0805 Å  <-- 极近/近重叠
+  - sample_6（通过）：
+      before_replace: nsites=4, min_dist≈2.9567 Å
+      after_replace : nsites=4, min_dist≈2.9567 Å  <-- 无变化，稳定
+
+3.2 spglib 错误信息（关键证据）
+对 sample_1/sample_5 进行：
+  cif2 = replace_symmetry_operators(cif, 'P4/mmm')
+  Structure.from_str(cif2, fmt='cif')
+然后在 symprec=0.1 下调用：
+  SpacegroupAnalyzer(...).get_symmetry_dataset()
+  spglib.get_symmetry_dataset(cell, symprec=0.1)
+
+观察到：
+  - pymatgen dataset=None
+  - spglib dataset=None
+  - spglib.get_error_message() == "too close distance between atoms"
+
+这与此前 `cif_quality.json` 中记录的 `symmetry_dataset_unavailable` 完全一致，
+并解释了为什么 `space_group_ok` 会变成 null（不可判定）。
+
+3.3 说明：为什么“原始 CIF”有时还能算出空间群？
+如果不经过 `replace_symmetry_operators` 的强制替换，pymatgen/spglib 往往还能从几何结构推断出某个空间群（通常是 P1 或低对称）。
+但一旦强制写入目标空间群的对称操作并展开，几何冲突被放大，才触发 spglib 的硬错误。
+
+
+4. 是不是 CrystaLLM 模型问题？
+这不是单一“模型坏”导致的，而是“生成质量 + 清洗策略”的耦合问题：
+  - 生成侧（模型/提示）：输出的分数坐标并不满足目标空间群的严格对称约束（数值噪声或结构本身不对称）
+  - 清洗/验证侧（管线设计）：强制替换对称操作并展开等价原子，导致碰撞，spglib 直接拒绝返回 dataset
+
+因此它更像是“后处理策略对某类生成输出不鲁棒”的工程问题。
+
+
+5. 已做改动（代码增强：让错误信息可解释）
+目标：当 dataset=None 时，不再只返回“symmetry_dataset_unavailable”，而是附带：
+  - spglib 的具体错误信息（例如 too close distance between atoms）
+  - 在当前 symprec 半径内的最小邻居距离（帮助量化碰撞尺度）
+
+改动文件：
+  - `model/CrystaLLM/crystallm/_metrics.py`
+
+改动摘要：
+  - 引入 `spglib`，在 dataset 空时额外调用一次 `spglib.get_symmetry_dataset(...)`
+  - 读取 `spglib.get_error_message()`
+  - 计算 `min_neighbor_dist`（在 r=symprec 的 neighbor list 内）
+  - 将 error 字段从固定字符串升级为：
+      "symmetry_dataset_unavailable: <spglib_err>: min_neighbor_dist<...Å≈...Å"
+
+示例输出（修复后）：
+  - sample_1（替换对称操作后，symprec=0.1）：
+      error = "symmetry_dataset_unavailable: too close distance between atoms: min_neighbor_dist<0.1Å≈0.0300Å"
+  - sample_5（替换对称操作后，symprec=0.1）：
+      error = "symmetry_dataset_unavailable: too close distance between atoms: min_neighbor_dist<0.1Å≈0.0805Å"
+
+好处：
+  - 以后看到 `space_group_check_error` 可以直接判断是否是“原子过近”导致
+  - 对调参/清洗策略优化提供直接证据，不再黑盒
+
+
+6. 可行的解决方案建议（按优先级）
+6.1 验证/清洗侧：在替换对称操作后做位点合并（merge）或碰撞修复
+经验验证：对 sample_1 替换后结构执行：
+  structure.merge_sites(tol=0.1)
+即可在 symprec=0.1 下消除 "too close distance between atoms"，spglib 能恢复返回 dataset。
+
+建议：
+  - 在 `clean_cif()` 或空间群检查前增加一段 “merge_sites(tol=symprec)” 的可选逻辑
+  - 或仅在检测到 spglib 报 too close 时走该分支（避免过度修改结构）
+
+6.2 验证侧：symprec 重试策略
+某些结构在更小 symprec 下不一定触发 too close。
+可以实现：
+  - 先 symprec=0.1
+  - 若 dataset=None 且 spglib_err=too close，尝试 symprec=0.05/0.01（同时保留记录）
+
+注意：
+  - 这可能会放过一些边缘碰撞结构，建议与几何检查/merge_sites 搭配。
+
+6.3 生成侧：减少与目标空间群不一致的自由度
+提升模型遵循目标空间群的概率：
+  - 给 Wyckoff 模板/只让输出不等价位点（而不是任意坐标）
+  - 或在 prompt 中明确要求对称性兼容的坐标精度与约束
+  - 或先不强制高对称空间群，先生成几何合理结构后再做对称识别
+
+
+7. 如何验证修复是否生效（建议的 check）
+1) 对发生 `space_group_check_error` 的 CIF，记录增强后的 error 信息；
+2) 若 error 含 “too close distance between atoms”，统计其 `min_neighbor_dist` 分布；
+3) 对这些样本启用 merge_sites / symprec 重试后，再观察：
+   - `space_group_ok` 是否从 null 变为 true/false
+   - `validation_ok` 是否有提升
+
+
+8. 附注：关于“报错栈/traceback”
+spglib 的失败模式多为“返回 None + 设置内部错误字符串”，而非抛 Python 异常。
+因此你们之前看到 `validator_step_tracebacks` 为空是正常的；增强 error message 才是定位的关键。
+
+
+9. 最新修复进展（已落地：merge_sites 恢复 symmetry dataset）
+已在 `model/CrystaLLM/crystallm/_metrics.py` 的 `space_group_consistency_details()` 中实现“碰撞恢复”逻辑：
+  - 当 `get_symmetry_dataset()` 返回 None 且 `spglib.get_error_message()` 包含
+    `too close distance between atoms` 时：
+      1) 对解析出的 Structure 执行 `merge_sites(tol=symprec, mode='delete')`（删除近重叠位点，避免 occupancy 相加 > 1）
+      2) 重新运行 `SpacegroupAnalyzer(...).get_symmetry_dataset()`
+  - 若恢复成功，则返回可判定的 detected SG，并额外带出字段：
+      `recovered_from_too_close_distance = True`
+
+本机验证（pymatgen==2023.3.23, spglib==2.6.0）：
+  - 对 na2cl2_qwen_v4_small / na2cl2_qwen_v5_small 的 Round 1 失败样本
+    `sample_1/2/5/8.cif`，此前均为：
+      `symmetry_dataset_unavailable: too close distance between atoms: ...`
+    修复后均能恢复 dataset，且 detected SG 为 `P4/mmm`（consistent=True）。
+
+
+

@@ -1,0 +1,488 @@
+Qwen Prompt 修改策略（last_prompt_lines / next_prompt_lines）严格限定方案 v1
+
+更新时间：2025-12-25
+适用范围：CrystaLLM 闭环中“优化器 LLM(Qwen) 生成 next_prompt_lines”的环节
+
+------------------------------------------------------------------------------
+0. 背景与澄清
+------------------------------------------------------------------------------
+这里讨论的“prompt”指 Qwen 输出/消费的数据结构里的两段：
+- last_prompt_lines：上一轮用于 CrystaLLM 采样的 CIF prompt 行（高层行）
+- next_prompt_lines：Qwen 认为下一轮应使用的 CIF prompt 行（高层行）
+
+它们通常是“高层提示行”，而不是完整 CIF（不包含/不要求包含 _atom_site_* loop、_cell_length_* 等完整结构信息）。
+因此，“计量必须与原子表一致”这一类约束，只有在 prompt lines 里真的包含 atom_site 时才有意义。
+在高层行场景里，更可执行的约束是：
+- 化学式字段内部自洽（sum/structural/Z 等）
+- 空间群字段自洽（symbol/number 等）
+- 输出行集合满足白名单与格式要求
+
+------------------------------------------------------------------------------
+1. 目标
+------------------------------------------------------------------------------
+1) 可控：对 Qwen 能改动的字段进行严格白名单限制，并限制改动幅度（例如每轮最多改 N 个 key）。
+2) 可执行：代码端能确定性地解析/过滤/合并输出，不依赖模型“自觉遵守”。
+3) 可审计：每轮记录输入、模型原始输出、解析结果、被拒绝的原因、最终落盘的 next_prompt_lines。
+4) 面向两类任务场景：
+   - 任务 S1（给定化学式，结构还原/重建）：化学计量锁定（composition_locked）
+   - 任务 S2（不给定化学式，自由探索）：允许修改化学计量（composition_editable）
+
+------------------------------------------------------------------------------
+2. 设计总览：两维模式矩阵
+------------------------------------------------------------------------------
+建议将“范围”与“计量策略”解耦，形成两维开关：
+
+A) 编辑范围 edit_scope
+- open：结果导向，允许 Qwen 自由输出 next_prompt_lines（仍会做最低限度安全过滤）
+- restricted：严格受限，只允许修改/新增/删除白名单 key
+
+B) 计量策略 composition_policy
+- locked：禁止改变化学计量（_chemical_formula_sum / structural / Z / data_ 的化学语义保持不变）
+- editable：允许改变化学计量（自由探索常用）
+
+最终模式 = (edit_scope, composition_policy)。
+
+------------------------------------------------------------------------------
+3. 强制输出协议（推荐）
+------------------------------------------------------------------------------
+核心思想：不要让 Qwen 直接“写最终 next_prompt_lines”，而是让它写“候选行”，代码端做强约束合并。
+
+3.1 基础协议（保持兼容现有实现）
+仍使用两段式输出（便于人读、也易于兼容旧逻辑）：
+
+ANALYSIS:
+（1-3 句）
+NEXT_PROMPT_LINES:
+（每行一条 CIF prompt line）
+END
+
+代码端解析后，对 NEXT_PROMPT_LINES 做过滤 + 合并 + 校验。
+
+3.2 严格受限模式（restricted）建议新增“严格结构化输出”备选
+如果希望更强的可控性，可让 Qwen 输出严格 JSON（并在服务端严格 parse）：
+
+{
+  "analysis": "...",
+  "set": {
+    "data": "data_Na2Cl2",
+    "_symmetry_space_group_name_H-M": "P4/mmm",
+    "_chemical_formula_sum": "Na2 Cl2",
+    "_cell_formula_units_Z": 2
+  },
+  "remove": ["_symmetry_Int_Tables_number"]
+}
+
+好处：解析更确定；坏处：模型可能更容易格式崩坏。
+建议实现上“双轨支持”：优先 JSON，失败回退到 3.1 的文本协议，再失败回退 last_prompt_lines。
+
+------------------------------------------------------------------------------
+4. 字段白名单与约束（restricted 核心）
+------------------------------------------------------------------------------
+4.1 行类型白名单（无论哪种模式都建议保留的最低过滤）
+只接受以下行前缀（其余一律丢弃，防止模型输出完整 CIF 或不相关内容污染）：
+- data_...
+- 以 "_" 开头的 CIF key 行（但会再做 key 白名单过滤）
+- 以 ";" 开头的注释行（可选：仅在 open 模式允许，restricted 模式默认不允许或只允许有限条）
+
+建议仍然禁止：
+- _cell_length_* / _cell_angle_*（除非你明确希望模型控制晶胞参数；否则很容易引入不物理/不稳定）
+- loop_ / _atom_site_*（高层 prompt 不建议让模型碰）
+
+4.2 key 白名单（restricted 模式）
+按你的描述，优先支持以下 key：
+
+化学计量相关：
+- data_（“data 行”，以 line 形式存在；可视为 key=data）
+- _chemical_formula_structural
+- _chemical_formula_sum
+- _cell_formula_units_Z
+
+空间群相关：
+- _symmetry_space_group_name_H-M
+- _symmetry_Int_Tables_number
+
+注意：如果你当前的 last_prompt_lines 里并不包含某些 key，restricted 模式下允许“新增”这些 key（set）。
+
+4.3 计量策略（composition_policy）
+
+composition_locked（结构还原/重建）：
+- 禁止 Qwen 改变：_chemical_formula_sum / _chemical_formula_structural / _cell_formula_units_Z 的“数值语义”
+- 实操上可选两种严格程度：
+  L1（简单）：这些行如果出现在 last_prompt_lines 中，则值必须保持完全一致（字符串一致或归一化后一致）。
+  L2（更强）：即使 last_prompt_lines 中缺失，也必须从“任务输入”中注入固定化学式（见第 6 节“需要外部输入”）。
+
+composition_editable（自由探索）：
+- 允许 Qwen 修改/新增/删除化学式相关行，但必须通过本地校验：
+  - _chemical_formula_sum 必须可解析为 Composition（元素+计量）
+  - _chemical_formula_structural 建议强制设为 reduce(formula_sum)
+  - _cell_formula_units_Z 必须为正整数（可以设置范围，例如 1-16；范围是否限制可配置）
+
+4.4 空间群策略（任意空间群）
+你要求“任意空间群都可以”，建议仍做以下处理以避免明显无效组合：
+- 允许 Qwen 只提供一个：
+  - 只提供 _symmetry_space_group_name_H-M：代码端尝试推导 Int Tables number（若可推导则补齐）
+  - 只提供 _symmetry_Int_Tables_number：代码端尝试推导 H-M symbol（若可推导则补齐）
+- 若两者都提供：
+  - 若能验证一致则接受；不一致则以一个为准（推荐：以 H-M symbol 为准，number 自动修正）
+
+实现建议：优先使用 pymatgen 的 space group 工具做 lookup（仓库内已有 pymatgen 依赖）。
+
+------------------------------------------------------------------------------
+5. 合并/校验/回退：代码端确定性执行流程
+------------------------------------------------------------------------------
+无论 open 还是 restricted，都建议按下面 pipeline 落地（关键是“模型输出只是候选”）：
+
+Step 0：准备策略参数
+- edit_scope: open/restricted
+- composition_policy: locked/editable
+- editable_keys: set[str]（restricted 时启用）
+- max_key_changes: int（每轮最多改动的 key 数）
+- allow_comments: bool（是否允许 ';' 注释行）
+- prefer_keep_order: bool（是否保持 last_prompt_lines 的顺序）
+- require_keys: set[str]（例如至少要有 data 与 space group）
+
+Step 1：调用 Qwen，拿到 raw_text
+- raw_text 进入审计记录（qwen_output.json）
+
+Step 2：解析
+- 优先尝试严格 JSON（如果启用）
+- 否则走 ANALYSIS/NEXT_PROMPT_LINES/END 解析
+- 解析失败：直接回退 last_prompt_lines（并记录 parse_failed）
+
+Step 3：候选行过滤（sanitize）
+- 丢弃非 prompt 行
+- 丢弃 disallowed keys（例如 _cell_length_*）
+- restricted 模式下：丢弃不在 editable_keys 白名单内的 key 行
+- 去重：每个 key 只保留最后一次出现（或第一次出现，需固定规则）
+
+Step 4：合并（merge）
+- 输入：last_prompt_lines + candidate_lines
+- 输出：merged_lines（仅替换允许的 key；其余保持 last 不变）
+- enforce max_key_changes：
+  - 如果候选试图改动超过 N 个 key：可以选择“只取前 N 个改动”或“直接拒绝并回退”
+  - 推荐：restricted 模式直接拒绝；open 模式可截断
+
+Step 5：归一化（normalize）
+- data_ 只保留一行，且放到第一行
+- _chemical_formula_sum：格式归一（元素排序、空格、是否加引号）
+- _chemical_formula_structural：若开启强制，则写为 reduce(formula_sum)
+- _symmetry_*：对齐空格格式（例如 key + 三个空格 + value）
+
+Step 6：校验（validate）
+- required key 存在性（例如必须包含 data 与 space group）
+- composition_policy=locked：确保关键字段不变（L1/L2）
+- composition_policy=editable：确保可解析 & Z 为正整数
+- space group：尽量验证/补齐一致性
+
+Step 7：失败处理（fallback）
+- 如果 validate 失败：
+  - 能自动修复的（structural、spacegroup number 等）先修复再验
+  - 仍失败：回退 last_prompt_lines
+- 将错误原因写入 qwen_output.json（例如 validation_errors 数组）
+
+Step 8：落盘与审计
+- next_prompt_lines（最终）写入 round_{k+1}/prompt.txt
+- 每轮记录 qwen_output.json（含 input/output/raw_text/merge_result/validation_errors）
+
+------------------------------------------------------------------------------
+6. 仍需你确认/提供的最小信息（否则 composition_locked 无法“严格锁定”）
+------------------------------------------------------------------------------
+你已经确认“化学式给定/不给定”是两种任务场景；为了让 composition_locked 真正可执行，需要明确：
+
+Q1：化学式“给定”的来源是什么？
+- 选项 A：它已经体现在 last_prompt_lines（例如 last 里包含 _chemical_formula_sum）
+- 选项 B：它来自外部任务输入（例如 dataset 提供 target_formula_sum）
+
+如果是 B，建议把 target_formula_sum（以及可选 structural、Z）作为一个字段传入优化器：
+- 方式 1：放进 evaluator_summary 的一个专用块，例如 evaluator_summary["task_spec"]
+- 方式 2：作为独立参数传入 optimize_prompt（不经模型）
+
+Q2：composition_locked 时是否允许 Qwen“补齐缺失行”？
+例如 last_prompt_lines 只有 data_ + space group，但你仍希望最终 next_prompt_lines 包含 formula_sum。
+
+Q3：comment 行（以 ';' 开头）在 restricted 模式是否允许？
+- 如果允许，建议限制条数与长度（例如最多 1-2 行，每行 <= 120 字符），防止 prompt 膨胀。
+
+你已确认的答案（用于后续实现）：
+- Q1：选项 A（给定化学式从第一轮 last_prompt_lines 开始就已提供）
+- Q2：允许（restricted+locked 时也允许“补齐缺失行”，但补齐内容必须来自 last_prompt_lines 的固定化学式）
+- Q3：允许（restricted 模式也允许 ';' 注释行，但建议限制条数与长度，见下文建议）
+
+什么是 “; 注释行”（comment line）？
+- CIF 语法里，分号 ';' 可以作为文本块或注释/说明的起始符号；在本项目的 high-level prompt 里，我们把“以 ';' 开头的一整行”当作“给生成模型看的自然语言提示/约束说明”，例如：
+  ; keep charge neutrality, avoid too short bonds
+- 这种行不会被当作 CIF key（不像 _chemical_formula_sum 那样有机器可解析的键值），更多是“软约束提示”。
+- 是否允许它的意义在于：restricted 模式下你希望 Qwen 只能改结构化字段，还是也允许它增删一两行自然语言提示来引导 CrystaLLM 采样。
+
+建议的约束（当 restricted 模式允许 ';' 注释行时）：
+- 最多允许 1 行（避免 prompt 膨胀；并符合“单行软约束”定位）
+- 每行最大长度例如 120 字符（或 200，按你模型上下文预算调整）
+- Qwen 侧允许以 ';' 开头输出（便于模型遵循简单模板）
+- 代码端“安全清洗”后，最终落盘到 prompt.txt 的形式建议重写为 CIF 标准注释行：'# ...'
+  - 目的：避免 ';' 在 CIF 解析中触发 multi-line text block 语义导致不可解析
+  - 要求：最终 prompt.txt 中不应存在任何以 ';' 开头的行
+- 注释行必须放在末尾（避免夹在结构化字段中间影响解析/生成）
+
+------------------------------------------------------------------------------
+7. 推荐的第一版落地（最小可执行 MVE）
+------------------------------------------------------------------------------
+为了尽快可用，建议按“先简单后严格”的路径：
+
+MVE-1（最快落地，优先稳定）：
+- 输出协议：沿用 ANALYSIS/NEXT_PROMPT_LINES/END（无需逼模型产 JSON）
+- restricted 模式：完全依赖代码端 merge + whitelist + max_key_changes 来“剪裁”模型输出
+- space group：仅要求 _symmetry_space_group_name_H-M 存在；Int Tables number 先不强制（可选自动补）
+- composition_locked：采用 L1（字符串/归一化一致）
+- composition_editable：仅要求 formula_sum 可解析、Z 为正整数；structural 自动重写为 reduce(formula_sum)
+
+MVE-2（更强一致性）：
+- 引入 target_formula_sum（用于 locked 的 L2）
+- 启用 space group 双向补齐与一致性校验
+- 引入严格 JSON 输出作为优先解析路径
+
+------------------------------------------------------------------------------
+8. 对应到代码的改造点（待你确认后再动手）
+------------------------------------------------------------------------------
+主要涉及两处：
+
+1) 优化器客户端（当前文件名仍可能叫 llama_client.py）
+- 生成 system prompt：按模式注入严格规则
+- 解析模型输出：支持 JSON + 文本模板
+- sanitize/merge/normalize/validate/fallback：实现第 5 节 pipeline
+
+2) 闭环主脚本 prompt_optimization_loop.py
+- 从 experiment_config 或命令行读取 edit_scope/composition_policy 等参数
+- 将策略写入 qwen_output.json，便于审计复盘
+
+------------------------------------------------------------------------------
+9. 验收标准（建议）
+------------------------------------------------------------------------------
+1) restricted+locked：连续多轮运行，化学式字段不发生变化；空间群允许变化但不产生非法/空输出。
+2) restricted+editable：化学式变化时，_chemical_formula_sum 可解析且 structural 被自动归一。
+3) 任意模式：Qwen 输出乱格式时能稳定回退，不会写出空 prompt。
+4) 审计文件齐全：每轮 qwen_output.json 可追踪“模型说了什么、最终用了什么、为什么拒绝/修复”。
+
+------------------------------------------------------------------------------
+10. 下一步（请你确认）
+------------------------------------------------------------------------------
+请你回复第 6 节的 Q1/Q2/Q3 三点（尤其是 Q1：给定化学式从哪来）。
+我确认后再按本方案开始实际改代码（包括新增参数、严格限定的 merge/validator、以及 qwen_output.json 的错误字段）。 
+
+
+------------------------------------------------------------------------------
+11. 建议补强/修改点清单（总-分结构，追加说明）
+------------------------------------------------------------------------------
+【总述 / 总目标】
+在保持你 v1 方案“模型输出仅是候选，代码端确定性裁决”的前提下，我建议把实现补齐到“可配置、可验证、可回退、可审计”的工程闭环：
+- 可配置：两维模式矩阵（edit_scope + composition_policy）必须可从 CLI/配置文件显式指定，并写入审计。
+- 可验证：对化学式/空间群的“可解析、可补齐、可归一化、一致性校验”要在代码端强制执行。
+- 可回退：任何解析失败/校验失败都必须稳定回退到 last_prompt_lines，且保留失败原因。
+- 可审计：不仅记录 raw_text，还要记录“丢弃了什么、改动了什么、为何修复/拒绝”。
+
+下面按“分点”列出建议增强项（每点：总结 / 原因 / 策略）。
+
+------------------------------------------------------------------------------
+11.1 【高优先级】注释行（';'）的安全处理策略需要强制化
+------------------------------------------------------------------------------
+【总结】
+restricted/open 模式若允许自然语言注释，必须在落盘前把 ';...' 改写为 CIF 标准注释 '# ...'，并确保最终 prompt.txt 不含任何以 ';' 开头的行。
+
+【修改原因】
+- CIF 语法中 ';' 可能触发 multi-line text block 语义；一旦模型输出了孤立 ';' 或多行块，会显著增加 CIF 解析失败风险（尤其在后续清洗/验证里）。
+- 你们目前的 prompt 抽取/训练分布（data_ + space group 等高层行）不依赖 ';'，因此应把它视为“可选软约束”，并做严格限额与安全落盘。
+
+【落地策略】
+- allow_comments=true 时：
+  - 解析阶段允许识别 ';' 行，但 normalize 阶段统一改写为 '# ' 前缀（并 strip 掉危险字符）。
+  - 限制数量：restricted 模式最多 1 行；open 模式最多 2 行（可配置）。
+  - 限制长度：每行 <= 120（或 200）字符（可配置）。
+  - 强制放在末尾：comments 永远追加到 prompt 的最后，避免夹在结构化 key 中间扰动模型行为。
+- allow_comments=false 时：所有 ';' 行直接丢弃，并在审计中记录 discarded_lines。
+
+------------------------------------------------------------------------------
+11.2 【高优先级】restricted 的 key 白名单应覆盖你在 4.2 列出的字段，并引入“禁止项”总表
+------------------------------------------------------------------------------
+【总结】
+restricted 模式的 key 白名单需要从当前实现的 3 个 key 扩展到 v1 文档 4.2 的全集，同时建立统一的 disallowed_keys / disallowed_prefixes 列表（跨模式复用）。
+
+【修改原因】
+- 目前代码端（llama_client.py）allowed_keys 仅包含：data / _chemical_formula_sum / _symmetry_space_group_name_H-M。
+- v1 里还希望支持：_chemical_formula_structural、_cell_formula_units_Z、_symmetry_Int_Tables_number。
+- 若不扩展白名单，Qwen 即使输出了这些字段也会被合并器忽略，导致策略“名存实亡”。
+
+【落地策略】
+- restricted editable_keys 默认包含：
+  - data（data_ 行）
+  - _chemical_formula_structural
+  - _chemical_formula_sum
+  - _cell_formula_units_Z
+  - _symmetry_space_group_name_H-M
+  - _symmetry_Int_Tables_number
+- 全局 disallowed：
+  - _cell_length_*、_cell_angle_*（保持现有）
+  - loop_（强烈建议默认禁止）
+  - _atom_site_*（高层 prompt 默认禁止）
+  - 以及任何不以 data_/_ 开头的“杂项行”（除非是允许的注释行）
+- 若未来你要开放 loop_ / atom_site：建议只在 open 模式显式允许，并加独立的解析/校验器（否则会把 prompt 复杂度推到不可控）。
+
+------------------------------------------------------------------------------
+11.3 【高优先级】两维模式矩阵必须进入“运行时参数”，并写入每轮审计
+------------------------------------------------------------------------------
+【总结】
+edit_scope(open/restricted) 与 composition_policy(locked/editable) 不能只存在于文档；必须成为实验配置的一部分，并在每轮 qwen_output.json 里落盘。
+
+【修改原因】
+- 否则复盘时无法回答“这一轮为何拒绝/接受某个修改”“当时是什么模式/预算/白名单”。
+- 同样的 raw_text 在不同模式下裁决应不同，这必须可追踪。
+
+【落地策略】
+- 在 prompt_optimization_loop.py 增加 CLI 参数（或从 experiment_config.json 读取）：
+  - --edit-scope {open,restricted}
+  - --composition-policy {locked,editable}
+  - --max-key-changes N（默认 1）
+  - --allow-comments / --no-allow-comments
+  - --require-keys（默认要求 data + _symmetry_space_group_name_H-M）
+- 每轮 qwen_output.json 记录 strategy 字段：
+  - edit_scope、composition_policy、editable_keys、disallowed_rules、max_key_changes、require_keys、comment_limits 等。
+
+------------------------------------------------------------------------------
+11.4 【高优先级】normalize + validate + auto-fix 必须显式实现，不要隐含在“merge 行为”里
+------------------------------------------------------------------------------
+【总结】
+把“合并（merge）”与“归一化/校验/修复（normalize/validate/auto-fix）”拆成明确步骤，实现你第 5 节 pipeline 的确定性行为。
+
+【修改原因】
+- 仅靠 merge 限制 key 不能保证字段值合法（例如 Z=0、formula_sum 不能解析、space group symbol 非法等）。
+- 没有 auto-fix，会导致大量“本可修复”的输出被回退，降低闭环效率。
+
+【落地策略】
+- normalize（建议默认开启）：
+  - data_：保证仅 1 行且在第一行；从 Composition 归一化（元素排序、去空格）。
+  - _chemical_formula_sum：用 Composition 解析并重写为规范形式（例如 "Na2 Cl2" 或加引号的统一格式）。
+  - _chemical_formula_structural：若 composition_policy=editable 或你允许 auto-fix，则强制写为 reduced formula（来自 formula_sum）。
+  - _cell_formula_units_Z：强制解析为 int，并做范围检查（例如 1-16，范围可配置）。
+  - space group：清理引号/多余空格，统一 key 与 value 的间隔格式。
+- validate（失败即回退 last_prompt_lines，原因写入审计）：
+  - required keys 存在性（至少 data + SG symbol）
+  - composition_policy=locked：关键字段“语义不变”（至少 formula_sum 不变；若 last 不含则需明确锁定来源）
+  - composition_policy=editable：formula_sum 可解析、Z 为正整数、structural 可由 sum 推导
+  - space group 可解析/可查表（非法符号直接拒绝）
+- auto-fix（推荐先做“保守修复”）：
+  - 若 symbol 与 number 不一致：优先以 symbol 为准，自动改写 number（并记录修复原因）。
+  - 若缺失 number：可选补齐（同样记录）。
+
+------------------------------------------------------------------------------
+11.5 【中高优先级】空间群 symbol/number 的补齐与一致性：明确“以谁为准”的裁决规则
+------------------------------------------------------------------------------
+【总结】
+当 _symmetry_space_group_name_H-M 与 _symmetry_Int_Tables_number 同时出现但不一致时，需要一个固定裁决规则，避免每轮行为漂移。
+
+【修改原因】
+- 如果没有固定优先级，模型可能在两者间“来回修正”，导致提示不稳定。
+- 你文档 4.4 已建议“以 H-M symbol 为准”，建议写死为默认策略。
+
+【落地策略】
+- 优先级默认：symbol > number。
+- 行为：
+  - 只给 symbol：尝试补齐 number；补齐失败则允许缺失（或直接要求必须补齐，二选一写死）。
+  - 只给 number：尝试补齐 symbol；补齐失败则回退（因为 SG symbol 缺失会影响生成分布）。
+  - 两者都有但冲突：以 symbol 为准，number 自动修正；并在审计记录 "space_group_number_corrected": true。
+
+------------------------------------------------------------------------------
+11.6 【中优先级】合并规则需要明确：重复 key 取“最后一次”还是“第一次”
+------------------------------------------------------------------------------
+【总结】
+sanitize 阶段对重复 key 的去重规则要固定（建议：候选行中同一 key 取最后一次出现；合并时覆盖 last 的对应 key）。
+
+【修改原因】
+- LLM 输出常出现重复 key（尤其在“先说一版、再修正一版”时）。
+- 若规则不固定，会导致同样 raw_text 在不同运行中产生不同 next_prompt_lines，影响可复现。
+
+【落地策略】
+- 候选去重：同一 key 只保留最后一次出现（last-wins），并记录被覆盖的旧值到审计（可选）。
+- 合并覆盖：仅对白名单 key 生效；非白名单 key 永远不覆盖 last。
+
+------------------------------------------------------------------------------
+11.7 【中优先级】max_key_changes 超限时的策略：restricted 建议“拒绝”，open 可“截断”
+------------------------------------------------------------------------------
+【总结】
+当模型试图改动超过预算 N 个 key 时，restricted 与 open 的处理应不同，并写入文档/代码为硬规则。
+
+【修改原因】
+- restricted 的定位是“可控收敛”；超过预算意味着模型未遵守约束，应直接拒绝并回退，保持确定性。
+- open 的定位是“探索”；截断保留前 N 个改动可以提高吞吐率，但要可审计。
+
+【落地策略】
+- restricted：若 changes_used > N，直接 validation_failed -> fallback last_prompt_lines。
+- open：可截断到 N 个改动（按出现顺序），并记录 truncated_changes。
+
+------------------------------------------------------------------------------
+11.8 【中优先级】composition_locked 的锁定来源：建议在实现中显式检测“last 是否提供足够信息”
+------------------------------------------------------------------------------
+【总结】
+composition_locked 若仅依赖 last_prompt_lines，必须检测 last 是否包含可锁定的字段（至少 _chemical_formula_sum 或可解析的 data_ 化学式）；否则 locked 可能失效或出现歧义。
+
+【修改原因】
+- 你第 6 节目前写的是“Q1=选项 A（从 last_prompt_lines）”，但现实实验可能存在 last 只有 data_ + SG 的情况。
+- 一旦 last 不含 formula_sum，locked 的严格程度（L1/L2）必须有清晰行为，不然会出现“看似 locked，实际可漂移”。
+
+【落地策略】
+- 运行时检测：
+  - 若 last 含 _chemical_formula_sum：锁定以它为准（推荐）。
+  - 否则若 last 仅含 data_：锁定 data_ 的 Composition（作为弱锁）。
+  - 若两者都缺失：locked 模式直接拒绝启用（或自动降级到 editable，并记录降级原因）。
+- 若你未来要实现 L2（外部任务输入锁定）：建议把 target_formula_sum 放入 evaluator_summary["task_spec"] 或作为 optimize_prompt 的独立参数传入（不经模型）。
+
+------------------------------------------------------------------------------
+11.9 【中优先级】审计增强：记录“丢弃/修复/拒绝/回退”的结构化原因
+------------------------------------------------------------------------------
+【总结】
+qwen_output.json 不应只保存 input/output/raw_text；还应保存 sanitize/merge/normalize/validate 的中间产物与错误原因列表。
+
+【修改原因】
+- 你第 1 节的“可审计”目标需要可追踪：模型输出了什么 → 哪些行被丢弃 → 哪些 key 被改动 → 哪些修复发生 → 为什么回退。
+- 否则后期很难定位“通过率低”到底是模型问题还是裁决器过严。
+
+【落地策略】
+- 增加字段（示例命名）：
+  - parsed_protocol（json/text/fallback）
+  - candidate_lines_raw / candidate_lines_kept
+  - discarded_lines（含原因：non_prompt_line / disallowed_prefix / not_in_whitelist / too_long 等）
+  - merged_lines_before_normalize / normalized_lines
+  - key_changes（逐项列出 key、old、new、是否计入预算）
+  - validation_errors（数组）
+  - fallback_used（bool）与 fallback_reason
+
+------------------------------------------------------------------------------
+11.10 【中优先级】提示长度与 token 预算：建议限制 next_prompt_lines 的总行数/总字符数
+------------------------------------------------------------------------------
+【总结】
+无论 open 还是 restricted，都建议对最终 next_prompt_lines 做全局大小限制，避免 prompt 膨胀影响生成稳定性与可控性。
+
+【修改原因】
+- LLM 输出可能逐轮累积注释/重复字段，导致 prompt.txt 变长，进而改变 CrystaLLM 生成分布或引发解析噪声。
+- 你们目标是“高层 prompt”，天然应短小。
+
+【落地策略】
+- 默认限制：
+  - 结构化 key 行（data + _*）总数 <= 6（或 10）
+  - 注释行 <= 1（restricted）/ <= 2（open）
+  - 总字符数 <= 500（或按你上下文预算设定）
+- 超限处理：
+  - restricted：直接拒绝并回退
+  - open：截断注释行优先，保留结构化 key
+
+------------------------------------------------------------------------------
+11.11 【低到中优先级】严格 JSON 双轨：建议作为“可选增强”，不要作为 MVE-1 的硬依赖
+------------------------------------------------------------------------------
+【总结】
+支持“优先 JSON、失败回退文本模板、再失败回退 last”的双轨解析是好方向，但建议只在 MVE-2 启用，避免模型格式崩坏拖累闭环稳定性。
+
+【修改原因】
+- 你文档 3.2 已指出“模型可能更容易格式崩坏”，这在真实闭环里会显著降低有效更新率。
+- 当前实现已在 relaxed 文本协议下证明可用，先稳再严更合理。
+
+【落地策略】
+- MVE-1：仅文本模板 + 本地 sanitize/merge/validate。
+- MVE-2：加 JSON 优先解析；可通过环境变量或 CLI 开关启用（例如 --prefer-json-protocol）。
+

@@ -1,0 +1,294 @@
+CrystaLLM 闭环项目总体进展报告（Na2Cl2 + ALIGNN(GPU) + Qwen3(vLLM)）
+生成时间：2025-12-19
+
+
+0. 一句话结论（当前状态）
+-----------------------
+我们已经把“CrystaLLM 生成 → CIF 清洗与质量检查（过滤器）→ ALIGNN 评分 → 优化器 LLM（Qwen3）产出下一轮 prompt”的三轮闭环跑通，并完成两项关键工程增强：
+(1) 修复/规避了对称性检查中常见的 space_group_check_error（symmetry_dataset_unavailable: too close distance between atoms）问题；
+(2) 把“成分/计量一致性（formula + atom_site_multiplicity）”做成可开关项，允许在“追求高带隙、不关心配比严格一致”的实验里关闭该约束。
+
+
+1. 总体目标与研究方向（我们到底在做什么）
+----------------------------------------
+1.1 目标方向
+- 生成晶体结构（以 CIF 形式），并用机器学习打分器（ALIGNN）预测关键物性（目前主要是 bandgap、formation_energy）。
+- 在“追求目标物性”的同时，尽可能保证结构在基本物理/晶体学约束下“可解释、不过于离谱”（通过过滤器）。
+- 通过多轮闭环，让“优化器 LLM”根据上一轮的统计反馈自动调整下一轮的高层 prompt（只改 data_、_chemical_formula_sum、_symmetry_space_group_name_H-M 等高层行），逐步把生成分布推向更高分。
+
+1.2 范围边界（我们不做什么）
+- 优化器 LLM 不负责输出完整 CIF，只输出下一轮“高层 prompt lines”。
+- 当前闭环不做 MCTS 搜索（保留的是 MCTS 同源的清洗与验证规则），整体强调“少工程量、能跑通、可审计”。
+
+1.3 现阶段的核心权衡
+- “高带隙”与“严格化学计量/组成一致性”在很多生成样本上会互相拉扯：严格约束会显著降低通过率，但更有化学意义；
+  关闭成分/计量检查会扩大探索空间，更符合“先找高 bandgap 候选再人工/后处理筛选”的工作流。
+
+
+2. 项目结构与关键模块（有哪些组件，各负责什么）
+----------------------------------------------
+2.1 docs 目录的文档版图（建议先读这些）
+- 环境准备：model/CrystaLLM/docs/ENV_SETUP.md
+- Demo 运行说明：model/CrystaLLM/docs/DEMO_RUN.md
+- 闭环架构与历史实现说明：model/CrystaLLM/docs/CRYSTALLM_ALIGNN_LLAMAT3_JSON_LOOP.md
+- CIF 过滤器模块详解：model/CrystaLLM/docs/physical_chem_filters_module_zh.md
+- Qwen 闭环实验报告（v1）：model/CrystaLLM/docs/experiment_report_na2cl2_qwen_v1_small.txt
+- 对称性报错专项分析与修复记录（v4）：model/CrystaLLM/docs/report_symmetry_dataset_unavailable_na2cl2_qwen_v4_small.txt
+- LLM 输出稳定性排查：model/CrystaLLM/docs/llama_output_investigation_report.txt、model/CrystaLLM/docs/llama_template_debug_notes.md
+
+2.2 闭环主调度脚本（每轮都发生什么）
+- 入口脚本：model/CrystaLLM/bin/prompt_optimization_loop.py
+  - 负责生成（调用 bin/sample.py）
+  - 负责过滤器质量检查（clean_and_validate_cif 批量跑）
+  - 负责 ALIGNN 评分（通过 alignn_client -> ZMQ 服务）
+  - 负责构造 evaluator_summary（压缩成 LLM 可读输入）
+  - 负责调用优化器 LLM（llama_client.optimize_prompt）
+  - 输出每轮 round_XX 的完整审计文件：prompt.txt、cif_quality.*、scores.csv、summary.json、evaluator_summary.json、llama_output.json
+
+2.3 CIF 清洗与质量检查（过滤器）
+- 入口：model/CrystaLLM/crystallm/cif_cleaning.py
+  - clean_cif：对 CIF 做轻量清洗（晶胞 sanity、对称操作替换、去掉 atom props block 等）
+  - validate_cif：逐项验证并返回结构化结果（reasons、各子项 ok、step_errors/tracebacks）
+  - clean_and_validate_cif：闭环实际调用入口，返回 (cleaned_cif or None, metadata dict)
+
+2.4 核心指标实现（空间群/键长/成分等）
+- 文件：model/CrystaLLM/crystallm/_metrics.py
+  - bond_length_reasonableness_score：键长合理性评分（0~1）
+  - space_group_consistency_details / is_space_group_consistent：空间群一致性与可解释错误信息
+  - is_formula_consistent / is_atom_site_multiplicity_consistent：成分/计量一致性（已可开关）
+  - is_valid：严格模式综合判定（已可开关成分/计量）
+
+2.5 优化器 LLM 客户端（Qwen3 / LLaMA 统一接口）
+- 文件：model/CrystaLLM/bin/llama_client.py
+  - optimize_prompt 的输入：last_prompt_lines（上一轮 prompt 行）+ evaluator_summary（本轮汇总）
+  - 输出：analysis（短分析）+ next_prompt_lines（下一轮 prompt 行）
+  - 说明：当前代码会根据模型名判断协议（Qwen 默认走更宽松的 relaxed 协议），并记录原始输出用于审计。
+
+
+3. 每轮闭环的数据流（你脑中的流程图应长这样）
+------------------------------------------
+3.1 单轮（Round k）输入
+- prompt_text（由 last_prompt_lines 拼接）
+- 采样参数（temperature、top-k、max_new_tokens、seed 等）
+- 过滤器参数（bond_length_cutoff；以及新增的 check_composition 开关）
+- 评分参数（ALIGNN host/port、properties、timeout/retries）
+- 优化目标（score_property、score_goal、top_structures 等）
+
+3.2 单轮（Round k）执行顺序
+(1) CrystaLLM 生成 N 个 CIF：round_k/cifs/sample_*.cif
+(2) 过滤器：对每个 CIF 执行 clean_and_validate_cif
+    - 产出：round_k/cif_quality.json、round_k/cif_quality.csv、round_k/cif_quality_summary.txt
+    - 过滤器会把“清洗后 CIF”覆盖写回 sample_*.cif（便于下游评分与复现）
+(3) ALIGNN 评分：对每个 CIF 预测 formation_energy/bandgap
+    - 产出：round_k/scores.csv（包含 ok/score/属性列，并合并了过滤器字段）
+(4) 汇总：summary.json（给人看）+ evaluator_summary.json（给 LLM 看）
+(5) 若 k < rounds：调用优化器 LLM，根据 evaluator_summary 输出下一轮 prompt（写入 round_k/llama_output.json，并生成 round_{k+1}/prompt.txt）
+
+3.3 关键点：LLM 的“分析报告”是针对什么？
+- LLM 输入的 evaluator_summary 是“本轮整体指标 + 若干 top_structures（代表样本）”的压缩摘要，
+  并不是 8 个 CIF 的全文逐条喂给 LLM。
+- 因此 LLM 的 analysis 本质上是“对本轮整体情况的短评 + 下一步怎么改 prompt”，可能会提到 top_structures 里的某些样本，但不是逐个 CIF 的详尽报告。
+
+
+4. 过滤器与质量检查：指标、判定、以及新增开关
+--------------------------------------------
+4.1 过滤器默认会检查哪些“硬指标”
+默认（check_composition=True）下，validation_ok 的判定依赖：
+- 成分一致性：formula_ok（data_ / _chemical_formula_sum / _chemical_formula_structural 的 reduced_formula 一致）
+- 计量一致性：atom_site_multiplicity_ok（_chemical_formula_sum 与 atom_site * multiplicity 统计一致）
+- 键长合理性：bond_length_score >= cutoff（通常 cutoff=1.0）
+- 空间群一致性：space_group_ok == True（或至少能判定一致；不可判定会变成 space_group_check_error）
+
+4.2 为什么需要“成分/计量开关”
+在“追求高带隙”的探索阶段，你可能并不关心生成结构是否严格满足最初定义的 Na2Cl2 成分/计量；
+此时继续把 formula_ok 和 multiplicity_ok 当作硬门槛，会导致：
+- validation_ok 通过率过低，进而影响候选选择（prefer_valid_structures 会优先选 validation_ok=True）
+- 过早把“高带隙但配比偏离”的候选排除掉，降低探索效率
+
+4.3 新增开关的行为定义（我们实现的就是这件事）
+开关名（闭环脚本 CLI）：
+- --validation-check-composition（开启，默认）
+- --no-validation-check-composition（关闭）
+
+关闭时（check_composition=False）：
+- validation_ok 的判定将不再包含 formula_ok / atom_site_multiplicity_ok 两项；
+- 终端不再输出 formula_ok / multiplicity 的统计行；
+- round_XX/cif_quality_summary.txt 中也不再写入 formula_ok / multiplicity 的统计行；
+- 对每个样本的 metadata 中，formula_ok / atom_site_multiplicity_ok 会置为 None（表示“未检查”）。
+
+保留不变的约束（关闭开关也仍然会检查）：
+- 键长合理性（bond_length_score / bond_lengths_reasonable）
+- 空间群一致性（space_group_ok）
+- CIF 本身能否 parse（parse_structure 失败仍会导致 space_group_check_error）
+
+4.4 注意事项（使用开关的实验哲学）
+- 关闭成分/计量检查 ≠ “结构一定合理”，它只是把“成分自洽”从硬门槛移除；
+- 若目标是“最终可发表/可合成”的材料候选，建议在后期再把成分/计量检查打开，或做二阶段筛选：
+  (第一阶段) 只用几何/键长/对称性约束 + 物性打分做探索
+  (第二阶段) 对 top 候选恢复成分/计量/价态/电中性等更强约束
+
+
+5. 关键问题 1：space_group_check_error（symmetry_dataset_unavailable）及修复
+----------------------------------------------------------------------
+5.1 现象回顾
+在 na2cl2_qwen_v4_small/v5_small 的部分样本里出现：
+- validation_reasons 中包含 space_group_check_error
+- step_errors["space_group_check"] 形如：
+  symmetry_dataset_unavailable: too close distance between atoms: min_neighbor_dist<0.1Å≈0.0300Å
+
+5.2 根因链条（强因果，详见专项报告）
+简化版结论：
+- clean_cif 会根据声明的空间群替换 CIF 中的对称操作（replace_symmetry_operators）；
+- 对于“声明 P4/mmm 但坐标不满足该空间群”的样本，替换对称操作后会展开出大量等价位点；
+- 展开后会产生极近/近重叠原子对，spglib 判断 “too close distance between atoms”，导致 dataset=None；
+- 于是 space_group_consistency_details 返回 consistent=None -> 过滤器记录 space_group_check_error。
+
+5.3 已落地的修复策略（核心）
+我们在 space_group_consistency_details 里加入“恢复分支”：
+- 当 dataset=None 且 spglib error 包含 “too close distance between atoms” 时：
+  - 对 Structure 执行 merge_sites(tol=symprec, mode="delete") 删除近重叠位点；
+  - 重新调用 get_symmetry_dataset()；
+  - 若恢复成功，则可判定 detected_space_group，consistent 变为 True/False，不再走 space_group_check_error。
+
+5.4 修复效果（对实验目录的客观检查结论）
+- na2cl2_qwen_v5_small：round_01 原先出现 symmetry_dataset_unavailable（too close），round_03 未出现；
+  修复后对典型失败样本 sample_1/2/5/8，space_group_ok 可以恢复为 True（detected=P4/mmm）。
+- na2cl2_qwen_v6_small：没有再出现 symmetry_dataset_unavailable；仍存在一次 space_group_check_error，
+  但原因是 parse_structure: Invalid cif file with no structures（这是另一类问题）。
+
+5.5 风险与边界
+- merge_sites(mode="delete") 会修改结构（删除近重叠位点），这相当于“从几何冲突里救回一个可分析结构”；
+- 该策略更像工程上的鲁棒性补丁：用于避免 spglib 因近重叠直接拒绝返回 dataset，
+  并不保证结构在化学上更合理；因此建议在报告/字段里保留 recovered 标记（我们已加 recovered_from_too_close_distance）。
+
+
+6. 关键问题 2：space_group_check_error（parse_structure: no structures）仍存在
+--------------------------------------------------------------------
+6.1 在 v6_small 看到的现象
+na2cl2_qwen_v6_small/round_02 的 sample_4.cif 出现：
+- parse_structure: ValueError: Invalid cif file with no structures!
+- 因此 space_group_ok 无法计算，记录 space_group_check_error。
+
+6.2 这类问题与 symmetry_dataset_unavailable 的区别
+- symmetry_dataset_unavailable：CIF 能 parse 成 Structure，但 spglib 无法给 dataset（多因几何退化/近重叠）。
+- parse_structure failed：CIF 文本本身不完整/不符合 pymatgen CIF parser 要求，连 Structure 都构不出来。
+
+6.3 建议的修复方向（下一步）
+- 重点排查该样本 CIF 的结构块缺失/loop 格式异常（例如 atom_site loop 不完整、字段对不上、block 名/引号问题等）。
+- 在清洗阶段增加更早的“CIF 基础结构存在性检查”：
+  - 若 atom_site loop 缺失或为空，直接给出更友好的错误分类（例如 invalid_cif_no_structure），并在 prompt 侧加入约束。
+
+
+7. 实验进展时间线（做了哪些实验、得到什么结论）
+----------------------------------------------
+7.1 na2cl2_qwen_v1_small（闭环跑通验证）
+参考：model/CrystaLLM/docs/experiment_report_na2cl2_qwen_v1_small.txt
+- 三轮闭环可稳定运行：每轮 8/8 ALIGNN 打分成功。
+- 过滤器通过率偏低，主要卡在 composition/multiplicity。
+- Qwen 的分析偶尔出现“目标表述偏差”（max bandgap 却提“更低带隙”），但仍能输出可解析的新 prompt 行。
+
+7.2 na2cl2_qwen_v4_small（暴露 symmetry_dataset_unavailable）
+参考：model/CrystaLLM/docs/report_symmetry_dataset_unavailable_na2cl2_qwen_v4_small.txt
+- 清洗阶段对称操作替换会把“坐标不满足空间群”的样本放大为“近重叠位点”，触发 spglib dataset=None。
+- 增强了错误信息（附带 too close 与 min_neighbor_dist），便于定位根因。
+
+7.3 na2cl2_qwen_v5_small（确认问题仍存在，并为修复提供验证集）
+- round_01 明确存在 symmetry_dataset_unavailable（too close，多个样本）。
+- round_02 还出现 parse_structure failed 的样本。
+- round_03 未检索到 space_group_check_error。
+
+7.4 na2cl2_qwen_v6_small（修复后验证）
+- 未出现 symmetry_dataset_unavailable（too close）这一类 space_group_check_error；
+- 仍有 parse_structure failed 这一类 space_group_check_error（需要独立处理）。
+
+7.5 v7_small（下一轮建议）
+- 如果目标是“先追高带隙”，建议在 v7_small 的实验中尝试：
+  - 关闭成分/计量检查：--no-validation-check-composition
+  - 仍保留键长 + 空间群检查，以控制几何离谱程度
+
+
+8. 当前已完成的工程改动清单（面向维护者）
+----------------------------------------
+8.1 对称性检查鲁棒性增强
+- model/CrystaLLM/crystallm/_metrics.py
+  - dataset=None 时追加 spglib error 与 min_neighbor_dist
+  - 遇到 too close distance 时尝试 merge_sites(mode="delete") 恢复 dataset
+  - 增加 recovered_from_too_close_distance 字段用于审计
+
+8.2 过滤器增加“成分/计量检查开关”
+- model/CrystaLLM/crystallm/cif_cleaning.py
+  - validate_cif(..., check_composition: bool = True)
+  - clean_and_validate_cif(..., check_composition: bool = True)
+  - check_composition=False 时跳过 composition/multiplicity 与 relaxed formula 检查，并把相关字段置为 None
+- model/CrystaLLM/crystallm/_metrics.py
+  - is_valid(..., check_composition: bool = True)
+
+8.3 闭环脚本暴露 CLI 开关，并隐藏对应终端输出
+- model/CrystaLLM/bin/prompt_optimization_loop.py
+  - 新增 --validation-check-composition/--no-validation-check-composition
+  - run_cif_quality_checks 透传该开关到 clean_and_validate_cif
+  - 关闭时不再在终端和 cif_quality_summary.txt 输出 formula/multiplicity 统计
+
+8.4 文档同步
+- model/CrystaLLM/docs/report_symmetry_dataset_unavailable_na2cl2_qwen_v4_small.txt
+  - 补充“修复已落地”的最新进展
+- model/CrystaLLM/docs/physical_chem_filters_module_zh.md
+  - 更新 is_valid/validate_cif/clean_and_validate_cif 的签名与语义（增加 check_composition）
+
+
+9. 下一步规划（建议按优先级推进）
+------------------------------
+P0（最优先，直接影响稳定性/通过率）
+1) 处理 parse_structure: Invalid cif file with no structures
+   - 目标：把这类“CIF 本体不合法”的样本快速识别并分类，减少 space_group_check_error 噪声。
+2) replace_symmetry_operators 的匹配规则更鲁棒
+   - 当前使用正则替换固定模板，可能对不同格式/缩进/loop 写法不鲁棒；
+   - 目标：覆盖更多 CIF 变体，减少清洗阶段“没替换到/替换错”的边缘问题。
+
+P1（提升优化效果：让 LLM 更“朝目标走”）
+3) 在 LLM 的 system prompt 中更硬地写死目标方向（bandgap 越大越好），并限制它“每轮最多改一个关键字段”
+   - 降低 prompt 漂移，提高闭环可控性。
+4) evaluator_summary 增加更直接的失败分布统计（例如 reasons top-k、space_group_check_error 的细分原因）
+   - 让 LLM 看到“主要瓶颈到底是什么”，减少胡乱修改 composition。
+
+P2（研究型增强：让生成更符合对称性/化学约束）
+5) 生成侧引入 Wyckoff 模板或“只生成不等价位点”的约束
+   - 从根上减少“声明高对称但坐标不对称”的样本，从而减少对称展开带来的冲突。
+6) 二阶段筛选工作流固化
+   - 第一阶段关闭成分/计量检查做探索；
+   - 第二阶段打开成分/计量 + 加电中性/价态约束（必要时引入外部工具）做收敛筛选。
+
+
+10. 运行与复现指南（面向操作者）
+-----------------------------
+10.1 启动依赖服务（参考 docs/ENV_SETUP.md、docs/DEMO_RUN.md）
+- ALIGNN ZMQ 服务（alignn-score 环境）
+- Qwen3(vLLM) OpenAI API（qwen/vllm 环境）或其他兼容 OpenAI 的服务
+
+10.2 启动闭环实验（示例）
+打开成分/计量检查（默认开启，也可显式写）：
+  python /root/autodl-tmp/model/CrystaLLM/bin/prompt_optimization_loop.py ... --validation-check-composition
+
+关闭成分/计量检查（更适合“只追高 bandgap”的探索）：
+  python /root/autodl-tmp/model/CrystaLLM/bin/prompt_optimization_loop.py ... --no-validation-check-composition
+
+10.3 如何快速判断一轮发生了什么
+- 看 round_XX/cif_quality_summary.txt：过滤器通过率与关键失败点统计
+- 看 round_XX/scores.csv：每个样本的 bandgap/formation_energy 与 validation_ok（以及 reasons）
+- 看 round_XX/evaluator_summary.json：喂给 LLM 的输入摘要
+- 看 round_XX/llama_output.json：LLM 的输入/输出与 raw_text（审计）
+
+
+11. 附录：常用术语解释（帮助快速对齐）
+------------------------------------
+- validation_ok：过滤器综合通过（受 check_composition 开关影响）
+- strict_valid：更严格的综合通过（与 validation_ok 近似，但也受 check_composition 开关影响）
+- space_group_ok：空间群一致性三态（True/False/None）；None 通常意味着“不可判定/解析失败”
+- space_group_check_error：
+  - symmetry_dataset_unavailable（多因 too close distance between atoms；已通过 merge_sites 恢复）
+  - parse_structure failed（CIF 无法解析出结构；仍需独立修复）
+- evaluator_summary：给优化器 LLM 的 round 级摘要（整体指标 + top_structures）
+
+
+（本报告旨在汇总“目标方向、已完成事项、当前问题、下一步规划”。如需逐轮实验的细粒度复盘，请直接查看各 experiments/na2cl2_qwen_v*_*/round_XX 下的 summary.json / cif_quality.json / llama_output.json。）
+

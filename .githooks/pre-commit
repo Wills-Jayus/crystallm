@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Local guardrail: block big files / too many files / known-heavy outputs.
+# Install: `git config core.hooksPath .githooks`
+#
+# Tunables (env vars):
+# - GIT_MAX_FILE_MB (default 5)
+# - GIT_MAX_FILES (default 300)
+# - GIT_MAX_TOTAL_MB (default 30)
+
+max_file_mb="${GIT_MAX_FILE_MB:-5}"
+max_files="${GIT_MAX_FILES:-300}"
+max_total_mb="${GIT_MAX_TOTAL_MB:-30}"
+
+max_file_bytes=$((max_file_mb * 1024 * 1024))
+max_total_bytes=$((max_total_mb * 1024 * 1024))
+
+deny_path() {
+  local p="$1"
+  case "$p" in
+    */__pycache__/*) return 0 ;;
+    */.pytest_cache/*|*/.mypy_cache/*|*/.ruff_cache/*) return 0 ;;
+    miniconda3/*|conda/*|conda_envs/*|.conda/*|venv/*|.venv/*) return 0 ;;
+    cache/*|hf/*|pip-cache/*|torch-cache/*|torch-extensions/*|triton-cache/*|vllm-cache/*|cuda-cache/*|xdg-cache/*) return 0 ;;
+    CrystaLLM_survivor_*/*|*_survivor_*/*) return 0 ;;
+    # CrystaLLM experiments: heavy/high-cardinality outputs
+    CrystaLLM/experiments/*/cifs/*) return 0 ;;
+    CrystaLLM/experiments/*/*/cifs/*) return 0 ;;
+    CrystaLLM/experiments/*/best_structures/*) return 0 ;;
+    CrystaLLM/experiments/*/*/best_structures/*) return 0 ;;
+    CrystaLLM/experiments/*/structures/*) return 0 ;;
+    CrystaLLM/experiments/*/*/structures/*) return 0 ;;
+    CrystaLLM/experiments/*/wandb/*) return 0 ;;
+    CrystaLLM/experiments/*/*/wandb/*) return 0 ;;
+  esac
+  return 1
+}
+
+deny_ext() {
+  local p="$1"
+  case "$p" in
+    *.pt|*.pth|*.ckpt|*.safetensors|*.bin|*.onnx|*.h5|*.npz|*.npy|*.pkl|*.tar|*.tar.gz|*.tgz|*.zip|*.7z) return 0 ;;
+  esac
+  return 1
+}
+
+# Staged added/modified/renamed (not deleted)
+mapfile -t files < <(git diff --cached --name-only --diff-filter=AMR)
+
+if [ "${#files[@]}" -gt "$max_files" ]; then
+  echo "ERROR: too many staged files: ${#files[@]} > ${max_files}"
+  echo "Tip: 不要把海量实验输出提交到 git；用 .gitignore，或先打包成一个小的汇总文件。"
+  exit 1
+fi
+
+total_bytes=0
+for p in "${files[@]}"; do
+  if deny_path "$p"; then
+    echo "ERROR: forbidden path to commit: $p"
+    exit 1
+  fi
+  if deny_ext "$p"; then
+    echo "ERROR: forbidden file type to commit: $p"
+    exit 1
+  fi
+
+  # size from index (staged blob), not from working tree
+  if git cat-file -e ":$p" 2>/dev/null; then
+    size="$(git cat-file -s ":$p" 2>/dev/null || echo 0)"
+    total_bytes=$((total_bytes + size))
+    if [ "$size" -gt "$max_file_bytes" ]; then
+      echo "ERROR: file too large to commit: $p (${size} bytes > ${max_file_bytes})"
+      exit 1
+    fi
+  fi
+done
+
+if [ "$total_bytes" -gt "$max_total_bytes" ]; then
+  echo "ERROR: total staged size too large: ${total_bytes} bytes > ${max_total_bytes}"
+  exit 1
+fi
+

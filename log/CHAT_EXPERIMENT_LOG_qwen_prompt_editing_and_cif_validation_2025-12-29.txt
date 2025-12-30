@@ -1,0 +1,204 @@
+实验日志：Qwen Prompt 严格限定方案 + CIF 校验异常（space_group unknown）根因分析
+日期：2025-12-29
+环境：Linux（AutoDL 容器），Conda env: crystallm_env（用于 pymatgen/验证复现）
+范围说明：本日志仅覆盖“prompt 修改策略 + CIF 校验/space group unknown 排查”相关聊天内容；不包含目录误删与恢复相关事项。
+
+===============================================================================
+【总述】本次工作目标与最终产出
+===============================================================================
+本次讨论与排查围绕两条主线展开：
+1）设计并评估一套“Qwen 作为优化器 LLM 时，对 next_prompt_lines 的修改严格限定策略”，确保闭环可控、可执行、可审计；
+2）针对新实验 na2cl2_qwen_v8_small 第三轮出现的 “space group consistent: 5/5 (1.000), unknown: 3” 现象，定位 unknown 的真实含义，并进一步把 “pymatgen 无法构造 Structure” 的根本原因定位到具体代码步骤与触发条件。
+
+最终得到的关键结论：
+- Prompt 修改策略层面：两维模式矩阵（edit_scope × composition_policy）是可落地方案；必须采用“模型输出为候选，代码端强裁决/合并/校验/回退”的工程化管线，不能依赖模型自觉。
+- CIF unknown 层面：unknown=space_group_ok 为 None 的样本数；在 v8 round_03 中，unknown 的根因并非 Qwen prompt 语法错误，而是 clean_cif() 中 replace_symmetry_operators() 替换对称操作后引发 “Species occupancies sum to more than 1!”（重合位点/占位叠加）导致 pymatgen 解析后得到 0 个结构，最终抛出 “Invalid cif file with no structures!”。
+
+===============================================================================
+【分述】Part A：Qwen next_prompt_lines 严格限定方案（设计/评估/实现要点）
+===============================================================================
+
+A1. 现状链路与约束背景（CrystaLLM 闭环）
+---------------------------------------
+当前闭环主链路（代码入口）：
+- 入口脚本：bin/prompt_optimization_loop.py
+- 每轮关键步骤：CrystaLLM 生成 CIF → clean_and_validate_cif 质量检查 → ALIGNN 评分 → build_evaluator_summary → qwen_client.optimize_prompt → next_prompt_lines 写入下一轮 prompt.txt
+
+优化器（Qwen）输出的核心字段：
+- last_prompt_lines：上一轮 prompt.txt 的行列表（高层 CIF 行）
+- next_prompt_lines：下一轮 prompt.txt 的行列表
+注：优化器不负责输出完整 CIF（不含 atom_site loop、cell 长度等细节），仅输出高层 prompt lines。
+
+因此，“计量必须与 atom_site 表一致”只有在 prompt 中包含 atom_site 时才可在 prompt 侧直接约束；在高层 prompt 场景更可执行的是：
+- 化学式字段内部自洽（sum/structural/Z 等）
+- 空间群字段自洽（symbol/number 等）
+- 输出行集合满足白名单与格式要求
+
+A2. 两种模式的总体设想与可行性结论
+---------------------------------------
+用户初步设想：两种模式
+- 模式 1：结果导向（open），不限制字段，可自由增删；
+- 模式 2：严格限制（restricted），只允许改化学组成/计量比与空间群等少数高层字段，并要求字段间一致性（如 formula_sum 与 atom_site 统计一致）。
+
+评估结论（可行）：
+- 方案可行且契合现有代码结构：llama_client.py 已有“只允许改少数 key、每轮最多改 1 个 key、过滤 cell_* 低层字段”的弱约束雏形，可升级为强约束。
+- 但字段间一致性不能靠 LLM 自觉，必须程序端做“裁决/重建/回退”。
+
+A3. 推荐的设计总览：两维模式矩阵（v1 文档方案）
+---------------------------------------
+将“范围”与“计量策略”解耦，形成两维开关：
+1）edit_scope：
+   - open：结果导向，允许更自由的候选输出（仍做最低安全过滤）
+   - restricted：严格受限，只允许白名单 key 的修改/新增/删除
+2）composition_policy：
+   - locked：禁止改变化学计量（composition_locked）
+   - editable：允许改变化学计量（composition_editable）
+最终模式 = (edit_scope, composition_policy)。
+
+关键思想：不要让 Qwen “直接写最终 next_prompt_lines”，而是让它输出候选，代码端做：
+parse → sanitize → merge → normalize → validate → auto-fix → fallback → audit
+
+A4. 关键字段白名单与工程性一致性约束
+---------------------------------------
+restricted 模式建议白名单（高频高层字段）：
+- 化学计量相关：data_（视为 key=data）、_chemical_formula_structural、_chemical_formula_sum、_cell_formula_units_Z
+- 空间群相关：_symmetry_space_group_name_H-M、_symmetry_Int_Tables_number
+
+关键一致性策略：
+- composition_editable：
+  - _chemical_formula_sum 必须能被 pymatgen.Composition 解析；
+  - _cell_formula_units_Z 必须为正整数（可设范围，如 1-16/32）；
+  - _chemical_formula_structural 建议由程序强制写为 reduce(formula_sum)；
+- composition_locked：
+  - 锁定来源需要明确（来自 last_prompt_lines 或外部 task_spec）；
+  - 若只依赖 last_prompt_lines，需要检测 last 是否包含可锁定锚点（例如 _chemical_formula_sum）；
+  - 若 last 缺失锚点，必须明确行为：降级 editable / 仅锁 data_ / 直接拒绝启用 locked。
+
+空间群一致性（symbol/number）：
+- 允许只提供 symbol 或只提供 number，代码端尝试补齐；
+- 两者都提供但不一致：建议固定裁决规则（默认以 symbol 为准，number 自动修正）。
+
+A5. 注释行（;）的风险与处理建议
+---------------------------------------
+讨论中明确的风险点：
+- CIF 语法里 ';' 可能触发 multi-line text block 语义；
+- 作为“高层 prompt”软约束，';' 注释行容易制造不可解析/不可控行为。
+
+推荐策略：
+- restricted 模式下若允许注释，必须严格限额（1 行、长度限制），并在最终落盘前改写为 CIF 安全注释 '# ...'，确保 prompt.txt 不含任何 ';' 行。
+
+A6. 与现有实现（llama_client.py）对齐的落地建议
+---------------------------------------
+现有实现（讨论时点）已具备的雏形能力：
+- 过滤：拒绝 _cell_length_* / _cell_angle_* 等低层行；
+- 合并：只允许少数 key 覆盖 last_prompt_lines；
+- 预算：每轮最多改 N 个 key（默认 1，环境变量 CRYSTALLM_LLM_MAX_KEY_CHANGES）；
+- 回退：解析失败或缺关键字段 → 回退 last_prompt_lines。
+
+建议增强方向（形成“总-分”清单）包括：
+- 扩展 allowed_keys 覆盖 v1 白名单 key；
+- 引入 edit_scope/composition_policy 作为运行时参数，并写入 qwen_output.json 审计；
+- 显式实现 normalize/validate/auto-fix，避免仅靠 merge；
+- 统一重复 key 取值规则（last-wins 等）；
+- prompt 大小限制（总字符数/结构化行数上限）；
+- 审计增强：记录 discarded_lines、attempted/applied/truncated changes、fallback_reason 等。
+
+===============================================================================
+【分述】Part B：na2cl2_qwen_v8_small Round 03 “unknown=3” 的根因定位全过程
+===============================================================================
+
+B1. 现象复述：space group consistent 5/5，unknown 3
+---------------------------------------
+实验输出文件：
+- experiments/na2cl2_qwen_v8_small/round_03/cif_quality_summary.txt
+关键统计行：
+- space_group_ok: 5/5 (1.000)
+- space_group_ok (true/false/none): 5/0/3
+
+解释口径：
+- space_group_ok 是 tri-state（True/False/None）；
+- “5/5” 的分母只统计 space_group_ok 非 None 的样本；
+- unknown=3 表示 space_group_ok 为 None 的样本数（无法判定）。
+
+B2. 初步定位：unknown=3 对应的样本与错误链
+---------------------------------------
+从 round_03/cif_quality.csv 与 cif_quality.json 定位：
+- space_group_ok=None 的样本：sample_1、sample_5、sample_6（共 3 个）
+- 这些样本的 validator_step_errors["space_group_check"] 都是：
+  parse_structure: ValueError: Invalid cif file with no structures!
+- 且 bond_length_score / strict_valid 同样失败（原因一致：Structure.from_str 解析失败）
+
+因此 unknown 的直接原因是：空间群一致性检查的第 1 步 “解析 Structure” 失败，导致 consistent 无法计算，space_group_ok 置为 None。
+
+B3. 用户追问的“根本原因”：为什么会 no structures？
+---------------------------------------
+为回答“到底是哪一步出了问题？是不是 Qwen 的 next_prompt_lines？”进行了两步关键复现：
+1）复现环境问题：默认 python 环境缺少 pymatgen（ModuleNotFoundError），因此必须切到实验同款 conda 环境；
+2）同时需要保证导入的是项目内 crystallm 包（通过设置 PYTHONPATH=/root/autodl-tmp/model/CrystaLLM）。
+
+复现结果（关键发现）：
+- 对 sample_1/5/6：
+  - ORIGINAL 原始 CIF：pymatgen Structure.from_str(fmt="cif") 可以成功
+  - CLEANED（执行 clean_cif 后的 CIF）：pymatgen 解析失败，抛 Invalid cif file with no structures!
+
+这直接把根因从 “Qwen prompt” 转移到 “clean_cif 的清洗步骤”：
+-> 原始输出本可解析，是 clean_cif 把 CIF 清洗坏了。
+
+B4. 精确定位到代码步骤：replace_symmetry_operators 替换对称操作
+---------------------------------------
+clean_cif 的关键逻辑：
+- 读取 _symmetry_space_group_name_H-M
+- 若不是 P 1 且符号不含 <unk> 等非法 token：
+  调用 replace_symmetry_operators(cif_str, space_group_symbol)
+- 然后 remove_atom_props_block
+
+replace_symmetry_operators 的行为：
+- 依据 SpaceGroup(symbol) 生成全套 symmetry ops
+- 用正则把 CIF 中的“最简模板 loop_ ... 1 'x, y, z'”替换成全套 ops block
+
+在 v8 round_03 的三个 failure 样本中，原始 CIF 的 symmetry loop 正好是“1 'x, y, z'”的占位模板，
+因此被正则命中并替换为完整 ops（如 P4/nmm 的 16 ops）。
+
+B5. 触发 pymatgen “no structures” 的真实原因：occupancy 叠加 > 1
+---------------------------------------
+复现打印中，pymatgen 在解析 CLEANED CIF 时输出关键 warning：
+- “Some occupancies (...) sum to > 1!”
+- “Species occupancies sum to more than 1!”
+随后：
+- “No structure parsed for 1 structure in CIF...”
+- 最终 ValueError: Invalid cif file with no structures!
+
+解释：
+- 当 CIF 中 atom_site 给出的位点集合并不是“只给不等价位点、靠对称操作展开”的格式时，
+  把 symmetry ops 强行替换为全套 ops 会导致展开后出现重合位点；
+- 重合位点在解析/合并时会导致 occupancy 累加到 >1（例如出现 2.0），pymatgen 判结构无效，
+  进而该 CIF block 得到 0 structures，最终抛出 no structures。
+
+B6. 结论：不是 Qwen prompt 直接导致，而是 space group 触发了清洗分支
+---------------------------------------
+对于“是不是第二轮 Qwen next_prompt_lines 出问题”的回答：
+- round_03/prompt.txt 仅 2 行（data_ + space group symbol），语法本身没有异常；
+- Qwen 选择的非 P1 空间群（如 P4/nmm）会触发 clean_cif 的 replace_symmetry_operators 路径；
+- 真正导致 no structures 的，是“替换对称 ops”与“该类 CIF 的 atom_site 写法”不兼容。
+
+换句话说：
+Qwen 并不是写坏 CIF；但 Qwen 选了某个 SG，使得 clean_cif 执行了一段“潜在破坏性”的清洗逻辑，从而把原本可解析 CIF 变成不可解析。
+
+===============================================================================
+【总述】本阶段后续建议（面向下一步工程修复/实验策略）
+===============================================================================
+1）清洗策略修复（建议优先级最高）：
+   - 对 replace_symmetry_operators 加安全阀：替换后若出现 pymatgen occupancy>1/解析失败，则回退到替换前版本（保持可解析）；
+   - 或者仅在识别到 CIF 确实使用了“占位 symm loop + 不等价位点”编码风格时才替换；
+   - 或提供开关：允许在部分实验中禁用 replace_symmetry_operators（仅保留其它清洗步骤）。
+
+2）统计口径与审计增强（便于定位类似问题）：
+   - 在 cif_quality.json 中记录清洗前后差异、以及 pymatgen 解析 warning（如 occupancy>1）作为结构化原因；
+   - 将 space_group_ok=None 细分为：parse_structure_failed / symmetry_dataset_unavailable / missing_stated_space_group 等。
+
+3）Qwen prompt 策略与清洗策略联动：
+   - 若清洗策略短期无法完全鲁棒，restricted 模式下可暂时限制空间群候选集合（或限制某些易触发重合的空间群/编码风格组合）；
+   - 更长期：推进严格模式的“程序端裁决”与“生成后修复/判定”二阶段工作流，减少 fragile 清洗对闭环的影响。
+
+（日志完）
+
