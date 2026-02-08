@@ -11,6 +11,7 @@ import torch.nn as nn
 from torch.nn import functional as F
 
 from crystallm import CIFTokenizer
+import re
 
 
 @dataclass
@@ -305,6 +306,31 @@ class GPT(nn.Module):
         """
         tokenizer = CIFTokenizer()
         newline_id = tokenizer.token_to_id["\n"]
+        unk_id = tokenizer.token_to_id.get("<unk>")
+
+        # Heuristic: restrict atom tokens to the element set specified in the
+        # `data_...` header of the current prompt. Without this, the model can
+        # drift to unrelated chemistries (e.g. Na/Hg/Cl) and make formula checks
+        # fail systematically.
+        disallowed_atom_ids = []
+        try:
+            prompt_text = tokenizer.decode(idx[0].tolist())
+            m = re.search(r"^data_(\S+)", prompt_text, flags=re.MULTILINE)
+            if m:
+                data_id = m.group(1).strip().strip("'\"")
+                count = r"(?:\d+(?:\.\d+)?|\.\d+)"
+                prefix = re.match(rf"^((?:[A-Z][a-z]?(?:{count})?)+)", data_id)
+                formula_token = prefix.group(1) if prefix else data_id
+                allowed_atoms = set(re.findall(r"[A-Z][a-z]?", formula_token))
+                if allowed_atoms:
+                    for atom in tokenizer.atoms():
+                        if atom not in allowed_atoms:
+                            atom_id = tokenizer.token_to_id.get(atom)
+                            if atom_id is not None:
+                                disallowed_atom_ids.append(atom_id)
+        except Exception:
+            disallowed_atom_ids = []
+
         prev_id = None
         for _ in range(max_new_tokens):
             # if the sequence context is growing too long we must crop it at block_size
@@ -313,6 +339,12 @@ class GPT(nn.Module):
             logits, _ = self(idx_cond)
             # pluck the logits at the final step and scale by desired temperature
             logits = logits[:, -1, :] / temperature
+            # Never emit the UNK token; it commonly renders as "<unk>" in the
+            # CIF text and breaks downstream parsing/validation.
+            if unk_id is not None:
+                logits[:, unk_id] = -float("Inf")
+            if disallowed_atom_ids:
+                logits[:, disallowed_atom_ids] = -float("Inf")
             # optionally crop the logits to only the top k options
             if top_k is not None:
                 v, _ = torch.topk(logits, min(top_k, logits.size(-1)))

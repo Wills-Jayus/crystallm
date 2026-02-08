@@ -1,0 +1,17 @@
+Qwen 输出稳定性排查（索引）
+========================
+
+这份文件作为“排查/修复记录”的入口索引，详细内容请看同目录下：
+
+1) qwen_template_debug_notes.md
+   - 记录了 LLM 输出协议/模板的约束策略与常见失败模式
+
+2) qwen_output_garbled_analysis.md
+   - 记录了输出乱码/格式崩坏等问题的原因分析与建议
+
+3) qwen_isolation_experiments_report.md
+   - 记录了隔离实验（不同 prompt/不同参数/不同服务端）对输出稳定性的影响
+
+建议的最小自检流程：
+  - 先用 `CrystaLLM/bin/qwen_single_test.py` 做一次单次调用自检
+  - 再跑一轮闭环，确认 `round_XX/qwen_output.json` 中 `parsed.next_prompt_lines` 非空且可落盘

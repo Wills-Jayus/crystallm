@@ -1,0 +1,281 @@
+autodlmini / CrystaLLM 仓库文档汇报总结（≥4000字）
+生成日期：2026-02-08
+
+目录
+----
+0. 一句话总览
+1. 阅读范围与方法
+2. 仓库总体结构（autodlmini 是“可运行工作区”）
+3. 科研工作的核心逻辑：生成—过滤—打分—（可选）优化
+4. 核心代码模块速览（按功能分层）
+5. 数据与训练链路（从海量 CIF 到可训练 token）
+6. 推理与生成（prompt、采样、后处理、MCTS）
+7. 物理化学过滤器（清洗、验证、失败原因结构化）
+8. ALIGNN 评分服务（ZMQ 多物性打分）
+9. 闭环优化（CrystaLLM × 过滤器 × ALIGNN × Qwen）的历史实现与经验教训
+10. 实验组织、产物与复现方式
+11. 环境与运维（多环境、模型权重、缓存、迁移）
+12. 当前阶段结论与后续可扩展方向
+
+
+0. 一句话总览
+--------------
+本仓库围绕 CrystaLLM（把 CIF 当作“语言”来建模的自回归 Transformer）搭建了一套完整的材料结构生成与评估体系：给定化学组成（可选空间群/原子属性块），由 CrystaLLM 生成 CIF；再用物理化学/晶体学过滤器清洗验证；用 ALIGNN 等模型预测 formation_energy、bandgap 等性质；在闭环模式下，引入一个“优化器 LLM（当前统一为 Qwen，历史上也测试过 LLaMA）”根据轮次摘要提出下一轮 prompt，从而迭代提升有效结构比例与目标性质。
+
+
+1. 阅读范围与方法
+----------------
+本总结依据 autodlmini 目录下的“文档型文件”（README、docs、实验报告/排障记录、环境指南）以及文档中指向的关键代码入口综合而成。重点参考的文档包括：
+- `model/CrystaLLM/README.md`：CrystaLLM 原始项目说明（数据、训练、生成、评估、MCTS）。
+- `model/CrystaLLM/docs/ENV_SETUP.md`、`DEMO_RUN.md`：闭环需要的服务与环境、以及可运行的 demo 命令。
+- `model/CrystaLLM/docs/CRYSTALLM_ALIGNN_QWEN_JSON_LOOP.md`：闭环组件职责与数据流。
+- `model/CrystaLLM/docs/physical_chem_filters_module_zh.md`：过滤器指标与失败原因解释。
+- `model/CrystaLLM/docs/qwen_prompt_editing_strategy_v1.txt` 与若干 qwen/llama 输出稳定性排障文档：如何让“优化器 LLM”在工程上可控可审计。
+- `NEW_SERVER_RECOVERY_GUIDE.txt`、`qwen3_vllm/README.md`：新服务器恢复、vLLM 管理与路径规范。
+- `model/CrystaLLM/experiments/README.md` 与实验报告：每轮产物是什么、典型失败在哪里。
+
+方法上遵循“先整体、后模块、再数据流”的顺序：先明确仓库目标与工程边界，再逐层解释核心脚本与科研逻辑。
+
+
+2. 仓库总体结构（autodlmini 是“可运行工作区”）
+--------------------------------------------
+从 `autodlmini/` 根目录来看，这不是一个“纯代码仓库”，而是一个面向真实实验运行的工作区：它同时包含核心代码（可 git 管理）、实验产物（大量 CIF/CSV/JSON）、模型服务启动脚本、日志与 PID 管理目录、以及各种缓存目录。
+
+2.1 顶层关键目录与文件
+- `autodlmini/model/`：核心代码与实验记录所在目录，也是一个 git 仓库（包含 `.git`），不要随意 `git reset/clean`。
+- `autodlmini/model/CrystaLLM/`：CrystaLLM 主项目目录，包含训练/采样/评估/闭环脚本与 `crystallm` Python 包。
+- `autodlmini/model/qwen_local_api.py`：本地 FastAPI + HF pipeline 封装的 OpenAI 兼容 `/v1/chat/completions`（可选替代 vLLM）。
+- `autodlmini/qwen3_vllm/`：vLLM 的一键启停脚本与配置（目标：需要时开，不用就停，释放显存）。
+- `autodlmini/models/`：按约定存放大模型权重（如 Qwen3-30B），通常不随代码迁移。
+- `autodlmini/alignn_model_zips/`：ALIGNN 预训练模型 zip 的缓存/种子目录，降低评分服务对外网下载的依赖。
+- `autodlmini/logs/`、`autodlmini/run/`：运行态日志与 PID 管理目录（vLLM / ALIGNN ZMQ server 等）。
+- `autodlmini/bin/cache_usage.sh`：统计 huggingface/torch/triton 等缓存占用，避免磁盘被缓存吃满。
+- `autodlmini/NEW_SERVER_RECOVERY_GUIDE.txt`：新服务器恢复指南（路径规范、conda-pack 迁移建议、权重下载建议）。
+
+2.2 “为什么会有很多 cache 目录”
+LLM 与 GPU 推理会产生大量缓存：HF cache、triton 编译 cache、torch extensions、vLLM cache 等。仓库把这些目录放到数据盘路径下统一管理，是为了：
+- 迁移可控（换服务器不至于找不到 cache/日志）；
+- 清理可控（知道哪些目录可以安全清理）；
+- 运行稳定（磁盘满是最常见的长跑实验中断原因之一）。
+
+
+3. 科研工作的核心逻辑：生成—过滤—打分—（可选）优化
+------------------------------------------------
+该仓库的科研逻辑可以用一个“可插拔流水线”描述：
+
+（A）结构生成（CrystaLLM）
+- 输入：prompt（CIF 前缀），通常包含 `data_<composition>`，可选空间群与原子属性块。
+- 输出：完整 CIF 文本（prompt + continuation）。
+
+（B）清洗与验证（过滤器）
+- 清洗：把 CIF 从“能看”变成“尽量能解析”，例如移除 `<unk>`、修复错误 loop_ 标记、按空间群替换对称操作、移除容易干扰的 atom_type block 等。
+- 验证：用 pymatgen/spglib 做结构解析与一致性检查，输出 `valid/validation_ok` 及 reasons。
+
+（C）性质打分（ALIGNN）
+- 对可解析结构预测 formation_energy、bandgap 等，形成用于选择/排序/优化的量化指标。
+
+（D）优化器（可选，闭环才需要）
+- 把“上一轮 prompt + 本轮摘要（统计 + top structures + 失败原因 top）”交给 Qwen（OpenAI 兼容接口），产出 next prompt。
+- 工程上必须配套本地的白名单过滤、合并、回退、审计记录，才能保证闭环稳定推进。
+
+这条流水线既能用于“复现型任务”（给定 composition/space group，希望生成合理结构并通过验证），也能用于“发现型任务”（更偏无条件或弱条件生成，再用筛选+打分挑选候选）。本次总结不假设具体任务设定，而强调仓库提供的通用组件与可组合能力。
+
+
+4. 核心代码模块速览（按功能分层）
+--------------------------------
+为了快速定位“核心代码在哪”，这里按功能列出关键入口（路径以 `autodlmini/model/CrystaLLM/` 为根）。
+
+4.1 生成与解码
+- `bin/sample.py`：最常用的采样入口（读取 ckpt.pt，按 temperature/top_k 生成 CIF）。
+- `crystallm/_tokenizer.py`：CIFTokenizer（词表：元素、数字、CIF key、符号、空间群等）。
+- `crystallm/_mcts.py`：MCTS 解码与 evaluator（研究路线：把外部 scorer 作为 reward 引导生成）。
+
+4.2 清洗与验证（过滤器）
+- `crystallm/cif_cleaning.py`：clean_cif / validate_cif / clean_and_validate_cif，输出结构化 reasons。
+- `crystallm/_metrics.py`：键长合理性、空间群一致性、计量一致性、多重度一致性等核心指标。
+- `bin/postprocess.py`：对 CIF 做对称操作替换、移除 atom props（较轻量的后处理脚本）。
+
+4.3 ALIGNN 评分
+- `resources/alignn_zmq_server_multi.py`：ZMQ 常驻服务（多物性请求/响应协议）。
+- `bin/alignn_client.py`：ZMQ 客户端（单 CIF 或批量目录评分）。
+
+4.4 闭环与优化器（历史实现）
+- `bin/prompt_optimization_loop.py`：闭环 orchestrator（按 round 产出 cif_quality/scores/summary/evaluator_summary/qwen_output）。
+- `bin/qwen_client.py`：优化器 LLM 客户端（模板输出 + 本地解析 + 回退）。
+- `crystallm/prompt_sanitizer.py`：对 Qwen 输出的 prompt 做白名单、合并、预算限制、注释规范化与回退审计。
+- `model/qwen_local_api.py`：本地 OpenAI 兼容 LLM API（HF pipeline）；也可用 vLLM（见 `qwen3_vllm/`）。
+
+4.5 数据处理与训练
+- `bin/download.py`、`tar_to_pickle.py`、`deduplicate.py`、`preprocess.py`、`split.py`、`tokenize_cifs.py`、`identify_starts.py`：数据链路脚本。
+- `bin/train.py`：nanoGPT 风格训练脚本（memmap bin + 可选 starts indices）。
+
+4.6 实验与复现工具
+- `experiments/README.md`：解释 experiments 目录结构与每轮产物。
+- `bin/crystallm_reproduction_batch.py`：批量复现实验与汇总报告。
+
+
+5. 数据与训练链路（从海量 CIF 到可训练 token）
+--------------------------------------------
+CrystaLLM 的训练数据来自多个材料数据库的 CIF 汇总。原始项目的典型流程如下（由 `CrystaLLM/README.md` 描述，脚本在 `bin/`）：
+
+5.1 获取与序列化
+- 原始 CIF 往往以 tar.gz 形式分发，但对数百万文件的逐个 IO 成本很高。
+- 仓库提供把 tar.gz 转为 pkl.gz 的工具（列表形式的 (id, cif_str)），以便后续并行处理。
+
+5.2 去重与预处理
+- 数据中会存在重复（例如同 composition+spacegroup），去重策略常选择“每化学式单元体积更合理”的样本。
+- 预处理把 CIF 标准化/增强，使文本分布更适合学习（例如统一某些字段格式）。
+
+5.3 数据集切分与 tokenization
+- 切分 train/val/test 后，对训练集进行 tokenization。
+- CIFTokenizer 的词表规模远小于通用 tokenizer，这既有利于模型聚焦 CIF 语法，也要求 prompt 不能夹带自然语言。
+- identify_starts 输出 CIF 起始索引，帮助训练时更常从 CIF 开头采样片段，减少“随机切块落在 CIF 中间导致学习噪声”。
+
+5.4 训练脚本特性
+- `bin/train.py` 支持 bf16、torch.compile、resume、以及基于 starts indices 的采样策略。
+- 训练目标仍是经典的 next-token prediction（语言模型范式），但语料是 CIF 结构文本。
+
+
+6. 推理与生成（prompt、采样、后处理、MCTS）
+------------------------------------------
+6.1 prompt 的三类常见形态
+从仓库现有 prompts/reproduce 文件与脚本可见，prompt 通常是“CIF 高层行”的前缀，常见形态包括：
+1）仅 composition：
+   - `data_<formula>`
+   适合无空间群条件/更自由的生成。
+2）composition + 原子属性块（atom_type loop）：
+   - `data_...` + `loop_ _atom_type_symbol ...` + 每个元素的电负性/半径等
+   目的是把化学先验显式注入到生成条件中。
+3）composition + space group（可选再带 atom_type）：
+   - 增加 `_symmetry_space_group_name_H-M <sg>`
+   目的是引导生成满足特定对称性假设的结构。
+
+6.2 随机采样（sample.py）
+- 采样前会移除注释行、尽量消除 `<unk>` token，避免 prompt 污染生成。
+- 采样输出通常包含 prompt + completion，因此 prompt 的稳定性直接影响生成前缀。
+
+6.3 后处理（postprocess / cif_cleaning）
+- 简单后处理会替换对称操作、移除 atom props block。
+- 更完整的清洗会处理 spurious loop_、缺失晶胞参数的 best-effort 补齐等，以提高解析成功率。
+
+6.4 MCTS 解码（_mcts.py）
+- MCTS evaluator 在 rollout 后会对 CIF 做合法性检查：计量一致、多重度一致、键长合理、空间群一致。
+- 合法后再调用外部 scorer 得到 reward，作为搜索树的价值信号。
+- 这条路线更偏研究探索（把约束融入生成过程），工程成本与计算成本更高。
+
+
+7. 物理化学过滤器（清洗、验证、失败原因结构化）
+----------------------------------------------
+过滤器是把“生成文本”转为“可用结构候选”的关键模块。其核心价值不只是给一个 True/False，而是输出可统计、可回传、可优化的 reasons。
+
+7.1 验证指标（核心）
+- bond_length_reasonableness_score：用 CrystalNN 构图，按电负性差选择原子/离子半径计算期望键长，统计在容忍区间内的键比例。
+- space_group_consistency_details：对比声明空间群与从结构分析得到的空间群。
+- is_formula_consistent：data_、_chemical_formula_sum、_chemical_formula_structural 三处约化后是否一致。
+- is_atom_site_multiplicity_consistent：atom_site 多重度统计是否与 formula_sum 计数一致。
+
+7.2 reasons 的典型形态
+- `unreasonable bond lengths (~XX% flagged)`
+- `space group inconsistent`
+- `composition inconsistent`
+- `atom site multiplicity inconsistent`
+- `bond length score unavailable` / `space_group_check_error` 等（解析/分析失败类）
+
+7.3 “为什么需要 check_composition 开关”
+文档指出闭环支持关闭成分/计量一致性门槛（`--no-validation-check-composition`）：
+- 发现型任务或早期探索时，可能更希望先看 bandgap/formation_energy 的分布，不让严格计量把样本全杀掉。
+- 复现型任务则更强调化学计量与位点一致性，适合打开 gate。
+
+
+8. ALIGNN 评分服务（ZMQ 多物性打分）
+-----------------------------------
+8.1 服务化的必要性
+ALIGNN 模型加载成本较高，把它做成常驻进程并通过 ZMQ 请求/响应调用，能显著降低闭环每轮重复启动的成本，也更容易进行 CPU/GPU 隔离。
+
+8.2 协议与实现
+- 请求：JSON 字符串 `{ "cif": "...", "properties": ["formation_energy","bandgap"] }`
+- 响应：`ok` + 每个 property 的数值或 null + errors
+- 服务器端会维护 property->model_name 的映射，必要时下载或从 seed dir 拷贝 zip。
+
+8.3 工程注意事项
+- dgl/cuda 兼容性常导致 GPU 评分不稳定，因此仓库默认强制 CPU；如需 GPU 需谨慎配置。
+- zip 文件损坏/下载到 HTML 错误页会导致 BadZipFile，服务器端做了校验与降级处理。
+
+
+9. 闭环优化（历史实现）与经验教训
+--------------------------------
+闭环的目标是：让 prompt 随轮次迭代，使得生成的 CIF 更容易通过过滤器，同时在通过的前提下优化目标性质（如 formation_energy 更低、bandgap 更高等）。
+
+9.1 闭环的“每轮产物”
+文档与 experiments/README 约定每轮输出：prompt、cifs、cif_quality、scores、summary、evaluator_summary、qwen_output 等。
+
+9.2 为什么“优化器 LLM 的输出必须本地裁决”
+仓库记录了早期强制 JSON 输出导致的格式崩坏与乱码问题（尤其在 LLaMA 阶段）。核心教训是：
+- 不要依赖模型“自觉只输出 JSON/只输出允许字段”；
+- 必须在代码端做：模板解析、白名单过滤、key 级合并、改动预算限制、缺失字段补齐、以及失败回退；
+- 需要完整审计：输入、原始输出、解析结果、丢弃原因、最终落盘，才能定位“闭环为何不动/为何发散”。
+
+9.3 prompt_sanitizer 的策略化设计
+qwen_prompt_editing_strategy_v1.txt 总结了两个维度：
+- edit_scope：open（自由） vs restricted（白名单严格受限）
+- composition_policy：locked（计量锁定） vs editable（允许改计量）
+并强调“语义参数编辑 + 编译/校验器”的两层架构：让 LLM 提建议，最终由本地规则生成可用 prompt。
+
+9.4 旧实验报告暴露的典型问题
+以 na2cl2 的闭环报告为例：
+- 过滤器通过率常偏低，尤其卡在 composition / multiplicity / space group / bond length 的组合约束。
+- 优化器在目标表述上可能出现偏差（例如明明追 bandgap 却在分析里写“探索更低带隙”），因此目标需要更强的系统提示与更严格的输入摘要。
+
+
+10. 实验组织、产物与复现方式
+----------------------------
+10.1 experiments 目录
+- `experiments/<exp>/round_XX/`：每轮一个子目录，文件命名固定，便于脚本读取与人类复盘。
+- 大量生成 CIF（cifs/）与中间产物默认应被 gitignore 忽略，避免仓库爆仓。
+
+10.2 reproduce / prompts 目录
+- prompts：存放初始 prompt（通常是高层 CIF 行）。
+- reproduce：存放复现任务的输入/输出集合（例如不带 space group 的生成结果、指标汇总等）。
+
+10.3 推荐的复现路径
+- 按 ENV_SETUP 启动 ALIGNN ZMQ 与 Qwen OpenAI API。
+- 用 DEMO_RUN 提供的命令跑一个小实验（3 轮、每轮 8 样本），先验证整链路可跑通。
+- 再逐步扩大样本规模或替换 prompt 数据集。
+
+
+11. 环境与运维（多环境、模型权重、缓存、迁移）
+----------------------------------------------
+11.1 为什么需要多个环境
+闭环至少涉及：
+- crystallm_env：CrystaLLM 推理 + pymatgen/spglib 清洗验证
+- alignn-score：ALIGNN + jarvis + pyzmq 评分服务
+- qwen3-vllm：vLLM 提供 OpenAI 接口（或用本地 qwen_local_api）
+
+11.2 新服务器恢复的关键步骤（指南要点）
+NEW_SERVER_RECOVERY_GUIDE 强调：
+- 代码与实验记录在 `autodlmini/model/`，必须保留。
+- 大模型权重（Qwen3）通常不迁移，需要外网下载到 `autodlmini/models/` 约定位置。
+- 迁移环境建议用 conda-pack（最接近旧服务器依赖组合），否则从零安装容易踩版本坑。
+- 要把历史上写死的 `/root/autodl-tmp` 路径统一改到 `AUTODL_ROOT=/data/users/xsw/autodlmini`。
+
+11.3 缓存管理
+- vLLM 常驻会占用显存与 cache；仓库提供一键 stop 释放显存。
+- cache_usage.sh 用于周期性盘点 cache 目录，避免磁盘被慢慢吃满。
+
+
+12. 当前阶段结论与后续可扩展方向
+--------------------------------
+12.1 当前阶段（从文档与代码体现的“成熟度”）
+- CrystaLLM 的数据链路、训练入口、采样入口、过滤器、ALIGNN 服务化评分、闭环实验产物结构已经比较完备。
+- 围绕“优化器 LLM 输出稳定性”的工程经验积累较多：模板输出、stopping、回退、审计、sanitizer 都有清晰记录。
+
+12.2 仍然存在的核心矛盾
+- CIF 的多重约束（计量/多重度/空间群/键长）很容易同时满足不了，导致可用样本比例偏低。
+- 仅靠高层 prompt 行很难彻底约束生成过程，因此需要更强的生成时约束或更强的事后修复策略。
+
+12.3 可扩展方向（结合仓库现有能力）
+- 方向 A：把约束前移（更强的解码策略，如 MCTS/受约束采样/更强后处理），减少无效样本。
+- 方向 B：把失败结构化并转为可控动作（更细粒度诊断信号 + 修复通道 + 有预算的数值修复/重采样），并保持严格审计。
+- 方向 C：分任务设定不同目标与策略（复现 vs 发现），在输入摘要、过滤门槛、选择策略上做差异化。
+
+（完）

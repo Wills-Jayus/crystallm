@@ -1,0 +1,279 @@
+CrystaLLM 闭环实验对话记录（节选：仅含跑实验/服务/结果相关内容）
+生成时间：2026-01-28
+
+一、实验目标与链路
+- 目标：恢复并复现实验闭环的“最新一次实验效果”，从 0 启动所需服务并跑通参数一致的实验。
+- 闭环链路：CrystaLLM 生成 CIF → 清洗/校验 → ALIGNN ZMQ 预测(formation_energy, bandgap) → 依据 bandgap 最大化做 prompt 优化 → 下一轮继续采样。
+
+二、关键路径与环境（对话中明确出现）
+1) CrystaLLM 仓库/脚本
+- 仓库目录：/root/autodl-tmp/model/CrystaLLM
+- 闭环脚本：bin/prompt_optimization_loop.py
+- Prompt 文件（新命令使用）：/root/autodl-tmp/model/CrystaLLM/prompts/na2cl2_round0.txt
+
+2) Qwen vLLM（LLM 优化器服务）
+- 控制脚本：/root/autodl-tmp/qwen3_vllm/qwen3_vllmctl.sh
+- API Base（对话参数）：http://127.0.0.1:8000/v1
+- 模型名（对话参数）：Qwen3-30B-A3B-Instruct-2507
+- 停止命令（已实测）：/root/autodl-tmp/qwen3_vllm/qwen3_vllmctl.sh stop
+
+3) ALIGNN ZMQ（打分服务）
+- 服务脚本：/root/autodl-tmp/model/CrystaLLM/resources/alignn_zmq_server_multi.py
+- 监听端口：127.0.0.1:5555
+- properties：formation_energy, bandgap
+- PID 文件：/root/autodl-tmp/run/alignn_zmq_server_5555.pid
+- 日志：/root/autodl-tmp/logs/alignn_zmq_server_5555.log
+
+4) Conda 环境（对话中出现的解释性信息）
+- crystallm_env：运行闭环实验
+- qwen3-vllm：运行 vLLM（由 qwen3_vllmctl.sh 管理）
+- alignn-score：运行 ALIGNN ZMQ
+
+三、实验命令（用户“旧命令”与“新参数版本”的清晰模板）
+1) 用户提供的“旧命令”（关键参数原样保留）
+- 环境变量：
+  - CRYSTALLM_PROMPT_EDIT_SCOPE=restricted
+  - CRYSTALLM_COMPOSITION_POLICY=locked
+- 关键参数：
+  - --rounds 3
+  - --samples-per-round 8
+  - --temperature 0.8
+  - --top-k 10
+  - --max-new-tokens 2048
+  - --device cuda
+  - --dtype bfloat16
+  - --alignn-host 127.0.0.1 --alignn-port 5555
+  - --alignn-properties formation_energy bandgap
+  - --score-property bandgap --score-goal max
+  - --top-structures 3 --final-top-k 5
+  - --llama-api-base http://127.0.0.1:8000/v1
+  - --llama-model Qwen3-30B-A3B-Instruct-2507
+  - --llama-temperature 0.2 --llama-max-tokens 256
+  - --no-validation-check-composition
+
+2) 用户确认要采用的“新参数版本”（对话中明确给出的版本）
+  "$PY_CRYSTALLM" bin/prompt_optimization_loop.py \
+    --model-dir /root/autodl-tmp/model/CrystaLLM/crystallm_v1_small \
+    --initial-prompt-file /root/autodl-tmp/model/CrystaLLM/prompts/na2cl2_round0.txt \
+    --out-dir "$EXP_DIR" \
+    --rounds 3 \
+    --samples-per-round 8 \
+    --temperature 0.8 \
+    --top-k 10 \
+    --max-new-tokens 2048 \
+    --seed 1337 \
+    --device cuda \
+    --dtype bfloat16 \
+    --validation-bond-cutoff 1.0 \
+    --validation-check-composition \
+    --alignn-host 127.0.0.1 \
+    --alignn-port 5555 \
+    --alignn-timeout-ms 60000 \
+    --alignn-properties formation_energy bandgap \
+    --score-property bandgap \
+    --score-goal max \
+    --top-structures 3 \
+    --final-top-k 5 \
+    --llama-api-base http://127.0.0.1:8000/v1 \
+    --llama-model Qwen3-30B-A3B-Instruct-2507 \
+    --llama-temperature 0.2 \
+    --llama-max-tokens 256
+
+备注：对话中还强调“输出目录按当前时间命名”，即 EXP_DIR 用 date 生成时间戳后拼接。
+
+四、对话中出现的实验现象/结果（与质量相关）
+1) 采样输出与模型规模
+- 控制台输出显示：
+  - number of parameters: 25.36M
+  - 每轮写出 sample_1.cif ... sample_8.cif（每轮 8 个样本）
+
+2) CIF 解析/清洗相关的典型警告（实验过程可见）
+- pymatgen 在解析 CIF 时发出过多条“Possible issue in cif file at line: ...”警告（例如出现 <unk>、Na、Cl 等行被认为可疑）。
+- 也出现过 “Some fractional coordinates rounded to ideal values …” 的有限精度修正提示。
+
+3) 指标异常：validation_ok / formula_ok 全 0（定位方向）
+- 对话中用户观察到：最新实验里 validation_ok 全 0、formula_ok 全 0。
+- 进一步定位结论：与“生成内容化学组成漂移（例如生成到 Na/Hg/Cl 等）但 prompt data_ 仍是 Na2Cl2”这一类不一致高度相关；导致 composition/formula 检查系统性失败，从而 validation_ok、formula_ok 可能长期为 0。
+
+4) ALIGNN ZMQ 打分可用性（对话中实测）
+- 对真实 cleaned CIF（路径示例：…/cifs_cleaned/sample_1.cif）发起 ZMQ 请求，得到：
+  - ok: True
+  - formation_energy: -0.2911926805973053
+  - bandgap: -0.0005773007869720459
+说明：服务在重启后可正常返回数值（即打分链路可用）。
+
+五、实验结果应该怎么看（对话中提到的查看点）
+（以下为“怎么看指标”的操作性落点，便于复盘）
+- round_XX/cif_quality.csv：逐样本的清洗/校验结果字段（含 validation_ok / formula_ok / 失败原因等）
+- round_XX/scores.csv：ALIGNN 打分与是否打分成功（alignn_ok、formation_energy、bandgap 等）
+- round_XX/summary.json：每轮汇总（top structures、得分统计等）
+- final_report.json（如有）：最终跨轮最佳结构/得分总结
+
+六、实验运维事件：系统盘爆满（与跑实验直接相关的容量问题）
+1) 现象
+- / (系统盘 overlay 30G) 一度 Used 99%，仅剩 ~496MB。
+
+2) 根因（对话中已定位到具体 PID）
+- 并非“某个目录还堆着很多文件”，而是“已删除但仍被进程占用”的临时文件（deleted-but-open）。
+- 统计到 deleted-but-open 的总占用约 28.38 GiB。
+- 主要占用进程：ALIGNN ZMQ 服务进程 pid=539337（持有大量 /tmp/tmp* (deleted) FD）。
+
+3) 处理结果（对话中已执行并验证）
+- 重启 ALIGNN 后，/ 系统盘空间恢复：df -h / 显示 Used 约 1.2G、Avail 约 29G。
+
+七、ALIGNN ZMQ 手动启停方式（为实验复现准备）
+- 已提供手动控制脚本：/root/autodl-tmp/model/CrystaLLM/bin/alignn_zmqctl.sh
+- 常用命令：
+  - 启动：./bin/alignn_zmqctl.sh start   （在 /root/autodl-tmp/model/CrystaLLM 目录下）
+  - 状态：./bin/alignn_zmqctl.sh status
+  - 停止：./bin/alignn_zmqctl.sh stop
+  - 重启：./bin/alignn_zmqctl.sh restart
+说明：之所以不能直接输入 alignn_zmqctl.sh start，是因为脚本不在 PATH，需要使用 ./bin/... 或绝对路径或先 export PATH。
+
+八、本次对话的阶段性结论（面向“是否能继续跑实验”）
+- 服务层：Qwen vLLM 与 ALIGNN ZMQ 的启停方式明确，可独立检查状态；ALIGNN 重启后可正常打分返回数值。
+- 实验层：每轮 8 个 CIF 能生成并落盘；但 validation_ok/formula_ok 全 0 时，应优先关注生成内容与目标化学组成/配比是否一致（否则校验会系统性失败，导致闭环筛选退化）。
+CrystaLLM × ALIGNN(GPU) × Qwen3(vLLM) 闭环实验对话记录与总结
+日期：2026-01-28
+记录范围：仅保留“跑实验/部署/结果/性能与可复现性”相关内容；不记录与实验无关的杂项修 bug 过程。
+
+0. 实验目标
+-----------
+在同一台机器上完成以下闭环实验能力：
+1) CrystaLLM 生成若干 CIF 候选；
+2) 过滤器（物理/晶体学检查）对 CIF 做清洗与验证；
+3) ALIGNN 通过 ZMQ 服务对 CIF 预测 formation_energy、bandgap 等；
+4) 由优化器 LLM 根据“上一轮 prompt + 本轮汇总摘要”产出下一轮 next_prompt_lines；
+5) 循环多轮后，从全局候选中选择得分最好且通过验证的结构。
+
+本次对话将优化器 LLM 从原先的 LLaMA 模型替换为 Qwen3，并用 vLLM 以 OpenAI API Server 方式拉起服务端。
+
+
+1. 环境与资源（关键硬件/磁盘）
+---------------------------
+- 数据盘：/root/autodl-tmp（用于模型权重、缓存、日志与实验输出；避免落系统盘）
+- GPU：NVIDIA A800 80GB（单卡）
+- Python：3.10
+
+
+2. Qwen3 服务端部署（vLLM OpenAI API）
+------------------------------------
+模型：
+- Qwen/Qwen3-30B-A3B-Instruct-2507
+- 本地路径：/root/autodl-tmp/models/Qwen/Qwen3-30B-A3B-Instruct-2507（约 57G）
+
+关键点：
+- vLLM 使用 OpenAI 兼容接口（/v1/models、/v1/chat/completions）。
+- 启动后会常驻显存（模型权重 + KV cache 预留），空闲也会占用显存；不用时需 stop 释放显存。
+- 为方便“需要时启动、不用时释放显存”，新增了一键启停脚本：
+  - /root/autodl-tmp/qwen3_vllm/qwen3_vllmctl.sh
+  - /root/autodl-tmp/qwen3_vllm/config.env（默认省显存参数：MAX_MODEL_LEN=8192、GPU_MEMORY_UTILIZATION=0.80）
+  - 用法：start/stop/status/logs/test
+
+
+3. ALIGNN 打分器上 GPU（关键修复点）
+---------------------------------
+在闭环实验中，出现过 ALIGNN 打分全失败（n_scored_ok=0），错误为：
+  “Device API cuda is not enabled. Please install the cuda version of dgl.”
+
+解决思路与结果：
+- alignn-score 环境中 torch 为 cu121，但 dgl 之前是 CPU 版。
+- 将 dgl 替换为 dgl-2.1.0+cu121 后，DGL 可在 cuda:0 上创建 graph。
+- 重启 ALIGNN ZMQ 服务并验证 ZMQ 请求能返回数值预测：
+  返回示例：{"ok": true, "formation_energy": -1.03..., "bandgap": 3.61...}
+
+ALIGNN 服务：
+- ZMQ 端口：tcp://127.0.0.1:5555
+- 服务端脚本：/root/autodl-tmp/model/CrystaLLM/resources/alignn_zmq_server_multi.py
+- 预测属性：formation_energy、bandgap
+
+
+4. Qwen 接入闭环：输入输出协议（从“强约束”到“先跑通”）
+----------------------------------------------------
+原 LLaMA 优化器阶段曾因“严格 JSON/严格模板”导致输出不可控、解析失败、回退频繁。
+本次接入 Qwen 的策略是：
+- 先使用最宽松、最易跑通的约束（relaxed_v0）；
+- 输入给模型的是“纯文本摘要”，避免让模型“回显/续写 JSON”；
+- 输出不强制严格 JSON；只要模型能给出 next prompt lines，客户端做“宽松解析 + 清洗/合并”即可驱动下一轮。
+
+Qwen 实际输入（每轮一次）：
+- last_prompt_lines（上一轮 prompt.txt 的行列表）
+- evaluator_summary（本轮汇总：样本数、打分成功数、通过率、bandgap/formation_energy 统计、top structures 的验证原因等）
+说明：Qwen 不是对每个 CIF 各改一次 prompt，而是“每轮汇总一次 → 输出一次 next_prompt_lines”。
+
+Qwen 实际输出（每轮一次）：
+- 主要关注字段：next_prompt_lines（下一轮 prompt 行）
+- 附带：简短的修改建议/分析文本（用于人工审计）
+- 客户端会过滤掉不希望出现的细节行（如 _cell_length/_cell_angle），并把输出作为“补丁”合并回 last_prompt_lines，保证稳定性。
+
+
+5. 实验目录与常见产物（每轮）
+-------------------------
+每个实验目录（out-dir）下通常包含：
+- round_XX/prompt.txt：该轮真实输入给 CrystaLLM 的 prompt
+- round_XX/cifs/sample_*.cif：该轮生成的 CIF（默认 samples_per_round 个）
+- round_XX/cif_quality.json / .csv：过滤器输出（valid、reasons、bond_length_score、formula_ok、space_group_ok(三态)、multiplicity_ok 等）
+- round_XX/cif_quality_summary.txt：过滤器汇总（通过率、space_group_ok 三态统计等）
+- round_XX/scores.csv：ALIGNN 打分输出（formation_energy、bandgap）并合并过滤器关键字段
+- round_XX/summary.json：本轮汇总（均值/极值、top_structures 等）
+- round_XX/evaluator_summary.json：供 LLM 使用的压缩摘要
+- round_XX/llama_output.json：本轮（非最后一轮）LLM 的输入输出记录（这里模型已换为 Qwen，但文件名沿用）
+- final_report.json：全局汇总 + best_overall
+- best_structures/：复制出来的候选（按 round/rank/score 命名）
+
+
+6. 关键实验结果摘录（用于判断闭环是否“真跑通”）
+--------------------------------------------
+6.1 na2cl2_qwen_smoketest（早期冒烟）
+- 现象：Qwen 输出可解析并更新了下一轮 prompt（证明“Qwen→next_prompt_lines→下一轮”链路通）
+- 但当时 ALIGNN 因 DGL CUDA 未装对，打分全失败（n_scored_ok=0），导致难以评估“优化效果”。
+
+6.2 na2cl2_qwen_v1_small（三轮闭环，打分已正常）
+结果要点（来自 summary/final_report）：
+- 每轮 ALIGNN 打分成功：total/ok=8/8（每轮）
+- Round 01：
+  - bandgap max≈4.2189
+  - validation_ok 1/8
+  - Qwen 修改：data_Na2Cl2 → data_Na2Cl3（空间群保持 P4/mmm）
+- Round 02：
+  - validation_ok 0/8（主要卡在 composition inconsistent / multiplicity inconsistent）
+  - Qwen 修改：data_Na2Cl3 → data_Na2Cl2
+- Round 03：
+  - validation_ok 1/8
+全局 best_overall（final_report.json）：
+- round_01/cifs/sample_6.cif：bandgap≈4.2189 且 validation_ok=True（关键正样本）
+
+观察：
+- Qwen 输出稳定、能驱动闭环更新 prompt，但其“目标表述”曾出现与 max bandgap 不一致的措辞（提示后续需要在 system/user 中更明确写死 score_goal=max）。
+- 过滤器通过率偏低，主要失败集中在化学计量一致性与多重度一致性。
+
+6.3 na2cl2_qwen_v2_small（三态 space_group_ok 输出已用于产物）
+- v2_small 的 cif_quality.json/scores.csv 中不再出现旧式的 validation_failed 直接中断式记录；
+- space_group_ok 引入三态：True/False/None，并在 cif_quality_summary.txt 里汇总 true/false/none。
+
+6.4 na2cl2_qwen_v4_small（失败原因分析的典型样例）
+- Round 01：validation_ok 1/8；space_group_ok 3/1/4（true/false/none），常见失败为 composition inconsistent、space_group_check_error、bond lengths 不合理。
+- Round 02/03：validation_ok 0/8；出现系统性 formula_check/strict_valid 错误（根因：Qwen 将 data_ 改成带小数形式 data_Na2.1Cl1.9，与 data_ 解析规则不兼容）。
+
+
+7. 性能与运行体验（实验相关）
+--------------------------
+- vLLM Qwen3 服务启动后会占用大量显存（权重+KV cache），这是常驻服务的正常行为；不用时通过 stop 释放显存。
+- 使用了省显存启动档位（max_model_len、gpu_memory_utilization）以便“按需启停”。
+- ALIGNN 上 GPU 后，每轮 8 个 CIF 的打分可稳定返回数值（ok=8/8），闭环才具备可评估性。
+
+
+8. 总结与可复现要点
+-----------------
+本次对话达成的“可复现闭环”关键点：
+1) Qwen3 以 vLLM OpenAI API Server 方式稳定运行，并可用 curl 验证；
+2) ALIGNN ZMQ 服务在 GPU 上稳定返回 formation_energy/bandgap；
+3) Qwen 采用 relaxed 协议接入闭环：每轮读取 evaluator_summary + last_prompt_lines，输出 next_prompt_lines，驱动下一轮；
+4) 过滤器输出可解析、不中断，space_group_ok 为三态并在 summary 中统计。
+
+主要经验教训（对后续实验最重要）：
+- LLM 输出“可跑通”优先：先宽松解析再逐步加约束，比一开始强制 JSON/模板更稳；
+- 打分器必须先稳定（DGL CUDA 版本对齐），否则闭环只是在“盲改 prompt”；
+- prompt 变更要避免与下游解析规则冲突（例如 data_ 带小数会触发系统性失败）；
+- CrystaLLM 的元素约束目前偏弱，容易跑偏到非 Na/Cl，需要后续在 prompt 或后处理层加强约束策略。
+

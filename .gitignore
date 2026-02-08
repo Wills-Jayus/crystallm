@@ -96,3 +96,22 @@ CrystaLLM/**/*.cif
 
 
 
+
+
+
+
+# --- Generated experiment/data outputs (do not commit) ---
+.specstory/
+# Large generated artifacts / datasets
+CrystaLLM/experiments/
+CrystaLLM/reproduce/
+CrystaLLM/prompts/
+CrystaLLM/databench/
+CrystaLLM/sandbox/
+
+# Local scratch / one-off files
+CrystaLLM/my_prompt.txt
+33
+
+# Compressed pickles / caches
+*.pkl.gz

@@ -426,6 +426,10 @@ To randomly sample from a trained model, and generate CIF files, use the `bin/sa
 expects the path to the folder containing the trained model checkpoint, as well as the prompt, and other configuration 
 options.
 
+**NOTE:** Prompts should contain only pre-processed CIF content. Natural-language comment lines (e.g. `# ...` or `; ...`)
+are not part of the tokenizer vocabulary and would otherwise map to the special token `<unk>` and leak into the generated
+output prefix. The sampling script drops full-line comments before tokenization.
+
 <details>
   <summary>Expand for supported configuration options and their default values</summary>
 

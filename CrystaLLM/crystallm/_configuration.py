@@ -5,6 +5,17 @@ from omegaconf import DictConfig, OmegaConf
 import yaml
 
 
+def _coerce_value(expected_type: Any, value: str) -> Any:
+    if expected_type is bool:
+        v = value.strip().lower()
+        if v in ("1", "true", "yes", "y", "on"):
+            return True
+        if v in ("0", "false", "no", "n", "off"):
+            return False
+        raise ValueError(f"invalid boolean value: {value!r}")
+    return expected_type(value)
+
+
 def _parse_cli_overrides(overrides: List[str], config_dataclass: Type[dataclass]) -> Dict[str, Any]:
     cli_args = {}
     allowed_options = {field.name: field.type for field in fields(config_dataclass)}
@@ -16,7 +27,7 @@ def _parse_cli_overrides(overrides: List[str], config_dataclass: Type[dataclass]
             expected_type = allowed_options[key]
             try:
                 # convert value to the expected type
-                cli_args[key] = expected_type(value)
+                cli_args[key] = _coerce_value(expected_type, value)
             except ValueError:
                 raise ValueError(f"invalid type for '{key}': expected {expected_type}")
     return cli_args

@@ -17,6 +17,24 @@ from crystallm import (
 )
 
 
+def _strip_prompt_comment_lines(prompt: str) -> str:
+    """
+    Drop full-line comments before tokenization.
+
+    CrystaLLM's CIFTokenizer vocabulary is intentionally small and does not cover
+    natural-language comments. If comment lines are present (e.g. "# ..." or
+    "; ..."), most words are mapped to the special token "<unk>", which then
+    leaks into the generated CIF prefix because sampling outputs prompt+completion.
+    """
+    out_lines = []
+    for line in prompt.splitlines():
+        stripped = line.lstrip()
+        if stripped.startswith("#") or stripped.startswith(";"):
+            continue
+        out_lines.append(line.rstrip())
+    return ("\n".join(out_lines).rstrip() + "\n") if out_lines else "\n"
+
+
 @dataclass
 class SampleDefaults:
     out_dir: str = "out"  # the path to the directory containing the trained model
@@ -71,7 +89,17 @@ if __name__ == "__main__":
     if prompt.startswith("FILE:"):
         with open(prompt[5:], "r", encoding="utf-8") as f:
             prompt = f.read()
-    start_ids = encode(tokenizer.tokenize_cif(prompt))
+
+    prompt = _strip_prompt_comment_lines(prompt)
+    tokenized = tokenizer.tokenize_cif(prompt)
+    unk_n = tokenized.count("<unk>")
+    if unk_n:
+        # Best-effort: remove UNK tokens from the conditioning prompt so the
+        # generated CIF does not start with "<unk>" noise.
+        tokenized = [t for t in tokenized if t != "<unk>"]
+        print(f"[warn] prompt tokenization produced {unk_n} <unk> tokens; removing them before sampling.")
+
+    start_ids = encode(tokenized)
     x = torch.tensor(start_ids, dtype=torch.long, device=C.device)[None, ...]
 
     # run generation
@@ -80,7 +108,7 @@ if __name__ == "__main__":
             for k in range(C.num_samples):
                 y = model.generate(x, C.max_new_tokens, temperature=C.temperature, top_k=C.top_k)
 
-                generated = decode(y[0].tolist())
+                generated = decode(y[0].tolist()).replace("<unk>", "")
 
                 if C.target == "console":
                     print(generated)

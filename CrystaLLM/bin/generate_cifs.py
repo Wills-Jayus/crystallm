@@ -16,6 +16,16 @@ from crystallm import (
 )
 
 
+def _strip_prompt_comment_lines(prompt: str) -> str:
+    out_lines = []
+    for line in prompt.splitlines():
+        stripped = line.lstrip()
+        if stripped.startswith("#") or stripped.startswith(";"):
+            continue
+        out_lines.append(line.rstrip())
+    return ("\n".join(out_lines).rstrip() + "\n") if out_lines else "\n"
+
+
 def progress_listener(queue, n):
     pbar = tqdm(total=n, desc="generating CIFs from prompts...")
     while True:
@@ -72,12 +82,16 @@ def generate(model_dir, seed, device, dtype, num_gens, temperature, top_k, max_n
     with torch.no_grad():
         with ctx:
             for id, prompt in chunk_of_prompts:
-                start_ids = encode(tokenizer.tokenize_cif(prompt))
+                prompt = _strip_prompt_comment_lines(prompt)
+                tokenized = tokenizer.tokenize_cif(prompt)
+                if "<unk>" in tokenized:
+                    tokenized = [t for t in tokenized if t != "<unk>"]
+                start_ids = encode(tokenized)
                 x = torch.tensor(start_ids, dtype=torch.long, device=device)[None, ...]
                 gens = []
                 for _ in range(num_gens):
                     y = model.generate(x, max_new_tokens, temperature=temperature, top_k=top_k)
-                    output = decode(y[0].tolist())
+                    output = decode(y[0].tolist()).replace("<unk>", "")
                     gens.append(output)
                 generated.append((id, gens))
                 queue.put(1)

@@ -82,8 +82,19 @@ def get_atomic_props_block(composition, oxi=False):
     return str(CifBlock(data, loops, "")).replace("data_\n", "")
 
 
-def replace_symmetry_operators(cif_str, space_group_symbol):
-    space_group = SpaceGroup(space_group_symbol)
+def replace_symmetry_operators(cif_str, space_group_symbol, safe: bool = True):
+    """
+    Replace the symmetry operation loop with the full set of operators for the declared space group.
+
+    Note: blindly replacing symmetry operators can make some generated CIFs
+    unparsable (e.g. occupancy conflicts leading to "no structures"). When
+    `safe=True` (default), this function will revert to the original CIF if the
+    replacement yields no parsable structure via pymatgen.
+    """
+    try:
+        space_group = SpaceGroup(space_group_symbol)
+    except Exception:  # noqa: BLE001
+        return cif_str
     symmetry_ops = space_group.symmetry_ops
 
     loops = []
@@ -103,6 +114,16 @@ def replace_symmetry_operators(cif_str, space_group_symbol):
 
     pattern = r"(loop_\n_symmetry_equiv_pos_site_id\n_symmetry_equiv_pos_as_xyz\n1 'x, y, z')"
     cif_str_updated = re.sub(pattern, symm_block, cif_str)
+
+    if safe and cif_str_updated != cif_str:
+        try:
+            from pymatgen.io.cif import CifParser
+
+            structures = CifParser.from_string(cif_str_updated).get_structures(primitive=False)
+            if not structures:
+                return cif_str
+        except Exception:  # noqa: BLE001
+            return cif_str
 
     return cif_str_updated
 
@@ -130,10 +151,37 @@ def extract_formula_units(cif_str):
 
 
 def extract_data_formula(cif_str):
-    match = re.search(r"data_([A-Za-z0-9]+)\n", cif_str)
-    if match:
-        return match.group(1)
-    raise Exception(f"could not find data_ in:\n{cif_str}")
+    """
+    Extract the chemical formula encoded in the CIF `data_...` header.
+
+    Historically we assumed `data_<formula>` matched `[A-Za-z0-9]+`, but some
+    optimizers produce decimal stoichiometries (e.g. `data_Na2.1Cl1.9`) or add
+    suffixes (e.g. `data_Na2Cl2_v1`). We therefore:
+      1) find the first `data_` header token;
+      2) take the leading "formula-like" prefix from that token.
+    """
+    match = re.search(r"^data_(\S+)", cif_str, flags=re.MULTILINE)
+    if not match:
+        raise Exception(f"could not find data_ in:\n{cif_str}")
+
+    data_id = match.group(1).strip().strip("'\"")
+    if not data_id:
+        raise Exception(f"empty data_ identifier in:\n{cif_str}")
+
+    # Element symbol + optional numeric count (int/float). Repeated.
+    count = r"(?:\d+(?:\.\d+)?|\.\d+)"
+    prefix = re.match(rf"^((?:[A-Z][a-z]?(?:{count})?)+)", data_id)
+    if prefix:
+        return prefix.group(1)
+
+    # Last-chance fallback: attempt to parse the full token as a Composition.
+    # This keeps the error pathway consistent (no regex failures), while
+    # allowing unusual but valid identifiers.
+    try:
+        _ = Composition(data_id)
+        return data_id
+    except Exception as exc:  # noqa: BLE001
+        raise Exception(f"could not extract a formula from data_ identifier '{data_id}': {exc}") from exc
 
 
 def extract_formula_nonreduced(cif_str):

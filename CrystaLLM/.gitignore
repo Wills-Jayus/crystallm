@@ -164,3 +164,59 @@ scratches/
 saved_models/
 
 .DS_Store
+# Python缓存文件
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+crystallm_env/  # 你的虚拟环境目录
+
+# 实验输出文件（核心：排除海量实验生成文件）
+CrystalLM/Experiments/*/output/
+CrystalLM/Experiments/*/logs/
+CrystalLM/Experiments/*/checkpoints/
+CrystalLM/Experiments/*/temp/
+CrystalLM/Experiments/*/*.jsonl  # 大规模数据文件
+CrystalLM/Experiments/*/*.csv
+CrystalLM/Experiments/*/*.h5
+CrystalLM/Experiments/*/*.pth
+CrystalLM/Experiments/*/*.pt
+CrystalLM/Experiments/*/*.ckpt
+CrystalLM/Experiments/*/_ab_*/  # 自动生成的实验目录（比如你的_ab_autofix_off_xxx目录）
+
+# 日志文件
+*.log
+*.err
+*.out
+logs/
+
+# 临时文件
+*.tmp
+*.temp
+.DS_Store  # Mac系统文件
+.idea/     # IDE配置文件
+.vscode/   # VSCode/Cursor配置
+*.swp
+*.swo
+
+# --- Always track docs ---
+# Logs/notes live under CrystaLLM/docs with irregular names/extensions.
+!docs/
+!docs/**
