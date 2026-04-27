@@ -1,0 +1,187 @@
+CrystaLLM + Qwen：面向 match rate 的 Scheme‑B 流程说明（challenge_set_v1）
+日期：2026-02-24
+
+本文件目的
+- 解释为什么 “只修键长/晶胞”等连续修复通常只能提升 valid，而难以提升 match。
+- 给出我们敲定并已落地的“提升 match@budget（best‑of‑K any‑match）”的完整流程（Scheme‑B）。
+- 说明代码/脚本改动点、参数设计（便于后续修改预算 K/上限）。
+- 以 1 个 prompt（no‑sg / with‑sg 两种输入）为例，展示它可能经历的完整链路与分支。
+
+
+一、背景：为什么 Qwen 介入后 valid↑但 match≈不变
+1) valid（successful generation rate）更像“数值/字段合法性 + 物理化学约束是否通过”
+   - 典型信号：键长合理、原子重叠、晶胞尺度、角度范围、_cell_volume 字段一致性、对称操作 loop 等。
+2) match rate 更像“离散结构骨架是否正确”
+   - 结构骨架错（拓扑/占位/对称性）时，做连续修复往往只能把结构从 invalid 拉到 valid，
+     但不会把“骨架错”变成“骨架对”，因此 match 不一定提升。
+
+因此我们把目标从“修到 valid”为主，改成：
+- 在更小预算（平均 K=10，单样本上限 15/20，参数可调）下，
+  尽量提高 best‑of‑K 的 match@K（any‑match）与 valid@K（any‑valid）。
+
+
+二、我们敲定的评测口径（验收口径）
+1) match@K（Seen/Unseen）
+   - 定义：对每个化合物有 K 个候选结构，只要其中任意一个与 GT 匹配（StructureMatcher），该化合物计为 match。
+   - Seen/Unseen 的划分由挑战集的固定列表决定（其余均为 Unseen）。
+2) valid@K
+   - 定义：对每个化合物的 K 个候选，只要其中任意一个通过 valid，则该化合物计为 valid。
+3) 重要原则：默认禁止使用 GT 的 match 结果做决策
+   - GT match 只用于最终评测统计；流程中的 Qwen 决策基于“代理信号”，不允许 oracle‑stop。
+
+
+三、输入类型与约束
+挑战集每个化合物文件夹包含两类 prompt：
+1) no‑sg prompt：不提供空间群（或为空）
+   - 允许 Qwen 在重采样时提出更靠谱的 SG，并写回 prompt（离散信息补全）。
+2) with‑sg prompt：明确给定空间群
+   - 不允许更改 SG（严格约束）
+   - 即使 Qwen 输出 “FIX_PROMPT_SG”，流程也会强制禁用该动作。
+
+
+四、Scheme‑B（已实现）的整体流程（按阶段）
+实现位置（主要在 scp_task/CrystaLLM 仓库中）：
+- /data/users/xsw/autodlmini/model/scp_task/CrystaLLM/bin/run_csp_scheme_b.py
+- /data/users/xsw/autodlmini/model/scp_task/CrystaLLM/bin/qwen_propose_sg.py
+- /data/users/xsw/autodlmini/model/scp_task/CrystaLLM/bin/run_challenge_set_v1_csp.py
+
+阶段 0：准备 prompts（挑战集 wrapper）
+- 对 challenge_set_v1 的每个化合物生成 2 个 prompts_dir：
+  - no_sg：ID.txt
+  - with_sg：ID.txt
+
+阶段 1：初始采样（init_k 次）
+- 使用 CrystaLLM 对每个 prompt 先生成 init_k 个候选 CIF：
+  - 输出命名：ID__1.cif ... ID__init_k.cif
+- 目的：为后续“SG 提议”提供可观察的结构代理信号样本。
+
+阶段 2：Qwen 提议 SG（只对 no‑sg）
+- 脚本：qwen_propose_sg.py
+- 输入给 Qwen 的信息（proxy，不是 GT match）：
+  A) 对称性/空间群 proxy
+     - stated_sg（CIF 声明的 SG）
+     - detected_sg（SpacegroupAnalyzer 在 symprec=0.1/0.01 下检测到的 SG）
+     - symm ops 数、equivalent groups 数（等价原子分组数，粗略反映对称性“稳定性/强度”）
+  B) Wyckoff proxy（骨架相关，高 ROI）
+     - 按元素统计 wyckoff letter 分布（粗粒度占位摘要）
+  C) 配位环境 proxy（化学常识入口）
+     - 每类元素 mean CN
+     - 每类元素 top‑neighbor 元素类型分布（例如 O 周围主要是金属 vs 主要是 O）
+  D) 辅助：密度、volume/atom（只作 sanity）
+- Qwen 输出动作（单行 CMD）：
+  - CMD: FIX_PROMPT_SG sg=<H-M>
+  - CMD: NO_CHANGE
+- 产物：
+  - prompts_final/ID.txt（如果提议 SG，则把 _symmetry_space_group_name_H-M 写回；否则保持原样）
+  - qwen_sg_propose/ 下保存每个 ID 的 user/raw/cmd/summary 用于审计与复现。
+
+阶段 3：补足预算（再采样到 K）
+- 使用 prompts_final 继续生成剩余 (K - init_k) 个候选：
+  - 输出命名：ID__{init_k+1}.cif ... ID__K.cif
+- 关键点：为了保证可复现与不覆盖，生成器支持 sample-index-offset（追加样本）。
+
+阶段 4：Qwen 数值修复（Scheme‑A repair，仍然保留）
+- 复用 Scheme‑A 的 repair 阶段（csp_v2_repair_once.py）对 invalid 的 CIF 做修复：
+  - 连续修复：FIX_CIF（晶胞缩放、角度 clamp、对称操作 normalize、frac wrap 等）
+  - 离散修复：FIX_PROMPT_SG（仅在 no‑sg 允许；with‑sg 强制禁用）
+- 重要：with‑sg 路径传入 --disable-prompt-sg-fix，保证 SG 不会被修改。
+
+阶段 5：评测与汇总（best‑of‑K）
+- valid@K（before/after Qwen）
+  - before：用 raw ID__k.cif 判断 any‑valid
+  - after：若存在修复文件 ID__k__qwen_v2_fixed.cif 则用修复后，否则用 raw，再判断 any‑valid
+- match@K（Seen/Unseen，before/after Qwen）
+  - 将 K 个候选打包为 tar，成员名为 ID__k.cif（满足 benchmark_metrics 的读取逻辑）
+  - 运行 benchmark_metrics.py（StructureMatcher）得到 any‑match 的比例（Seen/Unseen 各一份）
+- wrapper 写出最终 JSON 表格（用于论文/报告表格复现）。
+
+
+五、实现改动点（你能在代码里看到的“硬证据”）
+1) 多样本生成 + 可追加样本
+- scp_task/CrystaLLM/bin/generate_cifs_from_prompts_dir.py
+  - 新增：--num-samples-per-prompt（写 ID__k.cif）
+  - 新增：--sample-index-offset（用于 init_k + 追加到 K）
+
+2) 禁止 with‑sg 的 prompt SG 修改
+- scp_task/CrystaLLM/bin/csp_v2_repair_once.py
+  - 新增：--disable-prompt-sg-fix（禁用 FIX_PROMPT_SG）
+- scp_task/CrystaLLM/bin/run_csp_scheme_a.py
+  - 透传：--disable-prompt-sg-fix
+
+3) 新增 SG 提议阶段（no‑sg）
+- scp_task/CrystaLLM/bin/qwen_propose_sg.py（新）
+- scp_task/CrystaLLM/reproduce/qwen_system_prompt_sg_propose.txt（新）
+
+4) 新增 Scheme‑B 总控
+- scp_task/CrystaLLM/bin/run_csp_scheme_b.py（新）
+  - 负责：init_k 采样 → Qwen SG propose → 追加采样到 K → 复用 Scheme‑A 做 eval/repair
+
+5) 挑战集 wrapper 支持 Scheme‑B + best‑of‑K 汇总
+- scp_task/CrystaLLM/bin/run_challenge_set_v1_csp.py
+  - 新增：--scheme {a,b}，默认 b
+  - 新增：--num-samples-per-prompt K，--init-k，--disable-sg-propose
+  - 输出：valid@K/match@K 的 before_qwen / after_qwen
+
+
+六、一个 prompt 的“可能经历的完整流程示例”
+下面以化合物 ID = Co2CO3(OH)2 为例（示意，不代表 Qwen 一定输出该 SG）。
+
+输入 1：no‑sg prompt（prompts_no_sg/Co2CO3(OH)2.txt）
+1) 初始采样（init_k=3）
+   - 生成：
+     - cifs/Co2CO3(OH)2__1.cif
+     - cifs/Co2CO3(OH)2__2.cif
+     - cifs/Co2CO3(OH)2__3.cif
+2) 代理信号抽取（来自这 3 个 CIF）
+   - symprec=0.1/0.01 的 detected_sg、Wyckoff 分布、mean CN、neighbor type 分布、density 等
+3) Qwen 提议 SG（可选分支）
+   - 分支 A：Qwen 认为现有 proxy 不足以确定 SG
+     - 输出：CMD: NO_CHANGE
+     - prompts_final/Co2CO3(OH)2.txt 与原 prompt 相同
+   - 分支 B：Qwen 给出更可靠的 SG
+     - 输出：CMD: FIX_PROMPT_SG sg=<某 H-M>
+     - prompts_final/Co2CO3(OH)2.txt 写入/替换 _symmetry_space_group_name_H-M 行
+4) 追加采样到 K（例如 K=10）
+   - 使用 prompts_final 继续生成：
+     - cifs/Co2CO3(OH)2__4.cif ... cifs/Co2CO3(OH)2__10.cif
+5) 数值修复（Scheme‑A repair，仅对 invalid 候选触发）
+   - 对每个 Co2CO3(OH)2__k.cif：
+     - 若 invalid：调用 Qwen（qwen_system_prompt.txt）输出 FIX_CIF / NO_CHANGE（no‑sg 仍允许 FIX_PROMPT_SG）
+     - 生成修复文件：csp_v2_repair/Co2CO3(OH)2__k__qwen_v2_fixed.cif（若修复产生）
+6) 汇总评测
+   - valid@10：
+     - before：任意一个 Co2CO3(OH)2__k.cif valid → valid@10=1
+     - after：优先用 __qwen_v2_fixed.cif，再判断 any‑valid
+   - match@10：
+     - 将 10 个候选（before/after）分别打包，跑 StructureMatcher，任意一个匹配则该 ID 计为 match。
+
+输入 2：with‑sg prompt（prompts_with_sg/Co2CO3(OH)2.txt）
+1) 仍然 best‑of‑K 采样（生成 ID__1..ID__K）
+2) 不进行 SG propose（SG 已给定，且不允许改）
+3) repair 阶段强制禁用 prompt SG 修改：
+   - 即使 Qwen 输出 FIX_PROMPT_SG，也会被 --disable-prompt-sg-fix 拦截
+4) 同样汇总 valid@K、match@K（before/after）
+
+
+七、如何运行（挑战集 70 个样本，Scheme‑B，K=10）
+推荐在 scp_task/CrystaLLM 目录运行（示例）：
+  export CUDA_VISIBLE_DEVICES=1
+  PY=/data/users/xsw/autodlmini/miniforge3/envs/crystallm_env/bin/python
+
+  $PY bin/run_challenge_set_v1_csp.py \
+    --scheme b \
+    --num-samples-per-prompt 10 --max-samples-per-prompt 20 \
+    --init-k 3 \
+    --out-root /data/users/xsw/autodlmini/model/scp_task/CrystaLLM/reproduce \
+    --run-name-prefix challenge_set_v1_small_schemeB_budget10 \
+    --device cuda:0 --dtype bfloat16 \
+    --gen-workers 16 --eval-workers 16 \
+    --qwen-api-base http://127.0.0.1:8000/v1 \
+    --qwen-model Qwen3-30B-A3B-Instruct-2507
+
+输出与验收点：
+- 最终汇总 JSON：reproduce/challenge_set_v1_small_schemeB_budget10_final_table_<timestamp>.json
+- no‑sg 的 SG propose 日志：<run_dir>/qwen_sg_propose/
+- K 个候选 CIF：<run_dir>/cifs/ID__1.cif ... ID__K.cif
+- repair 输出：<run_dir>/csp_v2_repair/*__qwen_v2_fixed.cif（若存在）
+

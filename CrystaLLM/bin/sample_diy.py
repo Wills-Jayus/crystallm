@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import random
 import shutil
@@ -54,8 +55,37 @@ class RunConfig:
     out_dir: str
     out_root: Optional[str]
     run_name: Optional[str]
+    workers: int
+    resume: bool
+    resume_seed_stride: int
     overwrite: bool
     quiet: bool
+
+
+def _index_existing_outputs(out_dir: Path, prompt_stems: set[str]) -> dict[str, int]:
+    """
+    Count existing CIF outputs per prompt stem in out_dir.
+
+    We treat files as belonging to a prompt stem if they match:
+      - <stem>.cif
+      - <stem>_<number>.cif
+    """
+    counts: dict[str, int] = {}
+    if not out_dir.exists():
+        return counts
+
+    for p in out_dir.glob("*.cif"):
+        if not p.is_file():
+            continue
+        base = p.name[:-4]  # strip ".cif"
+        if base in prompt_stems:
+            counts[base] = counts.get(base, 0) + 1
+            continue
+        if "_" in base:
+            maybe_stem, maybe_num = base.rsplit("_", 1)
+            if maybe_num.isdigit() and maybe_stem in prompt_stems:
+                counts[maybe_stem] = counts.get(maybe_stem, 0) + 1
+    return counts
 
 
 def _run_one_prompt(
@@ -139,6 +169,12 @@ def _parse_args() -> argparse.Namespace:
     p.add_argument("--device", default="cuda")
     p.add_argument("--dtype", default="bfloat16", choices=["float32", "bfloat16", "float16"])
     p.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="Number of prompts to sample concurrently (spawns that many sample.py subprocesses).",
+    )
+    p.add_argument(
         "--out-dir",
         default=None,
         help="Full output directory path (overrides --out-root/--run-name).",
@@ -149,9 +185,21 @@ def _parse_args() -> argparse.Namespace:
         default=None,
         help="Output folder name under --out-root (i.e., customize the output directory name).",
     )
+    p.add_argument(
+        "--no-resume",
+        dest="resume",
+        action="store_false",
+        help="Do not skip prompts that already have enough CIFs in the output directory.",
+    )
+    p.add_argument(
+        "--resume-seed-stride",
+        type=int,
+        default=1_000_000,
+        help="When resuming partially completed prompts, add existing_count*stride to the seed.",
+    )
     p.add_argument("--overwrite", action="store_true", help="Overwrite existing CIF filenames in the run dir.")
     p.add_argument("--no-quiet", dest="quiet", action="store_false", help="Show sample.py output (default quiet).")
-    p.set_defaults(quiet=True)
+    p.set_defaults(quiet=True, resume=True)
     return p.parse_args()
 
 
@@ -191,6 +239,22 @@ def main() -> None:
     if not prompts:
         raise SystemExit("No prompts to process after slicing.")
 
+    workers = int(args.workers)
+    if workers <= 0:
+        raise SystemExit("--workers must be >= 1")
+
+    prompt_stems = {p.stem for p in prompts}
+    existing_counts = _index_existing_outputs(run_dir, prompt_stems) if (args.resume and not args.overwrite) else {}
+    todo: list[tuple[int, Path, int]] = []
+    done_initial = 0
+    desired = int(args.num_samples_per_prompt)
+    for abs_index, prompt_path in enumerate(prompts):
+        existing = int(existing_counts.get(prompt_path.stem, 0))
+        if args.resume and not args.overwrite and existing >= desired:
+            done_initial += 1
+            continue
+        todo.append((abs_index, prompt_path, existing))
+
     cfg = RunConfig(
         model_dir=str(args.model_dir),
         prompts_dir=str(prompts_dir),
@@ -209,33 +273,61 @@ def main() -> None:
         out_dir=str(run_dir),
         out_root=out_root,
         run_name=run_name,
+        workers=workers,
+        resume=bool(args.resume),
+        resume_seed_stride=int(args.resume_seed_stride),
         overwrite=bool(args.overwrite),
         quiet=bool(args.quiet),
     )
     (run_dir / "run_config.json").write_text(json.dumps(cfg.__dict__, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    n = len(prompts)
-    total_cifs = 0
-    for i, prompt_path in enumerate(prompts, start=1):
-        _progress(i, n, prompt_path.name)
+    n_total = len(prompts)
+    n_pending = len(todo)
+    if cfg.resume and not cfg.overwrite:
+        print(f"[sample_diy] resume on: done={done_initial} pending={n_pending} total={n_total} workers={workers} -> {run_dir}")
+    else:
+        print(f"[sample_diy] resume off: pending={n_pending} total={n_total} workers={workers} -> {run_dir}")
+
+    if n_pending == 0:
+        print(f"[sample_diy] nothing to do -> {run_dir}")
+        return
+
+    def _task(abs_index: int, prompt_path: Path, existing: int) -> tuple[str, int]:
+        remaining = desired
+        seed = cfg.seed + abs_index
+        if cfg.resume and not cfg.overwrite:
+            remaining = max(0, desired - existing)
+            if existing > 0 and remaining > 0:
+                seed = seed + existing * cfg.resume_seed_stride
+
         moved = _run_one_prompt(
             sample_py=sample_py,
             model_dir=cfg.model_dir,
             prompt_path=prompt_path,
             out_dir=run_dir,
-            num_samples=cfg.num_samples_per_prompt,
+            num_samples=remaining,
             temperature=cfg.temperature,
             top_k=cfg.top_k,
             max_new_tokens=cfg.max_new_tokens,
-            seed=cfg.seed + (i - 1),
+            seed=seed,
             device=cfg.device,
             dtype=cfg.dtype,
             overwrite=cfg.overwrite,
             quiet=cfg.quiet,
         )
-        total_cifs += moved
+        return (prompt_path.name, moved)
 
-    print(f"\n[sample_diy] done prompts={n} cifs={total_cifs} -> {run_dir}")
+    total_cifs = 0
+    completed = done_initial
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        futures = [ex.submit(_task, abs_index, prompt_path, existing) for (abs_index, prompt_path, existing) in todo]
+        for fut in as_completed(futures):
+            name, moved = fut.result()
+            total_cifs += moved
+            completed += 1
+            _progress(completed, n_total, name)
+
+    print(f"\n[sample_diy] done prompts={n_total} cifs={total_cifs} -> {run_dir}")
 
 
 if __name__ == "__main__":

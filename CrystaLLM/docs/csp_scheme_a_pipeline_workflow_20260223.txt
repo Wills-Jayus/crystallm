@@ -1,0 +1,446 @@
+CrystaLLM - CSP Scheme-A（生成 → 评估 → Qwen 修复 → 评估）工作流程说明
+日期：2026-02-23
+
+本文档目的
+----------
+本文档面向“第一次接触我们当前 CSP 任务实现逻辑”的同学，解释当你执行一条类似下面的命令后，整条 pipeline 会如何运行：
+
+  export CUDA_VISIBLE_DEVICES=1
+  PY=/data/users/xsw/autodlmini/miniforge3/envs/crystallm_env/bin/python
+  ROOT=/data/users/xsw/autodlmini/model/scp_task/CrystaLLM
+
+  $PY $ROOT/bin/run_csp_scheme_a.py \
+    --model-dir /data/users/xsw/autodlmini/model/CrystaLLM/crystallm_v1_small \
+    --prompts-dir /data/users/xsw/autodlmini/model/scp_task/CrystaLLM/legacy_data/prompts/prompts_test_with_atomtype \
+    --system-prompt-file $ROOT/reproduce/qwen_system_prompt.txt \
+    --out-root $ROOT/reproduce \
+    --run-name csp_newqwenprompt_with_atomtype_$(TZ=Asia/Shanghai date +%Y%m%d_%H%M%S) \
+    --glob "*.txt" \
+    --num-prompts 10286 \
+    --num-samples-per-prompt 1 \
+    --gen-workers 16 \
+    --device cuda:0 \
+    --dtype bfloat16 \
+    --eval-workers 16 \
+    --bond-cutoff 1.0 \
+    --sample-quiet \
+    --qwen-api-base http://127.0.0.1:8000/v1 \
+    --qwen-model Qwen3-30B-A3B-Instruct-2507 \
+    --qwen-autostop-cmd "bash /data/users/xsw/autodlmini/qwen3_vllm/qwen3_vllmctl.sh stop" \
+    --qwen-autostart-cmd "bash /data/users/xsw/autodlmini/qwen3_vllm/qwen3_vllmctl.sh start" \
+    --qwen-wait-seconds 120 \
+    --qwen-check-interval 2 \
+    --repair-screen-workers 16
+
+该命令会在一个 run_dir 下生成原始 CIF、评估文件、Qwen 修复产物、修复后评估文件，并输出汇总对比报告。
+
+
+一、代码与数据的“两个根目录”概念（非常重要）
+---------------------------------------
+你在命令里会同时引用两套目录，它们的角色不同：
+
+1) Pipeline/脚本代码目录（我们当前在用）
+   ROOT=/data/users/xsw/autodlmini/model/scp_task/CrystaLLM
+   - 入口脚本：ROOT/bin/run_csp_scheme_a.py
+   - 生成脚本：ROOT/bin/generate_cifs_from_prompts_dir.py（gen-workers>1 时）
+   - 评估脚本：ROOT/bin/evaluate_cifs.py
+   - 修复脚本：ROOT/bin/csp_v2_repair_once.py
+   - Qwen 客户端：ROOT/bin/qwen_client.py
+   - 核心库：ROOT/crystallm/*
+
+2) 模型与资源目录（“原版 CrystaLLM 工程”及其 artifacts）
+   /data/users/xsw/autodlmini/model/CrystaLLM
+   - 训练好的模型（ckpt.pt）：/data/users/xsw/autodlmini/model/CrystaLLM/crystallm_v1_small/ckpt.pt
+   - resources/benchmarks、embedding csv、数据 split 等
+   - docs/：一些历史报告和说明（本文档也写到这里）
+
+注意：你传给 --model-dir 的是“模型 artifacts 目录”，不是脚本所在目录。
+
+
+二、入口脚本：run_csp_scheme_a.py 做了什么？
+------------------------------------------
+入口脚本：/data/users/xsw/autodlmini/model/scp_task/CrystaLLM/bin/run_csp_scheme_a.py
+
+它把整个 Scheme-A pipeline 串成一个“一条命令跑完”的流程，按阶段（stage）顺序执行：
+
+Stage 1: generation
+  - 从 prompts-dir 读取 prompt .txt
+  - 调用 CrystaLLM 模型生成每个 prompt 的一个 CIF（或更多 sample，取决于参数）
+  - 输出：run_dir/cifs/*.cif（默认在二级目录 cifs/）
+
+Stage 2: evaluate_before
+  - 把生成出来的 CIF 打成 tar.gz
+  - 运行 evaluate_cifs.py 评估，产出 metrics_before.csv 及 metrics_before_summary.json
+
+Stage 3: repair（Qwen 修复）
+  - 可选：启动/停止 Qwen vLLM 服务，等待其可用
+  - 运行 csp_v2_repair_once.py：筛出 invalid 的 CIF → 逐个调用 Qwen → 按 Qwen 的 CMD 执行数值修复/提示词修复
+  - 输出：run_dir/csp_v2_repair/ 下大量 per-sample 日志与修复后的 CIF
+
+Stage 4: evaluate_qwen_modify（只统计“被 Qwen 修改过”的那一小撮样本）
+  - 把 csp_v2_repair/*__qwen_v2_fixed.cif 打包并评估
+  - 输出：run_dir/csp_v2_repair/metrics_after_fixed.csv + summary
+  - 在 qwen_metrics_comparison.txt 中对应 [QWEN_Modify]
+
+Stage 5: evaluate_after（对“全量 prompts”的 AFTER_QWEN）
+  - 为每个原始 CIF：若存在 fixed 版本则用 fixed，否则回退用原始 CIF
+  - 打包为 run_dir/after_qwen_cifs.tar.gz 并评估
+  - 输出：run_dir/metrics_after.csv + summary
+  - 在 qwen_metrics_comparison.txt 中对应 [AFTER_QWEN]，分母是全量（例如 10286）
+
+最后：写入两份汇总报告 + pipeline_summary.json：
+  - run_dir/qwen_metrics_comparison.txt（面向人读）
+  - run_dir/qwen_metrics_comparison.json（面向程序读）
+  - run_dir/pipeline_summary.json（流水线每阶段产物路径、counts、Qwen 统计）
+
+
+三、run_dir 的目录结构与每个文件的含义
+--------------------------------------
+当 --out-root + --run-name 决定了 run_dir 后（例如 ROOT/reproduce/csp_xxx），该目录一般会包含：
+
+1) 生成阶段输出
+  - run_dir/cifs/
+      - <prompt_stem>.cif
+        由 CrystaLLM 生成的原始 CIF。文件名 stem 与 prompt .txt 一一对应（同名替换后缀）。
+  - run_dir/generated_cifs.tar.gz
+      - 把 run_dir/cifs/*.cif 打包后的 tar.gz，供 evaluate_cifs.py 输入。
+
+2) 评估（BEFORE）
+  - run_dir/metrics_before.csv
+      - 每个“可处理的”CIF 一行的评估明细（列见后文）。
+      - 行数可能小于 generated_cifs（因为某些 CIF 在解析/检查中抛异常时不会写入行）。
+  - run_dir/metrics_before_summary.json
+      - 聚合指标汇总（space group consistent、bond lengths reasonable、num valid 等）。
+
+3) Qwen 修复阶段输出
+  - run_dir/csp_v2_repair/
+      - <stem>__qwen_v2_user.txt
+          发送给 Qwen 的 user prompt（包含 ORIGINAL_PROMPT 精简片段 + SIGNALS）。
+      - <stem>__qwen_v2_raw.txt
+          Qwen 返回的纯文本（通常最后一行是 CMD: ...）。
+      - <stem>__qwen_v2_raw.json
+          Qwen OpenAI-compatible API 的原始响应（便于排查 400/限长等问题）。
+      - <stem>__qwen_v2_cmd.json
+          parse_qwen_repair_cmd 解析后的结构化命令（action/alpha/dir/channel/sg 等）。
+      - <stem>__qwen_v2_fixed.cif
+          修复后的 CIF（数值修复直接改 CIF 文本；或 prompt 修复后重新采样得到的 CIF）。
+      - <stem>__qwen_v2_prompt.txt
+          当 action=FIX_PROMPT_SG 时，会生成“修复后的 prompt”，并据此重新采样 CIF。
+      - <stem>__qwen_v2_error.txt
+          Qwen 调用失败、或其他不可恢复错误的记录。
+      - <stem>__qwen_v2_log.txt
+          “一站式”日志：每次 attempt 的 EVAL_BEFORE/SIGNALS/QWEN_CMD/APPLY_META/EVAL_AFTER/SIGNALS_AFTER。
+
+4) 评估（QWEN_Modify：只针对 fixed 子集）
+  - run_dir/csp_v2_repair/fixed_cifs.tar.gz
+  - run_dir/csp_v2_repair/metrics_after_fixed.csv
+  - run_dir/csp_v2_repair/metrics_after_fixed_summary.json
+
+5) 评估（AFTER：全量 AFTER_QWEN）
+  - run_dir/after_qwen_cifs.tar.gz
+      - 对全量 prompt，按“有 fixed 用 fixed；无 fixed 用原始”拼装得到的最终 CIF 集合。
+  - run_dir/metrics_after.csv
+  - run_dir/metrics_after_summary.json
+
+6) 汇总报告
+  - run_dir/qwen_metrics_comparison.txt
+      - 包含 run_dir、prompts_dir、glob、num_prompts、generated_cifs、Qwen 修复计数
+        + 三段指标：[BEFORE_QWEN]、[QWEN_Modify]、[AFTER_QWEN]
+  - run_dir/qwen_metrics_comparison.json
+      - 与 txt 同信息，但结构化 JSON。
+  - run_dir/pipeline_summary.json
+      - 记录每个 stage 是否 done/skipped/no_cifs，以及关键路径与 counts（可用于后处理/追踪）。
+
+7) Qwen 服务管理日志（如果你传了 autostart/autostop）
+  - run_dir/qwen_autostop.log
+  - run_dir/qwen_autostart.log
+
+
+四、Stage 1：生成（Generation）细节
+-----------------------------------
+4.1 prompts 的选择与切片逻辑
+gen-workers>1 时，run_csp_scheme_a.py 会调用：
+  /data/users/xsw/autodlmini/model/scp_task/CrystaLLM/bin/generate_cifs_from_prompts_dir.py
+
+该脚本会：
+  1) 列出 prompts_dir 下匹配 glob 的所有 .txt（按文件名排序）
+  2) 应用切片：
+     - --start-index：跳过前 N 个
+     - --num-prompts：取剩余里的前 N 个
+     - --shuffle/--select-seed：可选随机打乱后再切片
+  3) 把 prompt_paths 按 “i % workers” 分桶给每个 worker（_split_even）
+
+重要解释：为什么有人会误以为“每隔 8 个取 1 个”
+  - 当 workers=8 时，每个 worker 只看到其负责的 1/8 prompts（例如第 0 个 worker 处理索引 0,8,16,...）。
+  - 但全局输出目录里，8 个 worker 合起来会覆盖全部 prompts。
+  - 如果你只盯着某个 worker 的局部日志，就会产生“每隔 8 个取 1 个”的错觉。
+
+4.2 多进程生成的模型加载方式与显存含义
+generate_cifs_from_prompts_dir.py 中，每个 worker 进程会：
+  - 各自加载一次 ckpt.pt 到 GPU（见 _load_model）
+  - 然后循环处理自己那一桶 prompts（每个 prompt 生成 1 个 CIF）
+
+因此：
+  - gen-workers>1 并不是“同一个模型单进程多线程”，而是“多进程、多份模型副本”
+  - 如果 GPU 显存不够，就会 OOM（这也是你们引入 qwen_autostop 的原因之一：先关 Qwen vLLM 释放显存）
+
+4.3 输出文件与错误文件
+每个 prompt 输出：out_dir/<prompt_stem>.cif
+
+如果 worker 加载失败，会写：
+  out_dir/__worker_<id>__load_error.txt
+
+如果某个 prompt 读取/生成失败，会写：
+  out_dir/<prompt_stem>__gen_error.txt
+
+脚本默认在多进程结束后会做一次“缺失补跑”：
+  --retry-missing-single-worker
+这会在同一进程内再加载一次模型，并对缺失输出逐个补齐（避免少数 worker crash 导致缺口）。
+
+
+五、Stage 2：评估（Evaluate Before）细节
+-----------------------------------------
+评估脚本：
+  /data/users/xsw/autodlmini/model/scp_task/CrystaLLM/bin/evaluate_cifs.py
+
+输入：generated_cifs.tar.gz（tar 内每个成员是一个 CIF 文本）
+输出：
+  - metrics_before.csv
+  - metrics_before_summary.json（可选）
+并在终端打印汇总指标。
+
+5.1 evaluate_cifs.py 对单个 CIF 做的检查
+核心逻辑在 eval_cif()：
+  - is_sensible(cif, length_lo/hi, angle_lo/hi)
+      检查晶胞长度、晶胞角度是否在合理范围；不合理直接跳过该 CIF 的后续指标累计（但分母仍是总数 n）。
+  - tokenizer.tokenize_cif(cif) 计算 gen_len（token 数）
+  - 如果 space group != "P 1"，先 replace_symmetry_operators() 替换 symmetry op loop 为该 SG 的完整操作集合
+  - is_atom_site_multiplicity_consistent(cif)
+  - is_space_group_consistent(cif)
+  - bond_length_reasonableness_score(cif)
+      以 CrystalNN 邻接为基础，用原子半径/离子半径估计“期望键长”，统计合理比例得到 score ∈ [0,1]
+  - implied_vol：由 a/b/c 与 α/β/γ 推导的体积
+  - gen_vol：读取 CIF 中声明的 _cell_volume（若存在）
+  - vol_ratio/vol_dir/cell_volume_fix：比较 gen_vol 与 implied_vol 的一致性
+  - is_valid(cif, bond_length_acceptability_cutoff=1.0)
+      这是最终的 valid 判定（内部会检查 composition/atom multiplicity/bond score/space group 一致性等）。
+
+5.2 metrics_before.csv 的列含义（常见）
+CSV header 通常为：
+  comp, sg, is_valid, gen_len, implied_vol, gen_vol, vol_ratio, vol_dir, cell_volume_fix
+
+其中：
+  - comp：从 data_ 头部提取的化学式（extract_data_formula）
+  - sg：extract_space_group_symbol 提取的空间群符号
+  - is_valid：最终 valid 判定
+  - gen_len：tokenized 长度
+  - implied_vol / gen_vol：推导体积 / CIF 声明体积
+  - vol_ratio：gen_vol / implied_vol
+  - vol_dir：OK/UP/DOWN（偏小/偏大/正常）
+  - cell_volume_fix：OK / SET_TO_IMPLIED / DROP_FIELD（字段层面应如何修正 volume）
+
+重要注意：
+  - metrics_before.csv 的行数可能 < n_total（因为某些 CIF 抛异常时不会写入行）
+  - 但 summary.json 与终端打印时的分母 n 是 tar 内 CIF 总数
+
+
+六、Stage 3：Qwen 修复（Repair）细节
+-------------------------------------
+6.1 Qwen 服务的可用性检测与自动启停
+run_csp_scheme_a.py 会对 --qwen-api-base 做健康检查：
+  GET <api_base>/models
+只要返回 HTTP 2xx~4xx 都认为“服务可达”（避免某些鉴权/路径问题导致误判）。
+
+如果不可达：
+  - 如果你传了 --qwen-autostart-cmd，会后台启动，并按 --qwen-wait-seconds/--qwen-check-interval 轮询等待可达
+  - 如果仍不可达：
+      - 传了 --qwen-skip-if-unavailable：跳过 repair
+      - 否则：直接退出报错
+
+如果你传了 --qwen-autostop-cmd（常用于释放显存）：
+  - 在 generation/eval 之前会执行 stop
+  - repair 阶段如果同时也提供了 autostart+autostop，会在 repair 前“无条件”执行 start，再等待 ready
+
+6.2 修复脚本与总体策略
+修复脚本：
+  /data/users/xsw/autodlmini/model/scp_task/CrystaLLM/bin/csp_v2_repair_once.py
+
+它做的事情是：
+  1) 先对输入 CIF 集合做 validity screening（可并行，--screen-workers/--repair-screen-workers 控制）
+  2) 只对筛出的 invalid CIF 进入修复 loop
+  3) 对每个 invalid CIF，最多尝试 --max-repair-attempts 次（默认 3）：
+      a) summarize_signals(cif) 生成一组“可解析的诊断信号 SIGNALS”
+      b) 读取对应 prompt .txt（按 stem 匹配），并做压缩（避免 Qwen 上下文过长）
+      c) 调用 Qwen（OpenAI-compatible chat completions）
+      d) 解析 Qwen 返回的单行命令 CMD: ...
+      e) 本地执行命令（数值修复 / prompt SG 修复），得到 new_cif
+      f) 重新评估 new_cif；若 valid 则停止，否则进入下一次 attempt
+
+6.3 SIGNALS 是什么？（Qwen 的“可控输入”）
+SIGNALS 由 /data/users/xsw/autodlmini/model/scp_task/CrystaLLM/crystallm/signals.py:summarize_signals 生成。
+每行是一个结构化信号，常见包括：
+  - BOND dir=TOO_SHORT|TOO_LONG|MIXED|OK score=... min_ratio=... max_ratio=... worst_short=... worst_long=...
+  - SG consistent=YES|NO|UNKNOWN stated=... detected=... spglib_err=...
+  - OVERLAP min_dist=... pair=(i,j) cutoff=... dir=REPEL|OK
+  - CELL a=... lo=... hi=... dir=LOW|HIGH delta=...
+  - ANGLE alpha/beta/gamma=... lo=... hi=... dir=LOW|HIGH delta=...
+  - CELLVOL gen=... implied=... ratio=... dir=OK|UP|DOWN fix=...
+  - FRACRANGE min=... max=... out_of_range=YES|NO n_oor=.../...
+
+你想定位“修复失败的根因”，最直接的入口就是每个样本的 __qwen_v2_log.txt：
+  - 每个 attempt 的 SIGNALS_BEFORE / SIGNALS_AFTER 都会记录下来
+  - 这能告诉你键长到底偏短还是偏长，以及 worst_short/worst_long 对应元素对和 ratio
+
+6.4 Qwen System Prompt（协议约束）
+Qwen 的 system prompt 文件来自你传入的：
+  ROOT/reproduce/qwen_system_prompt.txt
+
+该文件的核心作用是：
+  - 强约束 Qwen 必须输出“一行”命令（避免长解释导致解析失败）
+  - 命令统一以 CMD: 开头，便于 parse_qwen_repair_cmd() 解析
+  - 规定 action、channel、alpha、dir 的语义与取值范围
+
+6.5 Qwen 返回的命令如何执行？（本地确定性修复）
+解析/执行逻辑在：
+  - 解析：/data/users/xsw/autodlmini/model/scp_task/CrystaLLM/crystallm/csp_v2_repair.py:parse_qwen_repair_cmd
+  - 执行：/data/users/xsw/autodlmini/model/scp_task/CrystaLLM/crystallm/csp_v2_repair.py:apply_cif_numeric_fix
+  - prompt 改 SG：/data/users/xsw/autodlmini/model/scp_task/CrystaLLM/crystallm/csp_v2_repair.py:apply_prompt_space_group_fix
+
+action 的两大类：
+  A) CMD: FIX_CIF alpha=... dir=... channel=...
+     - 不直接让 Qwen 改 CIF 文本，而是让 Qwen 选择“修复通道 + 强度/方向”，然后由本地代码做确定性编辑。
+  B) CMD: FIX_PROMPT_SG sg=<H-M>
+     - 修改 prompt 文本中的 _symmetry_space_group_name_H-M，然后调用 sample.py 重新生成一个新 CIF。
+
+6.6 “数值修复通道”channel 的当前实现（关键）
+目前支持（并由 system prompt 允许）：
+  - CELL_SCALE
+      等比例缩放 a/b/c。alpha∈[0,1] 通过 alpha_to_scale() 映射成比例因子。
+      dir=UP 表示放大；dir=DOWN 表示缩小。
+
+  - CELL_AXIS_SCALE
+      各向异性缩放 a/b/c：
+        - 依赖 SIGNALS 里的 CELL a/b/c dir=LOW|HIGH
+        - 将越界轴按 alpha 拉回到边界（例如 cur<lo 则向 lo 拉；cur>hi 则向 hi 拉）
+      不改动分数坐标。
+
+  - ANGLE_CLAMP / ANGLE_TO_90
+      仅在角度越界时修正 _cell_angle_alpha/_beta/_gamma：
+        - ANGLE_CLAMP：将越界值 clamp 到 [angle_lo, angle_hi]
+        - ANGLE_TO_90：将明显非法/缺失的角设置为 90°
+      不改动分数坐标。
+
+  - SG_NORMALIZE
+      归一化空间群与 symmetry op：
+        - 优先使用 SIGNALS 中 detected（若有），否则 stated
+        - 重写 _symmetry_space_group_name_H-M，并用 replace_symmetry_operators() 写入完整 symmetry operations
+        - 必要时降级到 'P 1'（并强制 identity symmop）
+      不改动分数坐标。
+
+  - FRAC_WRAP_ROUND
+      分数坐标规范化（表示等价，不做几何“移动”）：
+        - wrap 到 [0,1)（例如 -0.1 → 0.9，1.2 → 0.2）
+        - 按固定小数位 round（缓解解析有限精度问题）
+      只改 _atom_site_fract_x/y/z 的文本表示，不改元素/原子数。
+
+6.7 为什么有些样本“修复只成功一半”？
+在大量 case 中，单一自由度的 CELL_SCALE 并不总是可解：
+  - 如果某些键太长、某些键太短，同时存在，等比例缩放会在 TOO_LONG ↔ TOO_SHORT 之间震荡。
+  - 这时需要更高自由度的通道（CELL_AXIS_SCALE/ANGLE/SG/FRAC）或更精细的步长策略。
+因此我们把修复拆成“可控通道”，逐步加大自由度，而不是让 Qwen 直接改坐标表。
+
+
+七、Stage 4：QWEN_Modify 评估的含义
+------------------------------------
+[QWEN_Modify] 对应“Qwen 实际产出了 __qwen_v2_fixed.cif 的那些样本”的评估。
+
+它回答的问题是：
+  - “Qwen 介入后，它修改出来的 CIF 本身质量如何？”
+注意它的分母不是全量 prompts，而是 fixed_cifs 的数量。
+
+相关文件都在 repair_dir：
+  - run_dir/csp_v2_repair/fixed_cifs.tar.gz
+  - run_dir/csp_v2_repair/metrics_after_fixed.csv
+  - run_dir/csp_v2_repair/metrics_after_fixed_summary.json
+
+
+八、Stage 5：AFTER_QWEN（全量）评估的含义
+------------------------------------------
+[AFTER_QWEN] 对应“全量 prompts 的最终结果”：
+  - 对每个原始 CIF：如果 Qwen 成功产出 fixed 版本，则用 fixed；否则沿用原始生成的 CIF
+
+因此它回答的问题是：
+  - “引入 Qwen 修复后，整体有效率/指标提升多少？”
+它的分母是全量 prompt 数（更准确说是全量生成出的 CIF 数量；理想情况下与 --num-prompts 相同）。
+
+相关文件：
+  - run_dir/after_qwen_cifs.tar.gz
+  - run_dir/metrics_after.csv
+  - run_dir/metrics_after_summary.json
+
+
+九、如何从报告快速定位问题？
+----------------------------
+9.1 先看总体对比
+  - run_dir/qwen_metrics_comparison.txt
+    - BEFORE_QWEN：原始生成质量
+    - QWEN_Modify：Qwen 修改子集质量
+    - AFTER_QWEN：全量最终质量
+
+9.2 再看 Qwen 修复的“过程细节与失败原因”
+  - run_dir/csp_v2_repair/*__qwen_v2_log.txt
+    - 逐 attempt 的 SIGNALS_BEFORE/AFTER 会告诉你：
+      - 键长是偏短还是偏长（BOND dir=TOO_SHORT/TOO_LONG）
+      - 最糟糕的那对键（worst_short/worst_long，含元素、bond、expected、ratio）
+      - SG 是否不一致（SG consistent=NO）
+      - 是否有重叠（OVERLAP min_dist 很小）
+      - cell/angle 是否越界（CELL/ANGLE 行）
+      - volume 字段是否不一致（CELLVOL）
+
+9.3 如果发现“缺少 CIF / 生成不全”
+  - run_dir/cifs/*__gen_error.txt
+  - run_dir/cifs/__worker_*__load_error.txt
+  - generate_cifs_from_prompts_dir.py 会在结束时检查 missing outputs，并在未允许 partial 时直接报错退出。
+
+
+十、参数与性能/稳定性相关建议（给运行者）
+----------------------------------------
+10.1 GPU 显存与 workers
+  - gen-workers>1 会多进程多份模型占显存；同时开着 Qwen vLLM 更容易 OOM
+  - 推荐：
+      - 在 generation/eval 前用 --qwen-autostop-cmd 停掉 vLLM
+      - repair 前再 autostart
+
+10.2 Repair 的初筛并行（repair-screen-workers）
+  - repair 阶段会先扫描全量 CIF，找出 invalid，再对 invalid 调 Qwen。
+  - repair-screen-workers>1 会把这个扫描阶段并行化，避免 1w CIF 单进程长时间“看起来卡住”。
+
+10.3 为什么建议 run-name 带时间戳
+  - 避免不同实验覆盖同一个目录，方便溯源；
+  - 同一天按时间戳即可判断先后顺序。
+
+10.4 时区（北京时间）与 run-name
+  - run-name 如果用了 $(date +%Y%m%d_%H%M%S)，它取决于当前 shell 的 TZ/系统时区。
+  - 推荐显式写：TZ=Asia/Shanghai date ...
+
+
+附：关键代码索引（便于读代码时从入口跳转）
+--------------------------------------------
+入口与编排：
+  - /data/users/xsw/autodlmini/model/scp_task/CrystaLLM/bin/run_csp_scheme_a.py
+
+生成：
+  - /data/users/xsw/autodlmini/model/scp_task/CrystaLLM/bin/generate_cifs_from_prompts_dir.py
+  - /data/users/xsw/autodlmini/model/scp_task/CrystaLLM/bin/sample_diy.py（gen-workers=1 的旧路径）
+  - /data/users/xsw/autodlmini/model/scp_task/CrystaLLM/bin/sample.py（prompt 修复后重采样用）
+
+评估：
+  - /data/users/xsw/autodlmini/model/scp_task/CrystaLLM/bin/evaluate_cifs.py
+  - /data/users/xsw/autodlmini/model/scp_task/CrystaLLM/crystallm/_metrics.py（is_valid、bond score、SG 一致性等）
+
+Qwen 修复：
+  - /data/users/xsw/autodlmini/model/scp_task/CrystaLLM/bin/csp_v2_repair_once.py
+  - /data/users/xsw/autodlmini/model/scp_task/CrystaLLM/crystallm/signals.py（SIGNALS 生成）
+  - /data/users/xsw/autodlmini/model/scp_task/CrystaLLM/crystallm/csp_v2_repair.py（CMD 解析 + 数值修复实现）
+  - /data/users/xsw/autodlmini/model/scp_task/CrystaLLM/bin/qwen_client.py（OpenAI-compatible API 调用）
+

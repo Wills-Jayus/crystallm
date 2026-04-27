@@ -26,6 +26,8 @@ htmlcov/
 
 # --- OS / editor ---
 .DS_Store
+**/._*
+**/__MACOSX/
 .idea/
 .vscode/
 
@@ -103,11 +105,15 @@ CrystaLLM/**/*.cif
 # --- Generated experiment/data outputs (do not commit) ---
 .specstory/
 # Large generated artifacts / datasets
+CrystaLLM/challenge_set_v1/
 CrystaLLM/experiments/
 CrystaLLM/reproduce/
 CrystaLLM/prompts/
 CrystaLLM/databench/
 CrystaLLM/sandbox/
+
+# Nested repo (tracked separately)
+scp_task/
 
 # Local scratch / one-off files
 CrystaLLM/my_prompt.txt
