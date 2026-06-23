@@ -1,0 +1,36 @@
+{
+  "name": "strategy_fusion_coverage_repaired_v1",
+  "frozen_at_utc": "2026-06-22 14:53:13 UTC",
+  "dataset_protocol": "CrystaLLM Table 3 official MP-20 and MPTS-52 test splits",
+  "budget": 20,
+  "structure_matcher": {
+    "ltol": 0.3,
+    "stol": 0.5,
+    "angle_tol": 10
+  },
+  "selection_policy": "Frozen before opentry_8 full-test evaluation. Preserve CrystaLLM-a GT-SG candidate order as the primary anchor; append supplemental candidates only when primary slots are absent; never use StructureMatcher/test labels/oracle feedback for ordering.",
+  "primary_source": {
+    "mp20": "/data/users/xsw/autodlmini/model/New_model/opentry_7/generations/crystallm_a_gt_sg_mp_20_test.tar.gz",
+    "mpts52": "/data/users/xsw/autodlmini/model/New_model/opentry_7/generations/crystallm_a_gt_sg_mpts_52_test.tar.gz"
+  },
+  "supplemental_sources": {
+    "mp20": [
+      "/data/users/xsw/autodlmini/model/New_model/opentry_7/generations/strategy_stablekey_hybrid_mp_20_test_k20_candidates.jsonl"
+    ],
+    "mpts52": [
+      "/data/users/xsw/autodlmini/model/New_model/opentry_7/generations/strategy_stablekey_hybrid_mpts_52_test_k20_candidates.jsonl"
+    ]
+  },
+  "fallback_policy": "If primary and supplemental sources together still provide fewer than 20 candidates for an official sample, write explicit invalid placeholder CIF text for the remaining slots. These slots are candidates-present but parse-fail, so they count as failures without dropping the sample.",
+  "dedupe": "Exact generated_text dedupe within each sample before fallback placeholders.",
+  "candidate_budget_label": "strict K20 final candidates; no large-pool reranking",
+  "uses_fusion_or_ranking": true,
+  "pure_model": false,
+  "not_allowed": [
+    "test label tuning",
+    "StructureMatcher feedback for order or thresholds",
+    "oracle selection",
+    "dropping official samples",
+    "using historical stablekey top20 as final backbone"
+  ]
+}

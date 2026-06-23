@@ -1,0 +1,25 @@
+{
+  "controller": "/data/users/xsw/autodlmini/model/New_model/opentry_10/scripts/run_opentry10.py",
+  "controller_log": "/data/users/xsw/autodlmini/model/New_model/opentry_10/logs/mp20_until_done_controller.log",
+  "controller_pid": 1380377,
+  "pid": 839819,
+  "root": "/data/users/xsw/autodlmini/model/New_model/opentry_10",
+  "stage": "generate_validation_anchor_symprec0p1_mp20_shards",
+  "status": "controller_running",
+  "summary": {
+    "complete": false,
+    "completed_shards": 86,
+    "counts": {
+      "completed": 86,
+      "pending": 56
+    },
+    "expected_cifs_completed": 546300,
+    "expected_cifs_total": 904700,
+    "fraction_complete": 0.603847,
+    "remaining_shards": 56,
+    "running": [],
+    "total_shards": 142,
+    "updated_at": "2026-06-23T16:42:36+00:00"
+  },
+  "updated_at": "2026-06-23T16:42:36+00:00"
+}

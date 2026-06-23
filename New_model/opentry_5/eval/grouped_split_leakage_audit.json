@@ -1,0 +1,68 @@
+{
+  "created_at": "2026-06-19T02:46:40Z",
+  "fold_train_group_overlap_count": 0,
+  "group_key_fields": [
+    "dataset",
+    "space_group",
+    "anonymized_reduced_formula",
+    "element_count",
+    "row_count",
+    "wyckoff_multiplicity_pattern",
+    "anonymized_wyckoff_letter_sequence",
+    "free_symbol_pattern",
+    "crystal_system",
+    "prototype_fingerprint"
+  ],
+  "max_per_dataset": "all",
+  "split_policy": "deterministic SHA256 bucket on prototype-aware group_key; all identical group_keys stay in one split",
+  "stats": {
+    "dev_gate": {
+      "datasets": {
+        "mp20": 2252,
+        "mpts52": 2472
+      },
+      "groups": 1578,
+      "records": 4724,
+      "rows_ge_7": 1033
+    },
+    "dev_model": {
+      "datasets": {
+        "mp20": 3193,
+        "mpts52": 3373
+      },
+      "groups": 1675,
+      "records": 6566,
+      "rows_ge_7": 1109
+    },
+    "fold_a": {
+      "datasets": {
+        "mp20": 2602,
+        "mpts52": 2786
+      },
+      "groups": 1568,
+      "records": 5388,
+      "rows_ge_7": 1083
+    },
+    "fold_b": {
+      "datasets": {
+        "mp20": 2843,
+        "mpts52": 3059
+      },
+      "groups": 1685,
+      "records": 5902,
+      "rows_ge_7": 1059
+    },
+    "train_core": {
+      "datasets": {
+        "mp20": 21184,
+        "mpts52": 20153
+      },
+      "groups": 12947,
+      "records": 41337,
+      "rows_ge_7": 9027
+    }
+  },
+  "total_groups": 16200,
+  "total_records": 52627,
+  "train_dev_group_overlap_count": 0
+}

@@ -1,0 +1,6 @@
+{
+  "new_official_test_run": false,
+  "reason": "Phase A validation gate unavailable: no CrystaLLM-a GT-SG validation K20 candidate bank was found.",
+  "status": "not_frozen",
+  "test_feedback_used_for_training_or_selection": false
+}

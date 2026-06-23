@@ -1,0 +1,125 @@
+{
+  "artifacts": {
+    "/data/users/xsw/autodlmini/model/New_model/opentry_9/cache/official_benchmark_cifs/mp_20/val/manifest.tsv": {
+      "exists": true,
+      "path": "/data/users/xsw/autodlmini/model/New_model/opentry_9/cache/official_benchmark_cifs/mp_20/val/manifest.tsv",
+      "registered_at": "2026-06-22T16:35:33+00:00",
+      "sha256": "67c089f7dc50571d12c433304a8f7b968f4e853cc4e807dfb963d915a8ef95f4",
+      "size": 507575,
+      "stage_id": "prepare_validation_gt_cifs",
+      "type": "file"
+    },
+    "/data/users/xsw/autodlmini/model/New_model/opentry_9/cache/official_benchmark_cifs/mpts_52/val/manifest.tsv": {
+      "exists": true,
+      "path": "/data/users/xsw/autodlmini/model/New_model/opentry_9/cache/official_benchmark_cifs/mpts_52/val/manifest.tsv",
+      "registered_at": "2026-06-22T16:35:33+00:00",
+      "sha256": "8eafd173fb1e65feda58e0eb8ce476272e7fbf5076f0a956cd209161368080a6",
+      "size": 274861,
+      "stage_id": "prepare_validation_gt_cifs",
+      "type": "file"
+    },
+    "/data/users/xsw/autodlmini/model/New_model/opentry_9/generations/crystallm_gt_sg_val_anchor/mp20_val_data_atomtype_gt_sg_k100/run_meta.json": {
+      "exists": true,
+      "path": "/data/users/xsw/autodlmini/model/New_model/opentry_9/generations/crystallm_gt_sg_val_anchor/mp20_val_data_atomtype_gt_sg_k100/run_meta.json",
+      "registered_at": "2026-06-22T16:36:21+00:00",
+      "sha256": "b848f8df36265613d83a8e3c709e6cdee3f1bbb4584282590c338c15880e52c5",
+      "size": 1111,
+      "stage_id": "prepare_validation_anchor_mp20",
+      "type": "file"
+    },
+    "/data/users/xsw/autodlmini/model/New_model/opentry_9/generations/crystallm_gt_sg_val_anchor/mp20_val_data_atomtype_gt_sg_k100/tars/true.tar.gz": {
+      "exists": true,
+      "path": "/data/users/xsw/autodlmini/model/New_model/opentry_9/generations/crystallm_gt_sg_val_anchor/mp20_val_data_atomtype_gt_sg_k100/tars/true.tar.gz",
+      "registered_at": "2026-06-22T16:36:21+00:00",
+      "sha256": "e9e87961364dee04c7cb98eaa49a03ca02e412a24fc59ad8a0e5ea1f89c88703",
+      "size": 1926478,
+      "stage_id": "prepare_validation_anchor_mp20",
+      "type": "file"
+    },
+    "/data/users/xsw/autodlmini/model/New_model/opentry_9/generations/crystallm_gt_sg_val_anchor/mpts52_val_data_atomtype_gt_sg_k100/run_meta.json": {
+      "exists": true,
+      "path": "/data/users/xsw/autodlmini/model/New_model/opentry_9/generations/crystallm_gt_sg_val_anchor/mpts52_val_data_atomtype_gt_sg_k100/run_meta.json",
+      "registered_at": "2026-06-22T16:36:29+00:00",
+      "sha256": "163bcc5f79cef6ab721cdccf8ee1c1f995d756e6bb0e9d892973cbcf99053fb4",
+      "size": 1121,
+      "stage_id": "prepare_validation_anchor_mpts52",
+      "type": "file"
+    },
+    "/data/users/xsw/autodlmini/model/New_model/opentry_9/generations/crystallm_gt_sg_val_anchor/mpts52_val_data_atomtype_gt_sg_k100/tars/true.tar.gz": {
+      "exists": true,
+      "path": "/data/users/xsw/autodlmini/model/New_model/opentry_9/generations/crystallm_gt_sg_val_anchor/mpts52_val_data_atomtype_gt_sg_k100/tars/true.tar.gz",
+      "registered_at": "2026-06-22T16:36:29+00:00",
+      "sha256": "89052aaabc6511d6aa237f31033ef07b933767060bf860789dbc846b639a52a8",
+      "size": 1971588,
+      "stage_id": "prepare_validation_anchor_mpts52",
+      "type": "file"
+    },
+    "/data/users/xsw/autodlmini/model/New_model/opentry_9/metrics/baseline_provenance.json": {
+      "exists": true,
+      "path": "/data/users/xsw/autodlmini/model/New_model/opentry_9/metrics/baseline_provenance.json",
+      "registered_at": "2026-06-22T16:35:32+00:00",
+      "sha256": "20ac0b5e742802c1316ae8b869a9af9b784de4e5b587bec88eeffd040943a51c",
+      "size": 430004,
+      "stage_id": "phase0_baseline_provenance",
+      "type": "file"
+    },
+    "/data/users/xsw/autodlmini/model/New_model/opentry_9/metrics/resource_audit.json": {
+      "exists": true,
+      "path": "/data/users/xsw/autodlmini/model/New_model/opentry_9/metrics/resource_audit.json",
+      "registered_at": "2026-06-22T16:35:32+00:00",
+      "sha256": "b80d4491c1252970c13c273689f03e9c3e72ce73041d1ed4a470d84d77a5b334",
+      "size": 6797,
+      "stage_id": "phase0_resource_audit",
+      "type": "file"
+    },
+    "/data/users/xsw/autodlmini/model/New_model/opentry_9/reports/baseline_provenance.md": {
+      "exists": true,
+      "path": "/data/users/xsw/autodlmini/model/New_model/opentry_9/reports/baseline_provenance.md",
+      "registered_at": "2026-06-22T16:35:32+00:00",
+      "sha256": "ec500d8216e8f42f555090a4103381a0e22be076d9939c933e2e21f98e571019",
+      "size": 2442,
+      "stage_id": "phase0_baseline_provenance",
+      "type": "file"
+    },
+    "/data/users/xsw/autodlmini/model/New_model/opentry_9/reports/resource_audit.md": {
+      "exists": true,
+      "path": "/data/users/xsw/autodlmini/model/New_model/opentry_9/reports/resource_audit.md",
+      "registered_at": "2026-06-22T16:35:32+00:00",
+      "sha256": "09034de87e3f5674b2f5bcf8095d3030b3d965cbd3daac4bf545e886fdc8e7f5",
+      "size": 3050,
+      "stage_id": "phase0_resource_audit",
+      "type": "file"
+    },
+    "/data/users/xsw/autodlmini/model/New_model/opentry_9/state/validation_anchor_shards_mp20.complete.json": {
+      "exists": false,
+      "path": "/data/users/xsw/autodlmini/model/New_model/opentry_9/state/validation_anchor_shards_mp20.complete.json",
+      "registered_at": "2026-06-22T16:57:04+00:00",
+      "stage_id": "generate_validation_anchor_mp20_shards"
+    },
+    "/data/users/xsw/autodlmini/model/New_model/opentry_9/state/validation_anchor_shards_mp20.json": {
+      "exists": true,
+      "path": "/data/users/xsw/autodlmini/model/New_model/opentry_9/state/validation_anchor_shards_mp20.json",
+      "registered_at": "2026-06-22T16:47:31+00:00",
+      "sha256": "87f842357e9541dd71d1b805c1e3b4ae42340aef18e2a993f342bfac6500a329",
+      "size": 249736,
+      "stage_id": "plan_validation_anchor_mp20_shards",
+      "type": "file"
+    },
+    "/data/users/xsw/autodlmini/model/New_model/opentry_9/state/validation_anchor_shards_mpts52.complete.json": {
+      "exists": false,
+      "path": "/data/users/xsw/autodlmini/model/New_model/opentry_9/state/validation_anchor_shards_mpts52.complete.json",
+      "registered_at": "2026-06-22T16:49:08+00:00",
+      "stage_id": "generate_validation_anchor_mpts52_shards"
+    },
+    "/data/users/xsw/autodlmini/model/New_model/opentry_9/state/validation_anchor_shards_mpts52.json": {
+      "exists": true,
+      "path": "/data/users/xsw/autodlmini/model/New_model/opentry_9/state/validation_anchor_shards_mpts52.json",
+      "registered_at": "2026-06-22T16:47:31+00:00",
+      "sha256": "7521cb487f0e9532bc6bec2dca0538f0b003896d216618c841b0c233a8caee72",
+      "size": 137069,
+      "stage_id": "plan_validation_anchor_mpts52_shards",
+      "type": "file"
+    }
+  },
+  "created_at": "2026-06-22T16:35:32+00:00"
+}

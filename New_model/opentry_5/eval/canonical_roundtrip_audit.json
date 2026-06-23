@@ -1,0 +1,42 @@
+{
+  "by_split": {
+    "train_core": {
+      "checked": 2047,
+      "composition_mismatches": 0,
+      "considered": 2048,
+      "parse_failures": 0,
+      "skipped_missing_cif": 1,
+      "structurematcher_failures": 0,
+      "successes": 2047
+    }
+  },
+  "composition_mismatches": 0,
+  "created_at": "2026-06-19T02:46:51Z",
+  "examples": [
+    {
+      "error": "skipped_missing_cif",
+      "reason": "source_cif_invalid_or_empty",
+      "sample_id": "mp_20_train__mp-10721",
+      "split": "train_core"
+    }
+  ],
+  "max_records": 2048,
+  "parse_failures": 0,
+  "pass": true,
+  "records_checked": 2047,
+  "records_considered": 2048,
+  "skipped_missing_cif": 1,
+  "split_filter": "all",
+  "structure_matcher": {
+    "angle_tol": 5.0,
+    "attempt_supercell": false,
+    "ltol": 0.2,
+    "primitive_cell": true,
+    "scale": true,
+    "stol": 0.3
+  },
+  "structurematcher_failures": 0,
+  "success_rate": 1.0,
+  "successes": 2047,
+  "test_access": "none"
+}

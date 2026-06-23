@@ -1,0 +1,41 @@
+{
+  "angle_tolerance": 5.0,
+  "lattice_consistent": 6000,
+  "lattice_consistent_rate": 1.0,
+  "out_dir": "data/symcif_v3",
+  "parse_success": 6000,
+  "parse_success_rate": 1.0,
+  "render_success": 6000,
+  "render_success_rate": 1.0,
+  "retained": 6000,
+  "retained_rate": 1.0,
+  "retained_sizes": {
+    "test": 500,
+    "train": 5000,
+    "val": 500
+  },
+  "signature_consistent": 6000,
+  "signature_consistent_rate": 1.0,
+  "source_clean_report": "reports/conversion_report_symcif_v1.json",
+  "source_clean_report_summary": {
+    "enumeration_success": 6000,
+    "formula_consistent": 6000,
+    "multiplicity_consistent": 6000,
+    "parse_success": 6000,
+    "pymatgen_readable": 6000,
+    "render_success": 6000,
+    "roundtrip_cif_success": 6000,
+    "site_symmetry_extract_success": 6000,
+    "space_group_consistent": 6000,
+    "standardize_success": 6000,
+    "top_failure_reasons": {},
+    "total": 6000,
+    "wyckoff_extract_success": 6000
+  },
+  "source_dir": "data/symcif_v1",
+  "symprec": 0.1,
+  "top_failure_reasons": {},
+  "total": 6000,
+  "v3_parse_success": 6000,
+  "v3_parse_success_rate": 1.0
+}

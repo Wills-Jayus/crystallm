@@ -1,0 +1,7 @@
+{
+  "created_at": "2026-06-22T17:18:19+00:00",
+  "previous_run_id": "opentry10_on_opentry9_20260622_163527",
+  "previous_stage_count": 9,
+  "previous_write_root": "/data/users/xsw/autodlmini/model/New_model/opentry_9",
+  "reason": "opentry_9 state was copied into opentry_10; controller is reinitialized to avoid stale resume skips and opentry_9 paths."
+}

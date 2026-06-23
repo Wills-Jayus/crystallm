@@ -1,0 +1,74 @@
+{
+  "updated_utc": "2026-06-15",
+  "current_best": {
+    "scope": "MPTS-52 validation val512",
+    "cif_config": "E718 val512 frozen: E420/E421/E422-style rendered top50 + E425 train-label GBDT GT-free scorer + E710 selective replacement",
+    "match_at_1": 0.3301,
+    "match_at_5": 0.4199,
+    "match_at_20": 0.459,
+    "match_at_50": 0.4824,
+    "RMSE_at_1": 0.1095,
+    "RMSE_at_5": 0.1281,
+    "RMSE_at_20": 0.1318,
+    "rows_ge_7_match_at_5": 0.1822,
+    "rows_ge_7_match_at_20": 0.1911,
+    "rows_ge_7_match_at_50": 0.2044,
+    "status": "match@1 and match@5 clear +5pp target on val512; frozen for one full-test attempt after test candidate generation"
+  },
+  "latest_batch": {
+    "ids": "E710-E718",
+    "scope": "MPTS-52 val512 selective replacement and GT-free full-test apply path",
+    "train_labels": "E425 GBDT trained on E318 train rendered-candidate labels",
+    "val_pool": "E422 rendered top50 val512, scored via E425 model and selected by frozen E710 selective replacement",
+    "E712b_match_at_1_5_20_50": [
+      0.330078,
+      0.417969,
+      0.455078,
+      0.455078
+    ],
+    "E712b_RMSE_at_1_5_20": [
+      0.109463,
+      0.127517,
+      0.130864
+    ],
+    "E714_E715_applyonly_reproduced_E712b": true,
+    "E718_match_at_1_5_20_50": [
+      0.330078,
+      0.419922,
+      0.458984,
+      0.482422
+    ],
+    "E718_RMSE_at_1_5_20": [
+      0.109463,
+      0.128083,
+      0.131778
+    ],
+    "E718_rows_ge_7_match_at_5_20_50": [
+      0.182222,
+      0.191111,
+      0.204444
+    ],
+    "E718_WA_at_20": 0.710938,
+    "E718_skeleton_at_20": 0.757813,
+    "E718_unique_WA_mean_at_20": 8.152344,
+    "decision": "freeze E718 for one full-test attempt after generating the corresponding full test candidate pool"
+  },
+  "active_hypothesis": "Risk-controlled selective replacement can preserve E423 front ranks while inserting high-confidence train-label compatibility candidates; E718 validates this on val512 and is frozen for one full-test attempt.",
+  "done": [
+    "Ran E710/E711 selective replacement on E425/E426 val512 scored candidates.",
+    "Identified accidental E712/E713 full-validation denominator outputs as invalid for val512 comparison and reran correct E712b/E713b with max-records=512.",
+    "Added apply-only selector script and verified E714/E715 reproduces E710/E712b without label grid search.",
+    "Added GT-free rendered-candidate scorer and validated E716/E717/E718 full-test-applicable path.",
+    "Wrote no-leakage audit for frozen E718 config.",
+    "Updated experiments.jsonl, iterative_experiment_log.md, final_summary.md, NEXT_ACTION.md, and EXEC_STATE.json."
+  ],
+  "blocked": [],
+  "next_batch": [
+    "Generate E416-E420-style W/A predictions and renderer predictions for full MPTS-52 test under opentry_3.",
+    "Render full test with frozen E421 config and selfscore top50.",
+    "Score rendered full test candidates using E425 model through opentry_score_rendered_candidates_apply.py without test labels.",
+    "Apply frozen E710 selector params with opentry_apply_selective_replacement.py.",
+    "Run exactly one full MPTS-52 test evaluation for E718 and record match/RMSE@1/5/20 plus complex subset metrics.",
+    "Do not alter the frozen config using full-test feedback."
+  ]
+}

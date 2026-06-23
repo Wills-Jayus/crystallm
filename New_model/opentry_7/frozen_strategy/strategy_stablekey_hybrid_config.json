@@ -1,0 +1,13 @@
+{
+  "strategy_id": "strategy_stablekey_hybrid",
+  "status": "candidate strategy selected from historical validation-frozen hybrid rerun for unified opentry_7 evaluation",
+  "pure_model": false,
+  "uses_candidate_fusion_or_ranking": true,
+  "pool_note": "Historical stablekey hybrid top20 files are consumed as final K20 order. Missing source CIFs and uncovered official test samples are retained as failures by the unified evaluator.",
+  "mp_20_candidate_source": "model/New_model/symcif_experiment/reports/symcif_v4_table3_fixed_full_rerun_stablekey_hybrid/mp20/wa5_geom4_stablekey_hybrid/top20_predictions.jsonl",
+  "mpts_52_candidate_source": "model/New_model/symcif_experiment/reports/symcif_v4_table3_fixed_full_rerun_stablekey_hybrid/mpts52/wa5_geom4_stablekey_hybrid/top20_predictions.jsonl",
+  "converted_candidates": {
+    "mp_20": "generations/strategy_stablekey_hybrid_mp_20_test_k20_candidates.jsonl",
+    "mpts_52": "generations/strategy_stablekey_hybrid_mpts_52_test_k20_candidates.jsonl"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "enumeration_success": 6000,
+  "formula_consistent": 6000,
+  "multiplicity_consistent": 6000,
+  "parse_success": 6000,
+  "pymatgen_readable": 6000,
+  "render_success": 6000,
+  "roundtrip_cif_success": 6000,
+  "site_symmetry_extract_success": 6000,
+  "space_group_consistent": 6000,
+  "standardize_success": 6000,
+  "top_failure_reasons": {},
+  "total": 6000,
+  "wyckoff_extract_success": 6000
+}

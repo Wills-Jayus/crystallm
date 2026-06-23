@@ -1,0 +1,8 @@
+{
+  "geometry_checkpoint": null,
+  "source_artifacts": [
+    "/data/users/xsw/autodlmini/model/New_model/symcif_experiment/reports/symcif_v4_mp20_k5_dev/gtwa_geometry_k5_eval.json",
+    "/data/users/xsw/autodlmini/model/New_model/symcif_experiment/reports/symcif_v4_mp20_k5_dev/wa_top5_coverage_audit.json"
+  ],
+  "wa_decoder_best.pt": null
+}

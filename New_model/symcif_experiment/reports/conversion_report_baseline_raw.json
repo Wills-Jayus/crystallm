@@ -1,0 +1,15 @@
+{
+  "enumeration_success": 0,
+  "formula_consistent": 0,
+  "multiplicity_consistent": 0,
+  "parse_success": 6607,
+  "pymatgen_readable": 0,
+  "render_success": 6607,
+  "roundtrip_cif_success": 0,
+  "site_symmetry_extract_success": 0,
+  "space_group_consistent": 0,
+  "standardize_success": 0,
+  "top_failure_reasons": {},
+  "total": 6607,
+  "wyckoff_extract_success": 0
+}

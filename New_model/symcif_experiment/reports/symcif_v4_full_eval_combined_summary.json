@@ -1,0 +1,115 @@
+{
+  "geometry_bottleneck": {
+    "artifacts": {
+      "breakdown_csv": "/data/users/xsw/autodlmini/model/New_model/symcif_experiment/reports/symcif_v4_geometry_bottleneck/full_eval_breakdown.csv",
+      "failed_cases": "/data/users/xsw/autodlmini/model/New_model/symcif_experiment/reports/symcif_v4_geometry_bottleneck/failed_cases.jsonl",
+      "generated_cifs": "/data/users/xsw/autodlmini/model/New_model/symcif_experiment/reports/symcif_v4_geometry_bottleneck/generated_cifs",
+      "metrics_jsonl": "/data/users/xsw/autodlmini/model/New_model/symcif_experiment/reports/symcif_v4_geometry_bottleneck/metrics/baseline_per_generation_metrics.jsonl",
+      "summary_json": "/data/users/xsw/autodlmini/model/New_model/symcif_experiment/reports/symcif_v4_geometry_bottleneck/full_eval_summary.json",
+      "top20_predictions": "/data/users/xsw/autodlmini/model/New_model/symcif_experiment/reports/symcif_v4_geometry_bottleneck/top20_predictions.jsonl"
+    },
+    "data_root": "/data/users/xsw/autodlmini/model/New_model/symcif_experiment/data/structured_symcif_v4_reextracted",
+    "description": "GT WA + current retrieved/default geometry",
+    "evaluator": {
+      "bond_timeout_seconds": 8.0,
+      "direct_cif_mode": "baseline",
+      "eval_workers": 64,
+      "match_timeout_seconds": 8.0,
+      "max_eval_sites": 300,
+      "max_match_sites": 300,
+      "sample_timeout_seconds": 120.0,
+      "source": "scripts/run_generation_eval.py:evaluate_mode_with_hard_timeouts",
+      "valid_timeout_seconds": 8.0
+    },
+    "geometry_bottleneck_eval_note": "rank1 GT-WA/current-geometry CIF was evaluated once per sample and copied across top5/top20 because all ranks are intentionally identical in this bottleneck diagnostic.",
+    "geometry_source_counts": {
+      "sg_median_lattice+deterministic_free_params": 1940,
+      "train_same_skeleton": 7080,
+      "train_same_wa": 980
+    },
+    "mode": "geometry_bottleneck",
+    "overall": {
+      "top1": {
+        "RMSE": 0.09734087510941282,
+        "SG_ok": 0.996,
+        "atom_count_ok": 0.986,
+        "bond_length_score": 0.7738297051590626,
+        "bond_lengths_reasonable": 0.592,
+        "eval_timeout": 0.0,
+        "formula_ok": 0.996,
+        "k": 1,
+        "match_at_k": 0.564,
+        "matched_samples_for_RMSE": 282,
+        "mode": "geometry_bottleneck",
+        "multiplicity_ok": 0.0,
+        "num_attempts": 500,
+        "readable": 0.996,
+        "render_success": 1.0,
+        "samples": 500,
+        "skeleton_hit_at_k": 1.0,
+        "strict_valid": 0.0,
+        "strict_valid_any_at_k": 0.0,
+        "subset": "overall",
+        "valid": 0.0,
+        "wa_hit_at_k": 1.0
+      },
+      "top20": {
+        "RMSE": 0.09734087510941282,
+        "SG_ok": 0.996,
+        "atom_count_ok": 0.986,
+        "bond_length_score": 0.7738297051590678,
+        "bond_lengths_reasonable": 0.592,
+        "eval_timeout": 0.0,
+        "formula_ok": 0.996,
+        "k": 20,
+        "match_at_k": 0.564,
+        "matched_samples_for_RMSE": 282,
+        "mode": "geometry_bottleneck",
+        "multiplicity_ok": 0.0,
+        "num_attempts": 10000,
+        "readable": 0.996,
+        "render_success": 1.0,
+        "samples": 500,
+        "skeleton_hit_at_k": 1.0,
+        "strict_valid": 0.0,
+        "strict_valid_any_at_k": 0.0,
+        "subset": "overall",
+        "valid": 0.0,
+        "wa_hit_at_k": 1.0
+      },
+      "top5": {
+        "RMSE": 0.09734087510941282,
+        "SG_ok": 0.996,
+        "atom_count_ok": 0.986,
+        "bond_length_score": 0.7738297051590611,
+        "bond_lengths_reasonable": 0.592,
+        "eval_timeout": 0.0,
+        "formula_ok": 0.996,
+        "k": 5,
+        "match_at_k": 0.564,
+        "matched_samples_for_RMSE": 282,
+        "mode": "geometry_bottleneck",
+        "multiplicity_ok": 0.0,
+        "num_attempts": 2500,
+        "readable": 0.996,
+        "render_success": 1.0,
+        "samples": 500,
+        "skeleton_hit_at_k": 1.0,
+        "strict_valid": 0.0,
+        "strict_valid_any_at_k": 0.0,
+        "subset": "overall",
+        "valid": 0.0,
+        "wa_hit_at_k": 1.0
+      }
+    },
+    "predictions": "/data/users/xsw/autodlmini/model/New_model/symcif_experiment/reports/symcif_v4_hybrid_search/test_reranked_predictions.jsonl",
+    "samples": 500,
+    "top_errors": [
+      {
+        "count": 40,
+        "error": "ValueError: Invalid cif file with no structures!"
+      }
+    ],
+    "top_k": 20
+  }
+}

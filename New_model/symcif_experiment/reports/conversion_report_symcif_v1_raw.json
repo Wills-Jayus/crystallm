@@ -1,0 +1,18 @@
+{
+  "enumeration_success": 6521,
+  "formula_consistent": 6154,
+  "multiplicity_consistent": 6000,
+  "parse_success": 6521,
+  "pymatgen_readable": 6515,
+  "render_success": 6521,
+  "roundtrip_cif_success": 6521,
+  "site_symmetry_extract_success": 6521,
+  "space_group_consistent": 6284,
+  "standardize_success": 6521,
+  "top_failure_reasons": {
+    "convert:TypeError: 'NoneType' object is not subscriptable": 79,
+    "convert:TypeError: cannot unpack non-iterable NoneType object": 7
+  },
+  "total": 6607,
+  "wyckoff_extract_success": 6521
+}

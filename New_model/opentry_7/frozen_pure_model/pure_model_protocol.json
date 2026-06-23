@@ -1,0 +1,56 @@
+{
+  "line": "pure_model",
+  "status": "frozen after full official train/validation runs; full-test generation in progress",
+  "required_input": "composition + GT-SG only",
+  "forbidden_inputs": [
+    "GT W/A",
+    "GT site mapping",
+    "GT geometry",
+    "CrystaLLM candidates",
+    "SymCIF candidates",
+    "candidate fusion",
+    "selector",
+    "ranker",
+    "reranker",
+    "oracle",
+    "test label",
+    "test-time energy selection"
+  ],
+  "training_data": {
+    "mp_20": "official MP-20 train split real CIFs, tokenized in cache/tokens_mp_20_official",
+    "mpts_52": "official MPTS-52 train split real CIFs, tokenized in cache/tokens_mpts_52_official"
+  },
+  "checkpoint_selection": "best validation loss checkpoint saved by bin/train.py with always_save_checkpoint=false",
+  "checkpoints": {
+    "mp_20": {
+      "train_config": "configs/pure_crystallm_gt_sg_mp_20_train.yaml",
+      "working_checkpoint": "checkpoints/pure_crystallm_gt_sg_mp_20/ckpt.pt",
+      "frozen_checkpoint": "frozen_pure_model/pure_crystallm_gt_sg_mp_20_ckpt.pt",
+      "iter_num": 1500,
+      "best_val_loss": 0.42223724722862244
+    },
+    "mpts_52": {
+      "train_config": "configs/pure_crystallm_gt_sg_mpts_52_train.yaml",
+      "working_checkpoint": "checkpoints/pure_crystallm_gt_sg_mpts_52/ckpt.pt",
+      "frozen_checkpoint": "frozen_pure_model/pure_crystallm_gt_sg_mpts_52_ckpt.pt",
+      "iter_num": 1250,
+      "best_val_loss": 0.5958229303359985
+    }
+  },
+  "candidate_order": {
+    "0": "deterministic greedy argmax decode",
+    "1-19": "fixed seed sampling",
+    "seed": 1337,
+    "seed_stride": 1000,
+    "reordering": "none"
+  },
+  "inference": {
+    "top_k": 10,
+    "temperature": 1.0,
+    "num_gens": 20,
+    "max_new_tokens": 3000,
+    "dtype": "bfloat16",
+    "device": "cuda",
+    "generator": "scripts/generate_ordered_pure.py"
+  }
+}

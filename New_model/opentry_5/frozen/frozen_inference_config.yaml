@@ -1,0 +1,4 @@
+status: not_frozen
+reason: no opentry_5 model has passed grouped folds, dev_gate, val512, and no-ranking audit
+candidate_order: generation_index_then_seed
+test_access: none

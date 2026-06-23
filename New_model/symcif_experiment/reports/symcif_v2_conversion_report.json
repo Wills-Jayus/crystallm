@@ -1,0 +1,40 @@
+{
+  "angle_tolerance": 5.0,
+  "conversion_success": 6000,
+  "conversion_success_rate": 1.0,
+  "formula_consistent": 5632,
+  "formula_consistent_rate": 0.9386666666666666,
+  "manifest": "/data/users/xsw/autodlmini/model/New_model/symcif_experiment/data/split_manifest.csv",
+  "multiplicity_consistent": 5441,
+  "multiplicity_consistent_rate": 0.9068333333333334,
+  "out_dir": "data/symcif_v2",
+  "parse_success": 6000,
+  "parse_success_rate": 1.0,
+  "pymatgen_readable": 5632,
+  "pymatgen_readable_rate": 0.9386666666666666,
+  "render_success": 6000,
+  "render_success_rate": 1.0,
+  "retained": 6000,
+  "retained_rate": 1.0,
+  "retained_sizes": {
+    "test": 500,
+    "train": 5000,
+    "val": 500
+  },
+  "roundtrip_cif_success": 6000,
+  "roundtrip_cif_success_rate": 1.0,
+  "space_group_consistent": 5554,
+  "space_group_consistent_rate": 0.9256666666666666,
+  "symprec": 0.1,
+  "target_sizes": {
+    "test": 500,
+    "train": 5000,
+    "val": 500
+  },
+  "top_failure_reasons": {
+    "quality_gate:multiplicity_consistent": 113,
+    "quality_gate:pymatgen_readable,formula_consistent,space_group_consistent,multiplicity_consistent": 368,
+    "quality_gate:space_group_consistent,multiplicity_consistent": 78
+  },
+  "total": 6000
+}

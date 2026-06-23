@@ -1,0 +1,13 @@
+{
+  "failures": 0,
+  "formats": [
+    "baseline_minprompt",
+    "symcif_v1_atomprops"
+  ],
+  "manifest": "/data/users/xsw/autodlmini/model/New_model/symcif_experiment/data/split_manifest.csv",
+  "split_counts": {
+    "test": 500,
+    "train": 5000,
+    "val": 500
+  }
+}

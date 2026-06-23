@@ -1,0 +1,60 @@
+{
+  "line": "pure_structural_model",
+  "status": "honest_mvp_not_full_tested",
+  "frozen_at_utc": "2026-06-22 15:20:00 UTC",
+  "input_contract": "composition + GT-SG only",
+  "official_full_test_run": false,
+  "reason_full_test_not_run": "No opentry_8 structural checkpoint with validation generation metrics exceeding opentry_7 pure model or approaching CrystaLLM-a GT-SG was trained in this run. Running official full test would violate the prompt gate.",
+  "do_not_count_as_result": true,
+  "not_reused_as_pure_model": [
+    "opentry_7 pure_crystallm_gt_sg byte-level CIF GPT",
+    "SymCIF/v5 train-only retrieval/index candidates",
+    "CrystaLLM-a GT-SG candidates",
+    "strategy/fusion candidate pools"
+  ],
+  "historical_mvp_evidence": {
+    "opentry_7_pure_control": {
+      "model_type": "byte-level CIF GPT fine-tune",
+      "checkpoint_selection": "validation token loss",
+      "official_full_test": true,
+      "mp20_match_at_20": 0.7795710811408357,
+      "mpts52_match_at_20": 0.31521739130434784,
+      "diagnosis": "Not a structural W/A+geometry model and clearly below CrystaLLM-a GT-SG."
+    },
+    "MiniCFJoint_v2_validation": {
+      "model_type": "factorized orbit/element/free-parameter/lattice prototype",
+      "small_overfit": "passed",
+      "GT_WA_geometry_val_match_at_1": 0.5573,
+      "GT_WA_geometry_val_match_at_5": 0.5888,
+      "GT_WA_geometry_val_RMSE_at_5": 0.1684,
+      "diagnosis": "Action space and exact-cover feasibility are viable, but deterministic geometry did not pass validation gate."
+    },
+    "SymCIF_v5_evidence": {
+      "model_type": "structured retrieval/index plus exact-cover W/A and geometry",
+      "pure_model": false,
+      "diagnosis": "Strong strategy evidence that W/A coverage is the main bottleneck, but not eligible as pure structural model."
+    }
+  },
+  "required_next_checkpoint_gate": {
+    "validation_metrics": [
+      "match@1",
+      "match@5",
+      "match@20",
+      "rows>=7 match@1",
+      "rows>=7 match@5",
+      "rows>=7 match@20",
+      "RMSE@1",
+      "RMSE@5",
+      "RMSE@20",
+      "validity"
+    ],
+    "minimum_to_run_official_full_test": "Validation must clearly beat opentry_7 pure_crystallm_gt_sg or approach CrystaLLM-a GT-SG under strict fixed candidate order."
+  },
+  "recommended_model": {
+    "row_count": "class-balanced predictor with rows>=7 curriculum",
+    "wa_decoder": "skeleton-first or autoregressive row decoder with exact-cover feasibility and remaining-composition masks",
+    "geometry": "multimodal lattice/free-parameter head with wrapped coordinate loss and short-contact/collision loss",
+    "checkpoint_selection": "validation generation metrics, not token loss",
+    "candidate_order": "candidate 0 deterministic decode; candidates 1-19 fixed-seed sampling; no reordering by score, validity, logprob, energy, RMSE, or StructureMatcher"
+  }
+}

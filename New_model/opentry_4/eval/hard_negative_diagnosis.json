@@ -1,0 +1,1434 @@
+{
+  "baseline_missing_samples": [
+    {
+      "candidate_count_top20": 6,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-728959",
+      "skeleton_hit_candidates_top20": 6,
+      "target_row_count": 27,
+      "wa_hit_candidates_top20": 6
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-726800",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 16,
+      "wa_hit_candidates_top20": 4
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-570971",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 11,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-8586",
+      "skeleton_hit_candidates_top20": 3,
+      "target_row_count": 5,
+      "wa_hit_candidates_top20": 3
+    },
+    {
+      "candidate_count_top20": 10,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1204588",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 9,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-554994",
+      "skeleton_hit_candidates_top20": 6,
+      "target_row_count": 9,
+      "wa_hit_candidates_top20": 6
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-9815",
+      "skeleton_hit_candidates_top20": 5,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 3
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1195850",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 22,
+      "wa_hit_candidates_top20": 4
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1204814",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 9
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-723625",
+      "skeleton_hit_candidates_top20": 8,
+      "target_row_count": 12,
+      "wa_hit_candidates_top20": 8
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1198415",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 22,
+      "wa_hit_candidates_top20": 9
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-727071",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 13,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-707250",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 11,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-554171",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 26,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-9807",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 6,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-9806",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 6,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-726272",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 19,
+      "wa_hit_candidates_top20": 9
+    },
+    {
+      "candidate_count_top20": 5,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-570693",
+      "skeleton_hit_candidates_top20": 5,
+      "target_row_count": 26,
+      "wa_hit_candidates_top20": 5
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-567414",
+      "skeleton_hit_candidates_top20": 5,
+      "target_row_count": 17,
+      "wa_hit_candidates_top20": 5
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-571162",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 5,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-722381",
+      "skeleton_hit_candidates_top20": 6,
+      "target_row_count": 12,
+      "wa_hit_candidates_top20": 6
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-9804",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 6,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-9794",
+      "skeleton_hit_candidates_top20": 2,
+      "target_row_count": 6,
+      "wa_hit_candidates_top20": 0
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-9805",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 6,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-722979",
+      "skeleton_hit_candidates_top20": 8,
+      "target_row_count": 15,
+      "wa_hit_candidates_top20": 8
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-28713",
+      "skeleton_hit_candidates_top20": 3,
+      "target_row_count": 9,
+      "wa_hit_candidates_top20": 3
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-697676",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 15,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-722729",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 19,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-18655",
+      "skeleton_hit_candidates_top20": 6,
+      "target_row_count": 5,
+      "wa_hit_candidates_top20": 6
+    },
+    {
+      "candidate_count_top20": 10,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-6426",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 8,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-698310",
+      "skeleton_hit_candidates_top20": 6,
+      "target_row_count": 10,
+      "wa_hit_candidates_top20": 6
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-6452",
+      "skeleton_hit_candidates_top20": 5,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 0
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-29103",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 5,
+      "wa_hit_candidates_top20": 4
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1196015",
+      "skeleton_hit_candidates_top20": 13,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 4
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-29107",
+      "skeleton_hit_candidates_top20": 3,
+      "target_row_count": 5,
+      "wa_hit_candidates_top20": 3
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-29127",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 4
+    },
+    {
+      "candidate_count_top20": 10,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-556693",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 19,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-557579",
+      "skeleton_hit_candidates_top20": 1,
+      "target_row_count": 2,
+      "wa_hit_candidates_top20": 1
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-556689",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 21,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 10,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-697592",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 10,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-29129",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 9,
+      "wa_hit_candidates_top20": 9
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-572361",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 9,
+      "wa_hit_candidates_top20": 0
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-733858",
+      "skeleton_hit_candidates_top20": 5,
+      "target_row_count": 14,
+      "wa_hit_candidates_top20": 5
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-697575",
+      "skeleton_hit_candidates_top20": 8,
+      "target_row_count": 6,
+      "wa_hit_candidates_top20": 4
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-505312",
+      "skeleton_hit_candidates_top20": 2,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 0
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-703342",
+      "skeleton_hit_candidates_top20": 8,
+      "target_row_count": 19,
+      "wa_hit_candidates_top20": 8
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-703316",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 6,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1202699",
+      "skeleton_hit_candidates_top20": 6,
+      "target_row_count": 14,
+      "wa_hit_candidates_top20": 6
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-703343",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 11,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1196004",
+      "skeleton_hit_candidates_top20": 8,
+      "target_row_count": 19,
+      "wa_hit_candidates_top20": 8
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-28450",
+      "skeleton_hit_candidates_top20": 8,
+      "target_row_count": 13,
+      "wa_hit_candidates_top20": 8
+    },
+    {
+      "candidate_count_top20": 10,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-28460",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 3,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-557618",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 8,
+      "wa_hit_candidates_top20": 0
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-731713",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 12,
+      "wa_hit_candidates_top20": 0
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-560493",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-28464",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 17,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 9,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-505309",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 20,
+      "wa_hit_candidates_top20": 9
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-699317",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 10,
+      "wa_hit_candidates_top20": 4
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-505311",
+      "skeleton_hit_candidates_top20": 2,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 0
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-28454",
+      "skeleton_hit_candidates_top20": 2,
+      "target_row_count": 13,
+      "wa_hit_candidates_top20": 2
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-28456",
+      "skeleton_hit_candidates_top20": 8,
+      "target_row_count": 24,
+      "wa_hit_candidates_top20": 0
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1198278",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 10,
+      "wa_hit_candidates_top20": 0
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1189282",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-30022",
+      "skeleton_hit_candidates_top20": 2,
+      "target_row_count": 6,
+      "wa_hit_candidates_top20": 2
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1193635",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 15,
+      "wa_hit_candidates_top20": 9
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-554239",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 8,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-626973",
+      "skeleton_hit_candidates_top20": 8,
+      "target_row_count": 10,
+      "wa_hit_candidates_top20": 8
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-541933",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 14,
+      "wa_hit_candidates_top20": 0
+    },
+    {
+      "candidate_count_top20": 10,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-24473",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 11,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-24272",
+      "skeleton_hit_candidates_top20": 5,
+      "target_row_count": 22,
+      "wa_hit_candidates_top20": 5
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1204222",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 11,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-550172",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 2,
+      "wa_hit_candidates_top20": 4
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-568534",
+      "skeleton_hit_candidates_top20": 8,
+      "target_row_count": 11,
+      "wa_hit_candidates_top20": 8
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-973217",
+      "skeleton_hit_candidates_top20": 2,
+      "target_row_count": 3,
+      "wa_hit_candidates_top20": 2
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-863747",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 8,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-555688",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 9,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-569085",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 6,
+      "wa_hit_candidates_top20": 2
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-973694",
+      "skeleton_hit_candidates_top20": 5,
+      "target_row_count": 9,
+      "wa_hit_candidates_top20": 5
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-24273",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 22,
+      "wa_hit_candidates_top20": 4
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-17741",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 0
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-558580",
+      "skeleton_hit_candidates_top20": 1,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 0
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-628781",
+      "skeleton_hit_candidates_top20": 2,
+      "target_row_count": 2,
+      "wa_hit_candidates_top20": 2
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-555699",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 10,
+      "wa_hit_candidates_top20": 9
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-860792",
+      "skeleton_hit_candidates_top20": 2,
+      "target_row_count": 11,
+      "wa_hit_candidates_top20": 2
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1178650",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 9,
+      "wa_hit_candidates_top20": 9
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-558736",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-976587",
+      "skeleton_hit_candidates_top20": 5,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 5
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1193720",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 13,
+      "wa_hit_candidates_top20": 9
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1189564",
+      "skeleton_hit_candidates_top20": 5,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 5
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-558160",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-19478",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 13,
+      "wa_hit_candidates_top20": 9
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-17953",
+      "skeleton_hit_candidates_top20": 2,
+      "target_row_count": 5,
+      "wa_hit_candidates_top20": 2
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-623135",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 15,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-653891",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 22,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-623088",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 21,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-623030",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 9,
+      "wa_hit_candidates_top20": 4
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-554775",
+      "skeleton_hit_candidates_top20": 1,
+      "target_row_count": 4,
+      "wa_hit_candidates_top20": 1
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-558241",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 8,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-1181768",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 6,
+      "wa_hit_candidates_top20": 4
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-866713",
+      "skeleton_hit_candidates_top20": 5,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 5
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-866688",
+      "skeleton_hit_candidates_top20": 3,
+      "target_row_count": 8,
+      "wa_hit_candidates_top20": 3
+    },
+    {
+      "candidate_count_top20": 10,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1201867",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 25,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1178773",
+      "skeleton_hit_candidates_top20": 5,
+      "target_row_count": 9,
+      "wa_hit_candidates_top20": 5
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-568685",
+      "skeleton_hit_candidates_top20": 2,
+      "target_row_count": 3,
+      "wa_hit_candidates_top20": 2
+    },
+    {
+      "candidate_count_top20": 10,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1181338",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 11,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-541774",
+      "skeleton_hit_candidates_top20": 3,
+      "target_row_count": 17,
+      "wa_hit_candidates_top20": 3
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-24714",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-866695",
+      "skeleton_hit_candidates_top20": 5,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 5
+    },
+    {
+      "candidate_count_top20": 10,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-866660",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 14,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-6181",
+      "skeleton_hit_candidates_top20": 5,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 5
+    },
+    {
+      "candidate_count_top20": 8,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1199569",
+      "skeleton_hit_candidates_top20": 8,
+      "target_row_count": 21,
+      "wa_hit_candidates_top20": 8
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-24508",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 18,
+      "wa_hit_candidates_top20": 4
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-561412",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 9,
+      "wa_hit_candidates_top20": 4
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-644003",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 9,
+      "wa_hit_candidates_top20": 4
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-726226",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 12,
+      "wa_hit_candidates_top20": 4
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-559710",
+      "skeleton_hit_candidates_top20": 6,
+      "target_row_count": 11,
+      "wa_hit_candidates_top20": 6
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-568904",
+      "skeleton_hit_candidates_top20": 8,
+      "target_row_count": 10,
+      "wa_hit_candidates_top20": 8
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-558279",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 12,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 15,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-30161",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 4,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-643735",
+      "skeleton_hit_candidates_top20": 8,
+      "target_row_count": 9,
+      "wa_hit_candidates_top20": 8
+    },
+    {
+      "candidate_count_top20": 10,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1193943",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 13,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1178872",
+      "skeleton_hit_candidates_top20": 3,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 3
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-30150",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 13,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-1201586",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 6,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1203318",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 12,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-17975",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 6,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-20811",
+      "skeleton_hit_candidates_top20": 15,
+      "target_row_count": 3,
+      "wa_hit_candidates_top20": 5
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-759690",
+      "skeleton_hit_candidates_top20": 11,
+      "target_row_count": 9,
+      "wa_hit_candidates_top20": 0
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-541158",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 11,
+      "wa_hit_candidates_top20": 9
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-569569",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 6,
+      "wa_hit_candidates_top20": 4
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-29485",
+      "skeleton_hit_candidates_top20": 8,
+      "target_row_count": 11,
+      "wa_hit_candidates_top20": 8
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-554598",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 19,
+      "wa_hit_candidates_top20": 9
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-557343",
+      "skeleton_hit_candidates_top20": 5,
+      "target_row_count": 15,
+      "wa_hit_candidates_top20": 0
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-554523",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 10,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-601228",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 12,
+      "wa_hit_candidates_top20": 9
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-1101799",
+      "skeleton_hit_candidates_top20": 2,
+      "target_row_count": 3,
+      "wa_hit_candidates_top20": 2
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-29502",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 10,
+      "wa_hit_candidates_top20": 9
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-29520",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 4,
+      "wa_hit_candidates_top20": 5
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-600428",
+      "skeleton_hit_candidates_top20": 6,
+      "target_row_count": 4,
+      "wa_hit_candidates_top20": 3
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-29514",
+      "skeleton_hit_candidates_top20": 1,
+      "target_row_count": 6,
+      "wa_hit_candidates_top20": 1
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1203999",
+      "skeleton_hit_candidates_top20": 6,
+      "target_row_count": 16,
+      "wa_hit_candidates_top20": 6
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-17999",
+      "skeleton_hit_candidates_top20": 2,
+      "target_row_count": 6,
+      "wa_hit_candidates_top20": 2
+    },
+    {
+      "candidate_count_top20": 10,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-29500",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 23,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-17235",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 22,
+      "wa_hit_candidates_top20": 9
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1197775",
+      "skeleton_hit_candidates_top20": 5,
+      "target_row_count": 23,
+      "wa_hit_candidates_top20": 1
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-24090",
+      "skeleton_hit_candidates_top20": 5,
+      "target_row_count": 5,
+      "wa_hit_candidates_top20": 5
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-618788",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 15,
+      "wa_hit_candidates_top20": 4
+    },
+    {
+      "candidate_count_top20": 12,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-767240",
+      "skeleton_hit_candidates_top20": 5,
+      "target_row_count": 6,
+      "wa_hit_candidates_top20": 5
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1189633",
+      "skeleton_hit_candidates_top20": 8,
+      "target_row_count": 10,
+      "wa_hit_candidates_top20": 8
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-582735",
+      "skeleton_hit_candidates_top20": 6,
+      "target_row_count": 13,
+      "wa_hit_candidates_top20": 6
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-618999",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 7,
+      "wa_hit_candidates_top20": 0
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-554917",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 18,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-4078",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 5,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1202252",
+      "skeleton_hit_candidates_top20": 7,
+      "target_row_count": 11,
+      "wa_hit_candidates_top20": 7
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1203389",
+      "skeleton_hit_candidates_top20": 6,
+      "target_row_count": 12,
+      "wa_hit_candidates_top20": 6
+    },
+    {
+      "candidate_count_top20": 9,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-29703",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 18,
+      "wa_hit_candidates_top20": 9
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-1203386",
+      "skeleton_hit_candidates_top20": 8,
+      "target_row_count": 9,
+      "wa_hit_candidates_top20": 8
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-774105",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 19,
+      "wa_hit_candidates_top20": 9
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-557940",
+      "skeleton_hit_candidates_top20": 5,
+      "target_row_count": 14,
+      "wa_hit_candidates_top20": 0
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-1469",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 5,
+      "wa_hit_candidates_top20": 5
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-556074",
+      "skeleton_hit_candidates_top20": 5,
+      "target_row_count": 11,
+      "wa_hit_candidates_top20": 5
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-19180",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 10,
+      "wa_hit_candidates_top20": 4
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-1102115",
+      "skeleton_hit_candidates_top20": 1,
+      "target_row_count": 3,
+      "wa_hit_candidates_top20": 1
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-19913",
+      "skeleton_hit_candidates_top20": 8,
+      "target_row_count": 5,
+      "wa_hit_candidates_top20": 8
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-19061",
+      "skeleton_hit_candidates_top20": 6,
+      "target_row_count": 10,
+      "wa_hit_candidates_top20": 6
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-19111",
+      "skeleton_hit_candidates_top20": 4,
+      "target_row_count": 5,
+      "wa_hit_candidates_top20": 2
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-20697",
+      "skeleton_hit_candidates_top20": 2,
+      "target_row_count": 3,
+      "wa_hit_candidates_top20": 2
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-20135",
+      "skeleton_hit_candidates_top20": 10,
+      "target_row_count": 8,
+      "wa_hit_candidates_top20": 10
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": false,
+      "sample_id": "mpts_52_val__mp-20888",
+      "skeleton_hit_candidates_top20": 2,
+      "target_row_count": 3,
+      "wa_hit_candidates_top20": 2
+    },
+    {
+      "candidate_count_top20": 20,
+      "rows_ge_7": true,
+      "sample_id": "mpts_52_val__mp-19496",
+      "skeleton_hit_candidates_top20": 9,
+      "target_row_count": 10,
+      "wa_hit_candidates_top20": 0
+    }
+  ],
+  "failure_modes_rows_ge_7_val": {
+    "considered_wa_or_skeleton_hit_failures": 1139,
+    "counts": {
+      "collision_or_short_distance": 382,
+      "free_param_or_site_mapping": 566,
+      "inter_row_or_source_distance": 89,
+      "lattice_volume_vpa": 98,
+      "sg_wyckoff_legality": 4
+    },
+    "positive_min_distance_p10_cut": 1.35,
+    "positive_vpa_p05_p95": [
+      13.359072757302203,
+      27.667960126724427
+    ],
+    "rates": {
+      "collision_or_short_distance": 0.3353819139596137,
+      "free_param_or_site_mapping": 0.49692712906057945,
+      "inter_row_or_source_distance": 0.0781387181738367,
+      "lattice_volume_vpa": 0.08604038630377524,
+      "sg_wyckoff_legality": 0.003511852502194908
+    }
+  },
+  "failure_modes_val": {
+    "considered_wa_or_skeleton_hit_failures": 2095,
+    "counts": {
+      "collision_or_short_distance": 522,
+      "free_param_or_site_mapping": 1272,
+      "inter_row_or_source_distance": 110,
+      "lattice_volume_vpa": 182,
+      "sg_wyckoff_legality": 9
+    },
+    "positive_min_distance_p10_cut": 1.35,
+    "positive_vpa_p05_p95": [
+      13.359072757302203,
+      27.667960126724427
+    ],
+    "rates": {
+      "collision_or_short_distance": 0.24916467780429594,
+      "free_param_or_site_mapping": 0.6071599045346062,
+      "inter_row_or_source_distance": 0.05250596658711217,
+      "lattice_volume_vpa": 0.08687350835322195,
+      "sg_wyckoff_legality": 0.0042959427207637235
+    }
+  },
+  "inputs": {
+    "train_features": "/data/users/xsw/autodlmini/model/New_model/opentry_3/data/geometry_compat_mpts52/e318_train_balanced1024_top20_val128_e166_features/train_candidate_features.jsonl",
+    "train_summary": "/data/users/xsw/autodlmini/model/New_model/opentry_3/data/geometry_compat_mpts52/e318_train_balanced1024_top20_val128_e166_features/train_candidate_features_summary.json",
+    "val_features": "/data/users/xsw/autodlmini/model/New_model/opentry_3/data/geometry_compat_mpts52/e424_e422_val512_features/val_candidate_features.jsonl",
+    "val_summary": "/data/users/xsw/autodlmini/model/New_model/opentry_3/data/geometry_compat_mpts52/e424_e422_val512_features/val_candidate_features_summary.json"
+  },
+  "train": {
+    "hard_negative_candidates": 3011,
+    "positive_candidates": 8893,
+    "rows_ge_7_hard_negative_candidates": 755,
+    "rows_ge_7_positive_candidates": 310,
+    "rows_ge_7_wa_hit_match_fail_rate": 0.7662337662337663,
+    "wa_hit_match_fail_rate": 0.19582871908453303
+  },
+  "val512": {
+    "baseline_missing_rows_ge_7_samples": 128,
+    "baseline_missing_samples_with_wa_or_skeleton_hit_top20": 170,
+    "candidate_ceiling_top20": 0.46047430830039526,
+    "hard_negative_candidates": 2086,
+    "positive_candidates": 1733,
+    "rows_ge_7_candidate_ceiling_top20": 0.19004524886877827,
+    "rows_ge_7_hard_negative_candidates": 1135,
+    "rows_ge_7_positive_candidates": 127,
+    "rows_ge_7_wa_hit_match_fail_rate": 0.9149338374291115,
+    "wa_hit_match_fail_rate": 0.6454332552693208
+  }
+}

@@ -1,0 +1,938 @@
+{
+  "modes": {
+    "baseline_minprompt": {
+      "conditional": {
+        "conditional_match_rate": 0.2239448751076658,
+        "formula_sg_ok_generations": 2322,
+        "matched_generations": 520
+      },
+      "hit_distribution": {
+        "1": 112,
+        "2": 44,
+        "3": 18,
+        "4": 12,
+        "5": 7,
+        "no_match": 307
+      },
+      "per_system": {
+        "cubic": {
+          "match@1": 0.55,
+          "match@5": 0.75,
+          "match_at_1": 44,
+          "matched": 60,
+          "samples": 80
+        },
+        "hexagonal": {
+          "match@1": 0.2564102564102564,
+          "match@5": 0.5128205128205128,
+          "match_at_1": 10,
+          "matched": 20,
+          "samples": 39
+        },
+        "monoclinic": {
+          "match@1": 0.05555555555555555,
+          "match@5": 0.12962962962962962,
+          "match_at_1": 6,
+          "matched": 14,
+          "samples": 108
+        },
+        "orthorhombic": {
+          "match@1": 0.15,
+          "match@5": 0.33,
+          "match_at_1": 15,
+          "matched": 33,
+          "samples": 100
+        },
+        "tetragonal": {
+          "match@1": 0.32978723404255317,
+          "match@5": 0.5957446808510638,
+          "match_at_1": 31,
+          "matched": 56,
+          "samples": 94
+        },
+        "triclinic": {
+          "match@1": 0.0,
+          "match@5": 0.022727272727272728,
+          "match_at_1": 0,
+          "matched": 1,
+          "samples": 44
+        },
+        "trigonal": {
+          "match@1": 0.17142857142857143,
+          "match@5": 0.2571428571428571,
+          "match_at_1": 6,
+          "matched": 9,
+          "samples": 35
+        }
+      }
+    },
+    "symcif_v2_constrained_fixed_cell": {
+      "angle_sanity": {
+        "by_system": {
+          "cubic": {
+            "alpha": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "alpha_eq_90_frac": 1.0,
+            "beta": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "beta_eq_100_frac": 0.0,
+            "count": 400,
+            "gamma": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "gamma_eq_90_frac": 1.0
+          },
+          "hexagonal": {
+            "alpha": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "alpha_eq_90_frac": 1.0,
+            "beta": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "beta_eq_100_frac": 0.0,
+            "count": 195,
+            "gamma": {
+              "max": 120.0,
+              "mean": 120.0,
+              "min": 120.0,
+              "std": 0.0
+            },
+            "gamma_eq_90_frac": 0.0
+          },
+          "monoclinic": {
+            "alpha": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "alpha_eq_90_frac": 1.0,
+            "beta": {
+              "max": 145.7146,
+              "mean": 109.69707462962963,
+              "min": 78.5363,
+              "std": 11.87219466486344
+            },
+            "beta_eq_100_frac": 0.0,
+            "count": 540,
+            "gamma": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "gamma_eq_90_frac": 1.0
+          },
+          "orthorhombic": {
+            "alpha": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "alpha_eq_90_frac": 1.0,
+            "beta": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "beta_eq_100_frac": 0.0,
+            "count": 500,
+            "gamma": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "gamma_eq_90_frac": 1.0
+          },
+          "tetragonal": {
+            "alpha": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "alpha_eq_90_frac": 1.0,
+            "beta": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "beta_eq_100_frac": 0.0,
+            "count": 470,
+            "gamma": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "gamma_eq_90_frac": 1.0
+          },
+          "triclinic": {
+            "alpha": {
+              "max": 119.5175,
+              "mean": 85.628945,
+              "min": 60.0318,
+              "std": 12.726781451712638
+            },
+            "alpha_eq_90_frac": 0.09545454545454546,
+            "beta": {
+              "max": 131.563,
+              "mean": 87.28020772727272,
+              "min": 60.5135,
+              "std": 12.912251788549309
+            },
+            "beta_eq_100_frac": 0.0,
+            "count": 220,
+            "gamma": {
+              "max": 119.5131,
+              "mean": 84.71949136363637,
+              "min": 60.0597,
+              "std": 11.84198322078036
+            },
+            "gamma_eq_90_frac": 0.11363636363636363
+          },
+          "trigonal": {
+            "alpha": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "alpha_eq_90_frac": 1.0,
+            "beta": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "beta_eq_100_frac": 0.0,
+            "count": 175,
+            "gamma": {
+              "max": 120.0,
+              "mean": 120.0,
+              "min": 120.0,
+              "std": 0.0
+            },
+            "gamma_eq_90_frac": 0.0
+          }
+        },
+        "parse_failures": {}
+      },
+      "conditional": {
+        "conditional_match_rate": 0.2759538598047915,
+        "formula_sg_ok_generations": 2254,
+        "matched_generations": 622
+      },
+      "hit_distribution": {
+        "1": 131,
+        "2": 31,
+        "3": 25,
+        "4": 13,
+        "5": 9,
+        "no_match": 291
+      },
+      "per_system": {
+        "cubic": {
+          "match@1": 0.55,
+          "match@5": 0.6875,
+          "match_at_1": 44,
+          "matched": 55,
+          "samples": 80
+        },
+        "hexagonal": {
+          "match@1": 0.10256410256410256,
+          "match@5": 0.3333333333333333,
+          "match_at_1": 4,
+          "matched": 13,
+          "samples": 39
+        },
+        "monoclinic": {
+          "match@1": 0.12037037037037036,
+          "match@5": 0.17592592592592593,
+          "match_at_1": 13,
+          "matched": 19,
+          "samples": 108
+        },
+        "orthorhombic": {
+          "match@1": 0.26,
+          "match@5": 0.44,
+          "match_at_1": 26,
+          "matched": 44,
+          "samples": 100
+        },
+        "tetragonal": {
+          "match@1": 0.3404255319148936,
+          "match@5": 0.6276595744680851,
+          "match_at_1": 32,
+          "matched": 59,
+          "samples": 94
+        },
+        "triclinic": {
+          "match@1": 0.09090909090909091,
+          "match@5": 0.1590909090909091,
+          "match_at_1": 4,
+          "matched": 7,
+          "samples": 44
+        },
+        "trigonal": {
+          "match@1": 0.22857142857142856,
+          "match@5": 0.34285714285714286,
+          "match_at_1": 8,
+          "matched": 12,
+          "samples": 35
+        }
+      },
+      "skeleton_diversity": {
+        "single_skeleton_samples": 214,
+        "unique_assignment_per_sample_mean": 2.688,
+        "unique_assignment_per_sample_median": 2.0,
+        "unique_skeleton_per_sample_mean": 2.312,
+        "unique_skeleton_per_sample_median": 2.0
+      },
+      "unmatched_root_cause_formula_sg_ok": {
+        "StructureMatcher threshold / large-structure skip": 65,
+        "Wyckoff skeleton inconsistent": 827,
+        "element-Wyckoff assignment inconsistent": 199,
+        "skeleton/assignment match but free-coordinate deviation likely": 59,
+        "skeleton/assignment match but lattice/cell deviation large": 482
+      }
+    },
+    "symcif_v2_constrained_old": {
+      "angle_sanity": {
+        "by_system": {
+          "cubic": {
+            "alpha": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "alpha_eq_90_frac": 1.0,
+            "beta": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "beta_eq_100_frac": 0.0,
+            "count": 400,
+            "gamma": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "gamma_eq_90_frac": 1.0
+          },
+          "hexagonal": {
+            "alpha": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "alpha_eq_90_frac": 1.0,
+            "beta": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "beta_eq_100_frac": 0.0,
+            "count": 195,
+            "gamma": {
+              "max": 120.0,
+              "mean": 120.0,
+              "min": 120.0,
+              "std": 0.0
+            },
+            "gamma_eq_90_frac": 0.0
+          },
+          "monoclinic": {
+            "alpha": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "alpha_eq_90_frac": 1.0,
+            "beta": {
+              "max": 100.0,
+              "mean": 100.0,
+              "min": 100.0,
+              "std": 0.0
+            },
+            "beta_eq_100_frac": 1.0,
+            "count": 540,
+            "gamma": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "gamma_eq_90_frac": 1.0
+          },
+          "orthorhombic": {
+            "alpha": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "alpha_eq_90_frac": 1.0,
+            "beta": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "beta_eq_100_frac": 0.0,
+            "count": 500,
+            "gamma": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "gamma_eq_90_frac": 1.0
+          },
+          "tetragonal": {
+            "alpha": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "alpha_eq_90_frac": 1.0,
+            "beta": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "beta_eq_100_frac": 0.0,
+            "count": 470,
+            "gamma": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "gamma_eq_90_frac": 1.0
+          },
+          "triclinic": {
+            "alpha": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "alpha_eq_90_frac": 1.0,
+            "beta": {
+              "max": 100.0,
+              "mean": 100.0,
+              "min": 100.0,
+              "std": 0.0
+            },
+            "beta_eq_100_frac": 1.0,
+            "count": 220,
+            "gamma": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "gamma_eq_90_frac": 1.0
+          },
+          "trigonal": {
+            "alpha": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "alpha_eq_90_frac": 1.0,
+            "beta": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "beta_eq_100_frac": 0.0,
+            "count": 175,
+            "gamma": {
+              "max": 120.0,
+              "mean": 120.0,
+              "min": 120.0,
+              "std": 0.0
+            },
+            "gamma_eq_90_frac": 0.0
+          }
+        },
+        "parse_failures": {}
+      },
+      "conditional": {
+        "conditional_match_rate": 0.26548672566371684,
+        "formula_sg_ok_generations": 2260,
+        "matched_generations": 600
+      },
+      "hit_distribution": {
+        "1": 121,
+        "2": 35,
+        "3": 26,
+        "4": 15,
+        "5": 8,
+        "no_match": 295
+      },
+      "per_system": {
+        "cubic": {
+          "match@1": 0.525,
+          "match@5": 0.675,
+          "match_at_1": 42,
+          "matched": 54,
+          "samples": 80
+        },
+        "hexagonal": {
+          "match@1": 0.1282051282051282,
+          "match@5": 0.358974358974359,
+          "match_at_1": 5,
+          "matched": 14,
+          "samples": 39
+        },
+        "monoclinic": {
+          "match@1": 0.07407407407407407,
+          "match@5": 0.1574074074074074,
+          "match_at_1": 8,
+          "matched": 17,
+          "samples": 108
+        },
+        "orthorhombic": {
+          "match@1": 0.24,
+          "match@5": 0.42,
+          "match_at_1": 24,
+          "matched": 42,
+          "samples": 100
+        },
+        "tetragonal": {
+          "match@1": 0.3723404255319149,
+          "match@5": 0.6595744680851063,
+          "match_at_1": 35,
+          "matched": 62,
+          "samples": 94
+        },
+        "triclinic": {
+          "match@1": 0.022727272727272728,
+          "match@5": 0.06818181818181818,
+          "match_at_1": 1,
+          "matched": 3,
+          "samples": 44
+        },
+        "trigonal": {
+          "match@1": 0.17142857142857143,
+          "match@5": 0.37142857142857144,
+          "match_at_1": 6,
+          "matched": 13,
+          "samples": 35
+        }
+      },
+      "skeleton_diversity": {
+        "single_skeleton_samples": 202,
+        "unique_assignment_per_sample_mean": 2.694,
+        "unique_assignment_per_sample_median": 2.0,
+        "unique_skeleton_per_sample_mean": 2.308,
+        "unique_skeleton_per_sample_median": 2.0
+      },
+      "unmatched_root_cause_formula_sg_ok": {
+        "StructureMatcher threshold / large-structure skip": 65,
+        "Wyckoff skeleton inconsistent": 848,
+        "element-Wyckoff assignment inconsistent": 206,
+        "skeleton/assignment match but free-coordinate deviation likely": 52,
+        "skeleton/assignment match but lattice/cell deviation large": 489
+      }
+    },
+    "symcif_v2_constrained_skeleton_beam": {
+      "angle_sanity": {
+        "by_system": {
+          "cubic": {
+            "alpha": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "alpha_eq_90_frac": 1.0,
+            "beta": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "beta_eq_100_frac": 0.0,
+            "count": 400,
+            "gamma": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "gamma_eq_90_frac": 1.0
+          },
+          "hexagonal": {
+            "alpha": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "alpha_eq_90_frac": 1.0,
+            "beta": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "beta_eq_100_frac": 0.0,
+            "count": 195,
+            "gamma": {
+              "max": 120.0,
+              "mean": 120.0,
+              "min": 120.0,
+              "std": 0.0
+            },
+            "gamma_eq_90_frac": 0.0
+          },
+          "monoclinic": {
+            "alpha": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "alpha_eq_90_frac": 1.0,
+            "beta": {
+              "max": 139.2052,
+              "mean": 108.77790814814814,
+              "min": 68.6811,
+              "std": 11.469274321009294
+            },
+            "beta_eq_100_frac": 0.0,
+            "count": 540,
+            "gamma": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "gamma_eq_90_frac": 1.0
+          },
+          "orthorhombic": {
+            "alpha": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "alpha_eq_90_frac": 1.0,
+            "beta": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "beta_eq_100_frac": 0.0,
+            "count": 500,
+            "gamma": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "gamma_eq_90_frac": 1.0
+          },
+          "tetragonal": {
+            "alpha": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "alpha_eq_90_frac": 1.0,
+            "beta": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "beta_eq_100_frac": 0.0,
+            "count": 470,
+            "gamma": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "gamma_eq_90_frac": 1.0
+          },
+          "triclinic": {
+            "alpha": {
+              "max": 116.4587,
+              "mean": 88.31554545454546,
+              "min": 60.1429,
+              "std": 12.17631676088789
+            },
+            "alpha_eq_90_frac": 0.17272727272727273,
+            "beta": {
+              "max": 136.9348,
+              "mean": 91.96616681818182,
+              "min": 60.1488,
+              "std": 15.090945358936231
+            },
+            "beta_eq_100_frac": 0.0,
+            "count": 220,
+            "gamma": {
+              "max": 119.22,
+              "mean": 86.56164772727273,
+              "min": 60.0,
+              "std": 12.844825159765678
+            },
+            "gamma_eq_90_frac": 0.19090909090909092
+          },
+          "trigonal": {
+            "alpha": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "alpha_eq_90_frac": 1.0,
+            "beta": {
+              "max": 90.0,
+              "mean": 90.0,
+              "min": 90.0,
+              "std": 0.0
+            },
+            "beta_eq_100_frac": 0.0,
+            "count": 175,
+            "gamma": {
+              "max": 120.0,
+              "mean": 120.0,
+              "min": 120.0,
+              "std": 0.0
+            },
+            "gamma_eq_90_frac": 0.0
+          }
+        },
+        "parse_failures": {}
+      },
+      "conditional": {
+        "conditional_match_rate": 0.23018360949395433,
+        "formula_sg_ok_generations": 2233,
+        "matched_generations": 514
+      },
+      "hit_distribution": {
+        "1": 111,
+        "2": 51,
+        "3": 24,
+        "4": 23,
+        "5": 6,
+        "no_match": 285
+      },
+      "per_system": {
+        "cubic": {
+          "match@1": 0.5,
+          "match@5": 0.7125,
+          "match_at_1": 40,
+          "matched": 57,
+          "samples": 80
+        },
+        "hexagonal": {
+          "match@1": 0.1282051282051282,
+          "match@5": 0.28205128205128205,
+          "match_at_1": 5,
+          "matched": 11,
+          "samples": 39
+        },
+        "monoclinic": {
+          "match@1": 0.018518518518518517,
+          "match@5": 0.1388888888888889,
+          "match_at_1": 2,
+          "matched": 15,
+          "samples": 108
+        },
+        "orthorhombic": {
+          "match@1": 0.22,
+          "match@5": 0.44,
+          "match_at_1": 22,
+          "matched": 44,
+          "samples": 100
+        },
+        "tetragonal": {
+          "match@1": 0.3404255319148936,
+          "match@5": 0.7127659574468085,
+          "match_at_1": 32,
+          "matched": 67,
+          "samples": 94
+        },
+        "triclinic": {
+          "match@1": 0.022727272727272728,
+          "match@5": 0.20454545454545456,
+          "match_at_1": 1,
+          "matched": 9,
+          "samples": 44
+        },
+        "trigonal": {
+          "match@1": 0.2571428571428571,
+          "match@5": 0.34285714285714286,
+          "match_at_1": 9,
+          "matched": 12,
+          "samples": 35
+        }
+      },
+      "skeleton_diversity": {
+        "single_skeleton_samples": 81,
+        "unique_assignment_per_sample_mean": 4.322,
+        "unique_assignment_per_sample_median": 5.0,
+        "unique_skeleton_per_sample_mean": 3.29,
+        "unique_skeleton_per_sample_median": 3.0
+      },
+      "unmatched_root_cause_formula_sg_ok": {
+        "StructureMatcher threshold / large-structure skip": 65,
+        "Wyckoff skeleton inconsistent": 1116,
+        "element-Wyckoff assignment inconsistent": 170,
+        "skeleton/assignment match but free-coordinate deviation likely": 30,
+        "skeleton/assignment match but lattice/cell deviation large": 338
+      }
+    }
+  },
+  "n": 5,
+  "run_dir": "eval_runs/symcif_v2_skeleton_beam_match5_20260521",
+  "summary": {
+    "baseline_minprompt": {
+      "RMSE": "0.10554826850473821",
+      "average_generation_time": "nan",
+      "bond_length_score": "0.6241168612663848",
+      "eval_timeout": "0.0",
+      "formula_closure_success_rate": "nan",
+      "formula_ok": "0.9308",
+      "mask_rejection_count_mean": "nan",
+      "match_rate_n1": "0.224",
+      "match_rate_n20": "0.386",
+      "match_skipped_too_many_sites": "0.0284",
+      "matched_samples_for_RMSE": "193",
+      "mode": "baseline_minprompt",
+      "multiplicity_ok": "0.486",
+      "n": "5",
+      "num_attempts": "2500",
+      "parse_success": "0.9876",
+      "pymatgen_readable": "0.9248",
+      "raw_generation_success": "1.0",
+      "resample_count_mean": "nan",
+      "space_group_ok": "0.9288",
+      "symcif_to_cif_success": "1.0",
+      "too_many_estimated_sites": "0.0116",
+      "too_many_eval_sites": "0.0204",
+      "valid": "0.2248"
+    },
+    "symcif_v2_constrained_fixed_cell": {
+      "RMSE": "0.1444888460565618",
+      "average_generation_time": "0.3959673712734133",
+      "bond_length_score": "0.6270874449651397",
+      "eval_timeout": "0.0",
+      "formula_closure_success_rate": "1.0",
+      "formula_ok": "0.9396",
+      "mask_rejection_count_mean": "35935.8308",
+      "match_rate_n1": "0.262",
+      "match_rate_n20": "0.418",
+      "match_skipped_too_many_sites": "0.0",
+      "matched_samples_for_RMSE": "209",
+      "mode": "symcif_v2_constrained_fixed_cell",
+      "multiplicity_ok": "0.924",
+      "n": "5",
+      "num_attempts": "2500",
+      "parse_success": "1.0",
+      "pymatgen_readable": "0.924",
+      "raw_generation_success": "1.0",
+      "resample_count_mean": "0.0",
+      "space_group_ok": "0.9016",
+      "symcif_to_cif_success": "0.974",
+      "too_many_estimated_sites": "0.0",
+      "too_many_eval_sites": "0.0",
+      "valid": "0.284"
+    },
+    "symcif_v2_constrained_old": {
+      "RMSE": "0.15182156659275828",
+      "average_generation_time": "0.32422946672737596",
+      "bond_length_score": "0.6226741190798812",
+      "eval_timeout": "0.0",
+      "formula_closure_success_rate": "1.0",
+      "formula_ok": "0.9396",
+      "mask_rejection_count_mean": "28655.6476",
+      "match_rate_n1": "0.242",
+      "match_rate_n20": "0.41",
+      "match_skipped_too_many_sites": "0.0",
+      "matched_samples_for_RMSE": "205",
+      "mode": "symcif_v2_constrained_old",
+      "multiplicity_ok": "0.9224",
+      "n": "5",
+      "num_attempts": "2500",
+      "parse_success": "1.0",
+      "pymatgen_readable": "0.9224",
+      "raw_generation_success": "1.0",
+      "resample_count_mean": "0.0",
+      "space_group_ok": "0.904",
+      "symcif_to_cif_success": "0.974",
+      "too_many_estimated_sites": "0.0",
+      "too_many_eval_sites": "0.0",
+      "valid": "0.2776"
+    },
+    "symcif_v2_constrained_skeleton_beam": {
+      "RMSE": "0.154861446258277",
+      "average_generation_time": "0.3430414207033813",
+      "bond_length_score": "0.6056979320884799",
+      "eval_timeout": "0.0",
+      "formula_closure_success_rate": "1.0",
+      "formula_ok": "0.942",
+      "mask_rejection_count_mean": "30644.0936",
+      "match_rate_n1": "0.222",
+      "match_rate_n20": "0.43",
+      "match_skipped_too_many_sites": "0.0",
+      "matched_samples_for_RMSE": "215",
+      "mode": "symcif_v2_constrained_skeleton_beam",
+      "multiplicity_ok": "0.9296",
+      "n": "5",
+      "num_attempts": "2500",
+      "parse_success": "1.0",
+      "pymatgen_readable": "0.9296",
+      "raw_generation_success": "1.0",
+      "resample_count_mean": "0.0",
+      "space_group_ok": "0.8956",
+      "symcif_to_cif_success": "0.974",
+      "too_many_estimated_sites": "0.0",
+      "too_many_eval_sites": "0.0",
+      "valid": "0.2436"
+    }
+  },
+  "test_samples": 500
+}

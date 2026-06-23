@@ -1,0 +1,26 @@
+{
+  "a": {
+    "generation_hash": "5aaa6155ab78ca8796f9c80481a109733bb4e3b5ab640cf68c151209ff2d5f89",
+    "metrics_core_hash": "e5083727d655a695eab54283fce082f3a4989d1cd1864cc86081a370e1dfaca8",
+    "report": {
+      "num_records": 64,
+      "num_rows_ge7": 9,
+      "rows_ge7_top20_match": null,
+      "rows_ge7_top20_rmse": null,
+      "top20_match": null
+    }
+  },
+  "b": {
+    "generation_hash": "5aaa6155ab78ca8796f9c80481a109733bb4e3b5ab640cf68c151209ff2d5f89",
+    "metrics_core_hash": "e5083727d655a695eab54283fce082f3a4989d1cd1864cc86081a370e1dfaca8",
+    "report": {
+      "num_records": 64,
+      "num_rows_ge7": 9,
+      "rows_ge7_top20_match": null,
+      "rows_ge7_top20_rmse": null,
+      "top20_match": null
+    }
+  },
+  "generation_hash_identical": true,
+  "metrics_core_hash_identical": true
+}

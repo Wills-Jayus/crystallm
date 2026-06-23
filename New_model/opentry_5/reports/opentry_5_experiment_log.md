@@ -1,0 +1,1348 @@
+# opentry_5 Experiment Log
+
+## E8000: Canonical protocol, grouped split, and canonical dataset
+- Time: 2026-06-19T02:47:58Z
+- Core hypothesis: prototype-aware split and lossless canonical targets are required before training can create genuine new positives.
+- Difference vs historical failures: this is not source-prior, energy scoring, anchor insertion, or selector work.
+- Model side or data side: data side.
+- Contains sorting/filtering: no.
+- candidate order: not applicable; future generation order frozen by generation_index.
+- Read files: MPTS-52 train structured JSONL, MP-20 train structured JSONL.
+- Written files: grouped split JSONL, canonical train/dev JSONL, canonical CIF copies, canonical protocol/config/manifests.
+- Data split: prototype-aware grouped train_core/dev_model/dev_gate/fold_a/fold_b.
+- Data hash: see `manifests/canonical_data_hashes.json`.
+- Read test: no.
+- Read val512: no.
+- val512 cumulative use: 0.
+- Model: none.
+- Parameters: deterministic SHA256 split.
+- GPU/CPU: CPU data build.
+- Training time: NA.
+- Inference time: NA.
+- readable/composition/SG/Wyckoff/match/RMSE: NA.
+- grouped dev folds consistent: pending model evaluation.
+- Conclusion: protocol foundation built.
+- Gate: unit round-trip required before training.
+- Terminate family: no.
+- Next: run round-trip audit, then model smoke.
+
+## E8001: OOF W/A condition-gap dataset
+- Time: 2026-06-19T02:47:58Z
+- Core hypothesis: training with unseen-fold W/A conditions reduces train/inference mismatch without candidate ranking.
+- Difference vs historical failures: condition corruption is used during training, not as post-generation selection.
+- Model side or data side: data side.
+- Contains sorting/filtering: no.
+- candidate order: not applicable.
+- Metrics: `{"dev": {"full": {"fallback_levels": {"global": 1, "sg": 80, "sg_anon": 715, "sg_anon_rows": 9438, "sg_rows": 1056}, "missing_prediction": 0, "samples": 11290, "skeleton_exact": 0.17661647475642162, "wa_exact": 0.021346324180690875}, "rows_ge_7": {"fallback_levels": {"sg": 52, "sg_anon": 521, "sg_anon_rows": 930, "sg_rows": 639}, "missing_prediction": 0, "samples": 2142, "skeleton_exact": 0.18160597572362278, "wa_exact": 0.026143790849673203}}, "train": {"full": {"fallback_levels": {"global": 16, "sg": 328, "sg_anon": 1096, "sg_anon_rows": 37402, "sg_rows": 2495}, "missing_prediction": 0, "samples": 41337, "skeleton_exact": 0.42690567772213756, "wa_exact": 0.017514575319931298}, "rows_ge_7": {"fallback_levels": {"global": 9, "sg": 218, "sg_anon": 684, "sg_anon_rows": 6465, "sg_rows": 1651}, "missing_prediction": 0, "samples": 9027, "skeleton_exact": 0.44422288689487094, "wa_exact": 0.03423064140910601}}}`
+- Read test: no.
+- Read val512: no.
+- Gate: use only as condition mix, never as output ranker.
+- Next: integrate into Model A/D training.
+
+## E8002: Failure-aware denoising corruption dataset
+- Time: 2026-06-19T02:47:58Z
+- Core hypothesis: rows>=7 W/A-hit match-fail cases require direct generative correction of free params, site mapping, collisions, and lattice/VPA.
+- Difference vs historical failures: hard negatives supervise a denoiser/generator, not a scorer or selector.
+- Model side or data side: data side.
+- Contains sorting/filtering: no.
+- candidate order: native train rank preserved only as corruption provenance.
+- Metrics: `{"dev": {"by_corruption_type": {"collision_or_short_contact_noise": 1316, "free_param_or_site_mapping_noise": 2030, "inter_row_distance_noise": 227, "lattice_vpa_noise": 368}, "by_source": {"synthetic_train_dev_clean_corruption": 3941}, "examples": 3941, "rows_ge_7": 2142}, "train": {"by_corruption_type": {"collision_or_short_contact_noise": 5290, "free_param_or_site_mapping_noise": 7650, "inter_row_distance_noise": 943, "lattice_vpa_noise": 1471, "real_train_hard_negative_wa_or_skeleton_hit_match_fail": 2613}, "by_source": {"opentry3_e318_train_hard_negative": 2382, "opentry4_pairfield_train_hard_negative": 231, "synthetic_train_dev_clean_corruption": 15354}, "examples": 17967, "rows_ge_7": 9869}}`
+- Read test: no.
+- Read val512: no.
+- Gate: train Model B only after round-trip audit passes.
+- Next: unit/smoke Model B.
+
+## E8003: Model B lattice denoiser smoke
+- Time: 2026-06-19T02:50:25Z
+- Core hypothesis: a generative denoiser can learn to reverse lattice/VPA corruption without candidate ranking.
+- Difference vs historical failures: trained model objective, not scorer/selector/anchor insertion/direct candidate sorting.
+- Model side or data side: model side.
+- Contains sorting/filtering: no.
+- candidate order: not applicable; denoiser applies the same correction to every input.
+- Read files: data/geometry_denoising_train.jsonl, data/geometry_denoising_dev.jsonl.
+- Written files: checkpoints/model_b_denoiser_smoke/last.pt, checkpoints/model_b_denoiser_smoke/best.pt, eval/model_b_denoiser_smoke_eval.json.
+- Data split: train_core synthetic train, dev_model/dev_gate synthetic dev.
+- Data hash: see manifests/opentry_5_manifest.jsonl after refresh.
+- Read test: no.
+- Read val512: no.
+- val512 cumulative use: 0.
+- Model: LatticeDenoiser MLP with Gaussian NLL + Huber + VPA auxiliary constraints.
+- Parameters: 20622
+- GPU/CPU: cpu
+- Training time: 0.41s.
+- Inference time: included in smoke eval.
+- readable/composition exact/SG-Wyckoff/match/RMSE: not applicable to lattice-only smoke; full CIF generation gate pending.
+- grouped dev folds consistent: pending full fold CIF evaluation.
+- Conclusion: smoke completed; not a terminal breakthrough.
+- Gate: fail.
+- Terminate family: no.
+- Next: extend Model B to full row/free-param/site-mapping CIF generation.
+
+## E8003: Model B lattice denoiser smoke
+- Time: 2026-06-19T02:53:05Z
+- Core hypothesis: a generative denoiser can learn to reverse lattice/VPA corruption without candidate ranking.
+- Difference vs historical failures: trained model objective, not scorer/selector/anchor insertion/direct candidate sorting.
+- Model side or data side: model side.
+- Contains sorting/filtering: no.
+- candidate order: not applicable; denoiser applies the same correction to every input.
+- Read files: data/geometry_denoising_train.jsonl, data/geometry_denoising_dev.jsonl.
+- Written files: checkpoints/model_b_denoiser_smoke/last.pt, checkpoints/model_b_denoiser_smoke/best.pt, eval/model_b_denoiser_smoke_eval.json.
+- Data split: train_core synthetic train, dev_model/dev_gate synthetic dev.
+- Data hash: see manifests/opentry_5_manifest.jsonl after refresh.
+- Read test: no.
+- Read val512: no.
+- val512 cumulative use: 0.
+- Model: LatticeDenoiser MLP with Gaussian NLL + Huber + VPA auxiliary constraints.
+- Parameters: 20622
+- GPU/CPU: cuda:0
+- Training time: 0.98s.
+- Inference time: included in smoke eval.
+- readable/composition exact/SG-Wyckoff/match/RMSE: not applicable to lattice-only smoke; full CIF generation gate pending.
+- grouped dev folds consistent: pending full fold CIF evaluation.
+- Conclusion: smoke completed; not a terminal breakthrough.
+- Gate: pass.
+- Terminate family: no.
+- Next: extend Model B to full row/free-param/site-mapping CIF generation.
+
+## E8004: MiniCFJoint-v2 grouped fold_a gate0 smoke
+- Time: 2026-06-19T02:58:00Z
+- Core hypothesis: existing OrbitEngine joint-generation tooling can consume opentry_5 grouped train/fold data without leaving the no-test/no-ranking protocol.
+- Difference vs historical failures: this is a grouped data compatibility and round-trip gate, not selector/reranker work.
+- Model side or data side: data/model bridge.
+- Contains sorting/filtering: no candidate sorting; invalid target rows are excluded from the clean training target split by render/readability gate.
+- candidate order: not applicable.
+- Read files: data/minicfjoint_grouped/fold_a/train.jsonl and val.jsonl.
+- Written files: reports/minicfjoint_v2_fold_a_gate0_smoke/00_target_roundtrip_audit.*, checkpoints/minicfjoint_v2_fold_a_gate0_smoke/clean_data/*.
+- Data split: opentry_5 train_core and grouped fold_a.
+- Data hash: see manifests/opentry_5_manifest.jsonl after refresh.
+- Read test: no.
+- Read val512: no.
+- val512 cumulative use: 0.
+- Model: none in gate0.
+- Parameters: OrbitEngine target render audit.
+- GPU/CPU: CPU.
+- Training time: NA.
+- Inference time: NA.
+- readable: clean_val 100%.
+- composition exact: clean_val formula_ok 100%.
+- SG/Wyckoff legal: clean_val SG_ok 100%.
+- match/RMSE: NA.
+- rows>=7 metrics: pending.
+- grouped dev folds consistent: fold_b not yet run.
+- Conclusion: fold_a gate0 passed on a 2048/512 smoke; clean_val 502 records.
+- Gate: pass for smoke.
+- Terminate family: no.
+- Next: run fold_b gate0 and split MiniCFJoint training from evaluator.
+
+## E8005: MiniCFJoint-v2 fold_a small-overfit smoke attempt
+- Time: 2026-06-19T02:58:00Z
+- Core hypothesis: small joint W/A/free-param/lattice overfit can verify the full generator path on opentry_5 grouped data.
+- Difference vs historical failures: trained joint generator checkpoint, not ranking old candidates.
+- Model side or data side: model side.
+- Contains sorting/filtering: no.
+- candidate order: native generation path; no completed candidate metrics.
+- Read files: checkpoints/minicfjoint_v2_fold_a_gate0_smoke/clean_data/clean_train.jsonl.
+- Written files: checkpoints/minicfjoint_v2_fold_a_gate0_smoke/small_overfit/ckpt_best.pt; interruption note.
+- Data split: opentry_5 train_core/fold_a clean subset.
+- Read test: no.
+- Read val512: no.
+- val512 cumulative use: 0.
+- Model: MiniCFJoint-v2 small overfit.
+- Parameters: hidden_dim=128, emb_dim=48, samples=64, requested epochs=20.
+- GPU/CPU: cuda:0 requested.
+- Training time: incomplete.
+- Inference time: incomplete.
+- Metrics: no valid report; evaluator tail did not return.
+- grouped dev folds consistent: no.
+- Conclusion: not counted as passed; checkpoint exists but generation/evaluator wrapper must be fixed.
+- Gate: fail/blocked.
+- Terminate family: no.
+- Next: add a wrapper that separates training checkpoint creation from candidate generation/evaluation.
+
+## E8006: MiniCFJoint-v2 grouped fold_b gate0 smoke
+- Time: 2026-06-19T03:00:00Z
+- Core hypothesis: the same OrbitEngine target-render gate passes on the second grouped fold, not only fold_a.
+- Difference vs historical failures: grouped fold target audit only, no selector/reranker.
+- Model side or data side: data/model bridge.
+- Contains sorting/filtering: no candidate sorting; invalid target rows are excluded from clean targets by render/readability gate.
+- candidate order: not applicable.
+- Read files: data/minicfjoint_grouped/fold_b/train.jsonl and val.jsonl.
+- Written files: reports/minicfjoint_v2_fold_b_gate0_smoke/00_target_roundtrip_audit.*, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/*.
+- Data split: opentry_5 train_core and grouped fold_b.
+- Read test: no.
+- Read val512: no.
+- val512 cumulative use: 0.
+- Model: none in gate0.
+- Parameters: OrbitEngine target render audit.
+- GPU/CPU: CPU.
+- Training time: NA.
+- Inference time: NA.
+- readable: clean_val 100%.
+- composition exact: clean_val formula_ok 100%.
+- SG/Wyckoff legal: clean_val SG_ok 100%.
+- match/RMSE: NA.
+- rows>=7 metrics: pending.
+- grouped dev folds consistent: yes for gate0 target round-trip smoke.
+- Conclusion: fold_b gate0 passed on a 2048/512 smoke; clean_val 509 records.
+- Gate: pass for smoke.
+- Terminate family: no.
+- Next: split MiniCFJoint training and evaluator or implement opentry_5-native full CIF generator.
+
+## E8007: Model B fixed-order CIF recovery smoke (fold_a)
+- Time: 2026-06-19T03:09:09Z
+- Core hypothesis: the trained Model B lattice denoiser can be connected to OrbitEngine to emit parseable CIFs from synthetic geometry corruption without any candidate ranking.
+- Difference vs historical failures: same correction is applied to every input; candidates are fixed generation_index/seed perturbations, not score-sorted or selected.
+- Model side or data side: model side.
+- Contains sorting/filtering: no.
+- candidate order: generation_index 0..4; invalid slots are retained.
+- Read files: checkpoints/model_b_denoiser_smoke/best.pt, data/geometry_denoising_dev.jsonl, data/canonical_dev/dev_model.jsonl, data/canonical_dev/dev_gate.jsonl.
+- Written files: eval/model_b_cif_recovery_smoke/fold_a_generations.jsonl, eval/model_b_cif_recovery_smoke/fold_a_metrics.json.
+- Data split: fold_a.
+- Read test: no.
+- Read val512: no.
+- val512 cumulative use: 0.
+- Model: Model B lattice denoiser plus GT-W/A geometry recovery diagnostic.
+- Parameters: 20622
+- GPU/CPU: cuda:0.
+- Training time: already reported in E8003.
+- Inference time: 13.65s.
+- readable: top1 1.0000.
+- composition exact: top1 1.0000.
+- SG/Wyckoff legal: top1 SG 0.9609; W/A rows are GT diagnostic rows.
+- match@1: 0.9375.
+- match@5: 0.9375.
+- RMSE@1/5: 4.700705064819051e-16 / 3.5950750001639204e-16.
+- rows>=7 match: top1 0.8814.
+- grouped dev folds consistent: pending paired run if only one fold; diagnostic only.
+- Conclusion: CIF smoke completed; not terminal because it uses GT W/A/free params for diagnostic geometry recovery and only evaluates 128 samples.
+- Gate: smoke pass.
+- Terminate family: no.
+- Next: replace GT W/A/free params with OOF/predicted W/A and full free-param generator.
+
+## E8008: Model B fixed-order CIF recovery smoke (fold_b)
+- Time: 2026-06-19T03:12:50Z
+- Core hypothesis: the trained Model B lattice denoiser can be connected to OrbitEngine to emit parseable CIFs from synthetic geometry corruption without any candidate ranking.
+- Difference vs historical failures: same correction is applied to every input; candidates are fixed generation_index/seed perturbations, not score-sorted or selected.
+- Model side or data side: model side.
+- Contains sorting/filtering: no.
+- candidate order: generation_index 0..4; invalid slots are retained.
+- Read files: checkpoints/model_b_denoiser_smoke/best.pt, data/geometry_denoising_dev.jsonl, data/canonical_dev/dev_model.jsonl, data/canonical_dev/dev_gate.jsonl.
+- Written files: eval/model_b_cif_recovery_smoke/fold_b_generations.jsonl, eval/model_b_cif_recovery_smoke/fold_b_metrics.json.
+- Data split: fold_b.
+- Read test: no.
+- Read val512: no.
+- val512 cumulative use: 0.
+- Model: Model B lattice denoiser plus GT-W/A geometry recovery diagnostic.
+- Parameters: 20622
+- GPU/CPU: cuda:0.
+- Training time: already reported in E8003.
+- Inference time: 41.16s.
+- readable: top1 1.0000.
+- composition exact: top1 1.0000.
+- SG/Wyckoff legal: top1 SG 0.9922; W/A rows are GT diagnostic rows.
+- match@1: 0.9609.
+- match@5: 0.9609375.
+- RMSE@1/5: 1.7490605363664758e-10 / 1.749059410727035e-10.
+- rows>=7 match: top1 1.0000.
+- grouped dev folds consistent: pending paired run if only one fold; diagnostic only.
+- Conclusion: CIF smoke completed; not terminal because it uses GT W/A/free params for diagnostic geometry recovery and only evaluates 128 samples.
+- Gate: smoke pass.
+- Terminate family: no.
+- Next: replace GT W/A/free params with OOF/predicted W/A and full free-param generator.
+
+## E8009: Fixed-order MiniCFJoint-v2 smoke (fold_a)
+- Time: 2026-06-19T03:32:56Z
+- Core hypothesis: a joint W/A + geometry decoder can produce native CIF candidates without any beam-score sorting.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Read files: checkpoints/minicfjoint_v2_fold_a_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_a_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_joint_smoke_fold_a/report.json, eval/fixed_order_joint_smoke_fold_a/generations.jsonl, eval/fixed_order_joint_smoke_fold_a/metrics.jsonl, checkpoints/fixed_order_joint_smoke_fold_a/best_train.pt, checkpoints/fixed_order_joint_smoke_fold_a/last.pt.
+- Data split: fold_a clean smoke; train=128, eval=32.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2Net fixed-order decoder.
+- Parameters: 557936.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 1.81s.
+- Inference/eval wall time: 291.36s total.
+- readable@20: 96.88%.
+- composition exact@20: 96.88%.
+- SG/Wyckoff legal@20: 96.88%.
+- match@1: 21.88%.
+- match@5: 28.12%.
+- match@20: 43.75%.
+- RMSE@1/5/20: 0.39776230689278264, 0.321158463791088, 0.29037379001475255.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 65.67%.
+- skeleton-hit match-fail@20: 77.23%.
+- collision-like candidate rate@20: 64.84%.
+- grouped dev folds consistent: pending until both fold_a and fold_b fixed-order smoke complete.
+- Conclusion: non-oracle fixed-order generator path executed; terminal gate not met by this smoke alone.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the counterpart fold and then decide whether to scale training or change objective.
+
+## E8010: Fixed-order MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T03:39:44Z
+- Core hypothesis: a joint W/A + geometry decoder can produce native CIF candidates without any beam-score sorting.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_joint_smoke_fold_b/report.json, eval/fixed_order_joint_smoke_fold_b/generations.jsonl, eval/fixed_order_joint_smoke_fold_b/metrics.jsonl, checkpoints/fixed_order_joint_smoke_fold_b/best_train.pt, checkpoints/fixed_order_joint_smoke_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=128, eval=32.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2Net fixed-order decoder.
+- Parameters: 563084.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 1.77s.
+- Inference/eval wall time: 375.23s total.
+- readable@20: 81.25%.
+- composition exact@20: 81.25%.
+- SG/Wyckoff legal@20: 81.25%.
+- match@1: 9.38%.
+- match@5: 21.88%.
+- match@20: 34.38%.
+- RMSE@1/5/20: 0.0, 0.13052507598804405, 0.17806397452329387.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 71.43%.
+- skeleton-hit match-fail@20: 68.09%.
+- collision-like candidate rate@20: 39.69%.
+- grouped dev folds consistent: pending until both fold_a and fold_b fixed-order smoke complete.
+- Conclusion: non-oracle fixed-order generator path executed; terminal gate not met by this smoke alone.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the counterpart fold and then decide whether to scale training or change objective.
+
+## E8011: Fixed-order MiniCFJoint-v2 smoke (fold_a)
+- Time: 2026-06-19T03:53:38Z
+- Core hypothesis: a joint W/A + geometry decoder can produce native CIF candidates without any beam-score sorting.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Read files: checkpoints/minicfjoint_v2_fold_a_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_a_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_joint_smoke_E8011_fold_a/report.json, eval/fixed_order_joint_smoke_E8011_fold_a/generations.jsonl, eval/fixed_order_joint_smoke_E8011_fold_a/metrics.jsonl, checkpoints/fixed_order_joint_smoke_E8011_fold_a/best_train.pt, checkpoints/fixed_order_joint_smoke_E8011_fold_a/last.pt.
+- Data split: fold_a clean smoke; train=512, eval=64.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2Net fixed-order decoder.
+- Parameters: 1204554.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 7.59s.
+- Inference/eval wall time: 642.51s total.
+- readable@20: 98.44%.
+- composition exact@20: 98.44%.
+- SG/Wyckoff legal@20: 98.44%.
+- match@1: 14.06%.
+- match@5: 21.88%.
+- match@20: 23.44%.
+- RMSE@1/5/20: 0.06326073637938662, 0.1397992935696693, 0.10221112787312342.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 44.65%.
+- skeleton-hit match-fail@20: 44.78%.
+- collision-like candidate rate@20: 66.17%.
+- grouped dev folds consistent: pending until both fold_a and fold_b fixed-order smoke complete.
+- Conclusion: non-oracle fixed-order generator path executed; terminal gate not met by this smoke alone.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the counterpart fold and then decide whether to scale training or change objective.
+
+## E8012: Fixed-order MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T04:04:57Z
+- Core hypothesis: a joint W/A + geometry decoder can produce native CIF candidates without any beam-score sorting.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_joint_smoke_E8012_fold_b/report.json, eval/fixed_order_joint_smoke_E8012_fold_b/generations.jsonl, eval/fixed_order_joint_smoke_E8012_fold_b/metrics.jsonl, checkpoints/fixed_order_joint_smoke_E8012_fold_b/best_train.pt, checkpoints/fixed_order_joint_smoke_E8012_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=512, eval=64.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2Net fixed-order decoder.
+- Parameters: 1202948.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 7.55s.
+- Inference/eval wall time: 659.24s total.
+- readable@20: 89.06%.
+- composition exact@20: 89.06%.
+- SG/Wyckoff legal@20: 89.06%.
+- match@1: 28.12%.
+- match@5: 34.38%.
+- match@20: 43.75%.
+- RMSE@1/5/20: 0.07699105208766423, 0.07352039904201328, 0.09869735131815023.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 34.58%.
+- skeleton-hit match-fail@20: 36.20%.
+- collision-like candidate rate@20: 40.94%.
+- grouped dev folds consistent: pending until both fold_a and fold_b fixed-order smoke complete.
+- Conclusion: non-oracle fixed-order generator path executed; terminal gate not met by this smoke alone.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the counterpart fold and then decide whether to scale training or change objective.
+
+## E8013: Fixed-order MiniCFJoint-v2 smoke (fold_a)
+- Time: 2026-06-19T04:20:56Z
+- Core hypothesis: a joint W/A + geometry decoder can produce native CIF candidates without any beam-score sorting.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Read files: checkpoints/minicfjoint_v2_fold_a_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_a_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_joint_smoke_E8013_fold_a/report.json, eval/fixed_order_joint_smoke_E8013_fold_a/generations.jsonl, eval/fixed_order_joint_smoke_E8013_fold_a/metrics.jsonl, checkpoints/fixed_order_joint_smoke_E8013_fold_a/best_train.pt, checkpoints/fixed_order_joint_smoke_E8013_fold_a/last.pt.
+- Data split: fold_a clean smoke; train=806, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 441, "effective_train_records": 806, "rows_ge7_quota": 0.35, "rows_ge7_repeat": 3, "train_limit_requested": 512, "unique_rows_ge7_selected": 147, "unique_selected": 512}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2Net fixed-order decoder.
+- Parameters: 1200698.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 21.06s.
+- Inference/eval wall time: 748.30s total.
+- readable@20: 93.75%.
+- composition exact@20: 93.75%.
+- SG/Wyckoff legal@20: 93.75%.
+- match@1: 9.38%.
+- match@5: 20.31%.
+- match@20: 26.56%.
+- RMSE@1/5/20: 0.3494877006792217, 0.3795436494643131, 0.29023281720013006.
+- rows>=7 match@1/5/20: 11.11%, 11.11%, 11.11%.
+- rows>=7 positive-any@20: 11.11%.
+- rows>=7 new positives@20: 1.
+- W/A-hit match-fail@20: 79.15%.
+- skeleton-hit match-fail@20: 78.81%.
+- collision-like candidate rate@20: 65.08%.
+- grouped dev folds consistent: pending until both fold_a and fold_b fixed-order smoke complete.
+- Conclusion: non-oracle fixed-order generator path executed; terminal gate not met by this smoke alone.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the counterpart fold and then decide whether to scale training or change objective.
+
+## E8014: Fixed-order MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T04:32:41Z
+- Core hypothesis: a joint W/A + geometry decoder can produce native CIF candidates without any beam-score sorting.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_joint_smoke_E8014_fold_b/report.json, eval/fixed_order_joint_smoke_E8014_fold_b/generations.jsonl, eval/fixed_order_joint_smoke_E8014_fold_b/metrics.jsonl, checkpoints/fixed_order_joint_smoke_E8014_fold_b/best_train.pt, checkpoints/fixed_order_joint_smoke_E8014_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=806, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 441, "effective_train_records": 806, "rows_ge7_quota": 0.35, "rows_ge7_repeat": 3, "train_limit_requested": 512, "unique_rows_ge7_selected": 147, "unique_selected": 512}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2Net fixed-order decoder.
+- Parameters: 1197550.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 22.23s.
+- Inference/eval wall time: 690.33s total.
+- readable@20: 95.31%.
+- composition exact@20: 95.31%.
+- SG/Wyckoff legal@20: 95.31%.
+- match@1: 10.94%.
+- match@5: 21.88%.
+- match@20: 31.25%.
+- RMSE@1/5/20: 0.0783424239842814, 0.07716079330868883, 0.1295371705783122.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 57.92%.
+- skeleton-hit match-fail@20: 57.14%.
+- collision-like candidate rate@20: 47.34%.
+- grouped dev folds consistent: pending until both fold_a and fold_b fixed-order smoke complete.
+- Conclusion: non-oracle fixed-order generator path executed; terminal gate not met by this smoke alone.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the counterpart fold and then decide whether to scale training or change objective.
+
+## E8015: Fixed-order MiniCFJoint-v2 smoke (fold_a)
+- Time: 2026-06-19T04:47:39Z
+- Core hypothesis: a joint W/A + geometry decoder can produce native CIF candidates without any beam-score sorting.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Read files: checkpoints/minicfjoint_v2_fold_a_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_a_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_joint_smoke_E8015_fold_a/report.json, eval/fixed_order_joint_smoke_E8015_fold_a/generations.jsonl, eval/fixed_order_joint_smoke_E8015_fold_a/metrics.jsonl, checkpoints/fixed_order_joint_smoke_E8015_fold_a/best_train.pt, checkpoints/fixed_order_joint_smoke_E8015_fold_a/last.pt.
+- Data split: fold_a clean smoke; train=806, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 441, "effective_train_records": 806, "rows_ge7_quota": 0.35, "rows_ge7_repeat": 3, "train_limit_requested": 512, "unique_rows_ge7_selected": 147, "unique_selected": 512}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2Net fixed-order decoder.
+- Parameters: 1203396.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 23.31s.
+- Inference/eval wall time: 730.14s total.
+- readable@20: 100.00%.
+- composition exact@20: 100.00%.
+- SG/Wyckoff legal@20: 100.00%.
+- match@1: 28.12%.
+- match@5: 37.50%.
+- match@20: 39.06%.
+- RMSE@1/5/20: 0.2556718908480257, 0.27310917497859305, 0.2542576222290445.
+- rows>=7 match@1/5/20: 0.00%, 11.11%, 11.11%.
+- rows>=7 positive-any@20: 11.11%.
+- rows>=7 new positives@20: 1.
+- W/A-hit match-fail@20: 65.46%.
+- skeleton-hit match-fail@20: 62.79%.
+- collision-like candidate rate@20: 65.31%.
+- grouped dev folds consistent: pending until both fold_a and fold_b fixed-order smoke complete.
+- Conclusion: non-oracle fixed-order generator path executed; terminal gate not met by this smoke alone.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the counterpart fold and then decide whether to scale training or change objective.
+
+## E8016: Fixed-order MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T04:59:16Z
+- Core hypothesis: a joint W/A + geometry decoder can produce native CIF candidates without any beam-score sorting.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_joint_smoke_E8016_fold_b/report.json, eval/fixed_order_joint_smoke_E8016_fold_b/generations.jsonl, eval/fixed_order_joint_smoke_E8016_fold_b/metrics.jsonl, checkpoints/fixed_order_joint_smoke_E8016_fold_b/best_train.pt, checkpoints/fixed_order_joint_smoke_E8016_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=806, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 441, "effective_train_records": 806, "rows_ge7_quota": 0.35, "rows_ge7_repeat": 3, "train_limit_requested": 512, "unique_rows_ge7_selected": 147, "unique_selected": 512}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2Net fixed-order decoder.
+- Parameters: 1205002.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 23.16s.
+- Inference/eval wall time: 680.00s total.
+- readable@20: 92.19%.
+- composition exact@20: 92.19%.
+- SG/Wyckoff legal@20: 92.19%.
+- match@1: 17.19%.
+- match@5: 23.44%.
+- match@20: 28.12%.
+- RMSE@1/5/20: 0.13187193557298224, 0.11402669162082407, 0.15353003871873788.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 58.50%.
+- skeleton-hit match-fail@20: 62.11%.
+- collision-like candidate rate@20: 42.34%.
+- grouped dev folds consistent: pending until both fold_a and fold_b fixed-order smoke complete.
+- Conclusion: non-oracle fixed-order generator path executed; terminal gate not met by this smoke alone.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the counterpart fold and then decide whether to scale training or change objective.
+
+## E8017: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_a)
+- Time: 2026-06-19T05:35:19Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_a_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_a_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8017_fold_a/report.json, eval/fixed_order_geom_sampler_smoke_E8017_fold_a/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8017_fold_a/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8017_fold_a/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8017_fold_a/last.pt.
+- Data split: fold_a clean smoke; train=806, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 441, "effective_train_records": 806, "rows_ge7_quota": 0.35, "rows_ge7_repeat": 3, "train_limit_requested": 512, "unique_rows_ge7_selected": 147, "unique_selected": 512}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder.
+- Parameters: 1358322.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 21.18s.
+- Inference/eval wall time: 836.49s total.
+- readable@20: 95.31%.
+- composition exact@20: 95.31%.
+- SG/Wyckoff legal@20: 95.31%.
+- match@1: 7.81%.
+- match@5: 23.44%.
+- match@20: 42.19%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 11.11%.
+- rows>=7 positive-any@20: 11.11%.
+- rows>=7 new positives@20: 1.
+- W/A-hit match-fail@20: 83.97%.
+- skeleton-hit match-fail@20: 81.94%.
+- collision-like candidate rate@20: 58.91%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8018: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T05:49:44Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8018_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_E8018_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8018_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8018_fold_b/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8018_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=806, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 441, "effective_train_records": 806, "rows_ge7_quota": 0.35, "rows_ge7_repeat": 3, "train_limit_requested": 512, "unique_rows_ge7_selected": 147, "unique_selected": 512}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder.
+- Parameters: 1356716.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 24.41s.
+- Inference/eval wall time: 823.54s total.
+- readable@20: 90.62%.
+- composition exact@20: 90.62%.
+- SG/Wyckoff legal@20: 90.62%.
+- match@1: 14.06%.
+- match@5: 29.69%.
+- match@20: 43.75%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 49.31%.
+- skeleton-hit match-fail@20: 51.25%.
+- collision-like candidate rate@20: 28.44%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8019: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T06:12:13Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8019_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_E8019_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8019_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8019_fold_b/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8019_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=2323, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 441, "effective_train_records": 2323, "rows_ge7_quota": 0.45, "rows_ge7_repeat": 3, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder.
+- Parameters: 2489242.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 61.90s.
+- Inference/eval wall time: 1072.36s total.
+- readable@20: 93.75%.
+- composition exact@20: 93.75%.
+- SG/Wyckoff legal@20: 93.75%.
+- match@1: 28.12%.
+- match@5: 45.31%.
+- match@20: 54.69%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 46.96%.
+- skeleton-hit match-fail@20: 46.94%.
+- collision-like candidate rate@20: 51.17%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8020: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_a)
+- Time: 2026-06-19T06:31:47Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_a_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_a_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8020_fold_a/report.json, eval/fixed_order_geom_sampler_smoke_E8020_fold_a/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8020_fold_a/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8020_fold_a/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8020_fold_a/last.pt.
+- Data split: fold_a clean smoke; train=2323, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 441, "effective_train_records": 2323, "rows_ge7_quota": 0.45, "rows_ge7_repeat": 3, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder.
+- Parameters: 2493317.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 59.97s.
+- Inference/eval wall time: 1128.99s total.
+- readable@20: 96.88%.
+- composition exact@20: 96.88%.
+- SG/Wyckoff legal@20: 96.88%.
+- match@1: 15.62%.
+- match@5: 32.81%.
+- match@20: 51.56%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 75.34%.
+- skeleton-hit match-fail@20: 77.52%.
+- collision-like candidate rate@20: 69.69%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8021: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T06:56:59Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8021_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_E8021_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8021_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8021_fold_b/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8021_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=2323, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 441, "effective_train_records": 2323, "rows_ge7_quota": 0.45, "rows_ge7_repeat": 3, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder.
+- Parameters: 2489242.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 88.72s.
+- Inference/eval wall time: 1083.61s total.
+- readable@20: 95.31%.
+- composition exact@20: 95.31%.
+- SG/Wyckoff legal@20: 95.31%.
+- match@1: 21.88%.
+- match@5: 32.81%.
+- match@20: 53.12%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 47.81%.
+- skeleton-hit match-fail@20: 46.90%.
+- collision-like candidate rate@20: 45.00%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8022: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T07:24:24Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8022_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_E8022_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8022_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8022_fold_b/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8022_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=2323, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 441, "effective_train_records": 2323, "rows_ge7_quota": 0.45, "rows_ge7_repeat": 3, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder.
+- Parameters: 2489242.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 159.94s.
+- Inference/eval wall time: 1090.78s total.
+- readable@20: 92.19%.
+- composition exact@20: 92.19%.
+- SG/Wyckoff legal@20: 92.19%.
+- match@1: 12.50%.
+- match@5: 25.00%.
+- match@20: 53.12%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 49.04%.
+- skeleton-hit match-fail@20: 48.13%.
+- collision-like candidate rate@20: 48.75%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8023: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T07:53:24Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8023_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_E8023_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8023_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8023_fold_b/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8023_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=2323, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 441, "effective_train_records": 2323, "rows_ge7_quota": 0.45, "rows_ge7_repeat": 3, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder.
+- Parameters: 2489242.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 159.61s.
+- Inference/eval wall time: 1237.19s total.
+- readable@20: 89.06%.
+- composition exact@20: 89.06%.
+- SG/Wyckoff legal@20: 89.06%.
+- match@1: 18.75%.
+- match@5: 37.50%.
+- match@20: 59.38%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 41.67%.
+- skeleton-hit match-fail@20: 42.94%.
+- collision-like candidate rate@20: 44.06%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8024: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T08:17:46Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8024_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_E8024_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8024_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8024_fold_b/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8024_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=2470, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 588, "effective_train_records": 2470, "rows_ge7_quota": 0.6, "rows_ge7_repeat": 4, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder.
+- Parameters: 2489242.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 191.04s.
+- Inference/eval wall time: 1258.06s total.
+- readable@20: 96.88%.
+- composition exact@20: 96.88%.
+- SG/Wyckoff legal@20: 96.88%.
+- match@1: 31.25%.
+- match@5: 40.62%.
+- match@20: 57.81%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 40.07%.
+- skeleton-hit match-fail@20: 41.59%.
+- collision-like candidate rate@20: 43.91%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8025: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T08:44:28Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8025_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_E8025_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8025_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8025_fold_b/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8025_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=2470, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 588, "effective_train_records": 2470, "rows_ge7_quota": 0.6, "rows_ge7_repeat": 4, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder.
+- Parameters: 2489242.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 187.49s.
+- Inference/eval wall time: 1246.83s total.
+- readable@20: 93.75%.
+- composition exact@20: 93.75%.
+- SG/Wyckoff legal@20: 93.75%.
+- match@1: 18.75%.
+- match@5: 31.25%.
+- match@20: 54.69%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 45.32%.
+- skeleton-hit match-fail@20: 44.90%.
+- collision-like candidate rate@20: 49.06%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8026: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T09:12:58Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; previous representative coordinate conditioning; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8026_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_E8026_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8026_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8026_fold_b/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8026_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=2470, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 588, "effective_train_records": 2470, "rows_ge7_quota": 0.6, "rows_ge7_repeat": 4, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder with previous representative coordinate conditioning.
+- Parameters: 2588512.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 189.05s.
+- Inference/eval wall time: 1262.65s total.
+- readable@20: 92.19%.
+- composition exact@20: 92.19%.
+- SG/Wyckoff legal@20: 92.19%.
+- match@1: 23.44%.
+- match@5: 34.38%.
+- match@20: 57.81%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 39.51%.
+- skeleton-hit match-fail@20: 41.39%.
+- collision-like candidate rate@20: 47.11%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8027: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T09:40:25Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; previous representative coordinate conditioning; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8027_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_E8027_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8027_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8027_fold_b/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8027_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=2470, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 588, "effective_train_records": 2470, "rows_ge7_quota": 0.6, "rows_ge7_repeat": 4, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder with previous representative coordinate conditioning.
+- Parameters: 2588512.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 202.77s.
+- Inference/eval wall time: 1332.92s total.
+- readable@20: 89.06%.
+- composition exact@20: 89.06%.
+- SG/Wyckoff legal@20: 89.06%.
+- match@1: 29.69%.
+- match@5: 45.31%.
+- match@20: 51.56%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 42.13%.
+- skeleton-hit match-fail@20: 42.11%.
+- collision-like candidate rate@20: 49.77%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8028: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_a)
+- Time: 2026-06-19T10:07:53Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; previous representative coordinate conditioning; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_a_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_a_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8028_fold_a/report.json, eval/fixed_order_geom_sampler_smoke_E8028_fold_a/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8028_fold_a/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8028_fold_a/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8028_fold_a/last.pt.
+- Data split: fold_a clean smoke; train=2470, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 588, "effective_train_records": 2470, "rows_ge7_quota": 0.6, "rows_ge7_repeat": 4, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder with previous representative coordinate conditioning.
+- Parameters: 2592587.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 207.54s.
+- Inference/eval wall time: 1447.73s total.
+- readable@20: 96.88%.
+- composition exact@20: 96.88%.
+- SG/Wyckoff legal@20: 96.88%.
+- match@1: 10.94%.
+- match@5: 34.38%.
+- match@20: 48.44%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 11.11%.
+- rows>=7 positive-any@20: 11.11%.
+- rows>=7 new positives@20: 1.
+- W/A-hit match-fail@20: 67.03%.
+- skeleton-hit match-fail@20: 69.32%.
+- collision-like candidate rate@20: 66.56%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8029: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T10:35:35Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; previous representative coordinate conditioning; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8029_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_E8029_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8029_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8029_fold_b/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8029_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=2470, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 588, "effective_train_records": 2470, "rows_ge7_quota": 0.6, "rows_ge7_repeat": 4, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder with previous representative coordinate conditioning.
+- Parameters: 2588512.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 204.45s.
+- Inference/eval wall time: 1340.25s total.
+- readable@20: 95.31%.
+- composition exact@20: 95.31%.
+- SG/Wyckoff legal@20: 95.31%.
+- match@1: 26.56%.
+- match@5: 45.31%.
+- match@20: 60.94%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 31.17%.
+- skeleton-hit match-fail@20: 30.19%.
+- collision-like candidate rate@20: 45.23%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8030: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T11:04:20Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; previous representative coordinate conditioning; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8030_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_E8030_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8030_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8030_fold_b/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8030_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=2470, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 588, "effective_train_records": 2470, "rows_ge7_quota": 0.6, "rows_ge7_repeat": 4, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder with previous representative coordinate conditioning.
+- Parameters: 2588512.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 201.82s.
+- Inference/eval wall time: 1235.99s total.
+- readable@20: 95.31%.
+- composition exact@20: 95.31%.
+- SG/Wyckoff legal@20: 95.31%.
+- match@1: 21.88%.
+- match@5: 31.25%.
+- match@20: 54.69%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 46.12%.
+- skeleton-hit match-fail@20: 49.81%.
+- collision-like candidate rate@20: 52.50%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8031: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T11:29:41Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; previous representative coordinate conditioning; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8031_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_E8031_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8031_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8031_fold_b/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8031_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=2470, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 588, "effective_train_records": 2470, "rows_ge7_quota": 0.6, "rows_ge7_repeat": 4, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder with previous representative coordinate conditioning.
+- Parameters: 2588512.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 206.15s.
+- Inference/eval wall time: 1326.56s total.
+- readable@20: 95.31%.
+- composition exact@20: 95.31%.
+- SG/Wyckoff legal@20: 95.31%.
+- match@1: 21.88%.
+- match@5: 42.19%.
+- match@20: 56.25%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 44.73%.
+- skeleton-hit match-fail@20: 46.50%.
+- collision-like candidate rate@20: 44.30%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8032: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T11:53:18Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; previous representative coordinate conditioning; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8032_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_E8032_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8032_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8032_fold_b/eval_only_source.json. Source checkpoint: checkpoints/fixed_order_geom_sampler_smoke_E8031_fold_b/best_train.pt.
+- Data split: fold_b clean smoke; train=2470, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 588, "effective_train_records": 2470, "rows_ge7_quota": 0.6, "rows_ge7_repeat": 4, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder with previous representative coordinate conditioning.
+- Parameters: 2588512.
+- GPU/CPU: eval-only checkpoint load; generation/eval CPU.
+- Training time: 0.00s.
+- Inference/eval wall time: 794.50s total.
+- readable@20: 95.31%.
+- composition exact@20: 95.31%.
+- SG/Wyckoff legal@20: 95.31%.
+- match@1: 21.88%.
+- match@5: 35.94%.
+- match@20: 51.56%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 48.91%.
+- skeleton-hit match-fail@20: 50.88%.
+- collision-like candidate rate@20: 42.66%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8033: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T12:27:12Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; previous representative coordinate conditioning; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8033_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_E8033_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8033_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8033_fold_b/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8033_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=2470, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 588, "effective_train_records": 2470, "rows_ge7_quota": 0.6, "rows_ge7_repeat": 4, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder with previous representative coordinate conditioning.
+- Parameters: 2588512.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 216.61s.
+- Inference/eval wall time: 1338.23s total.
+- readable@20: 95.31%.
+- composition exact@20: 95.31%.
+- SG/Wyckoff legal@20: 95.31%.
+- match@1: 10.94%.
+- match@5: 28.12%.
+- match@20: 62.50%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 46.89%.
+- skeleton-hit match-fail@20: 49.67%.
+- collision-like candidate rate@20: 45.47%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8034: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T12:52:33Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; previous representative coordinate conditioning; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8034_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_E8034_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8034_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8034_fold_b/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8034_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=2470, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 588, "effective_train_records": 2470, "rows_ge7_quota": 0.6, "rows_ge7_repeat": 4, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder with previous representative coordinate conditioning.
+- Parameters: 2588512.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 214.35s.
+- Inference/eval wall time: 1274.42s total.
+- readable@20: 95.31%.
+- composition exact@20: 95.31%.
+- SG/Wyckoff legal@20: 95.31%.
+- match@1: 34.38%.
+- match@5: 48.44%.
+- match@20: 51.56%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 36.58%.
+- skeleton-hit match-fail@20: 36.81%.
+- collision-like candidate rate@20: 42.81%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8035: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T13:15:45Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; previous representative coordinate conditioning; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8035_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_E8035_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8035_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8035_fold_b/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8035_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=2470, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 588, "effective_train_records": 2470, "rows_ge7_quota": 0.6, "rows_ge7_repeat": 4, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder with previous representative coordinate conditioning.
+- Parameters: 2588512.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 211.24s.
+- Inference/eval wall time: 1017.97s total.
+- readable@20: 95.31%.
+- composition exact@20: 95.31%.
+- SG/Wyckoff legal@20: 95.31%.
+- match@1: 28.12%.
+- match@5: 40.62%.
+- match@20: 56.25%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 48.85%.
+- skeleton-hit match-fail@20: 48.81%.
+- collision-like candidate rate@20: 44.45%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8036: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T13:33:41Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; previous representative coordinate conditioning; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8036_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_E8036_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8036_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8036_fold_b/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8036_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=2470, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 588, "effective_train_records": 2470, "rows_ge7_quota": 0.6, "rows_ge7_repeat": 4, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder with previous representative coordinate conditioning.
+- Parameters: 2588512.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 0.00s.
+- Inference/eval wall time: 739.15s total.
+- readable@20: 95.31%.
+- composition exact@20: 95.31%.
+- SG/Wyckoff legal@20: 95.31%.
+- match@1: 34.38%.
+- match@5: 48.44%.
+- match@20: 51.56%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 36.91%.
+- skeleton-hit match-fail@20: 37.46%.
+- collision-like candidate rate@20: 43.59%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## SMOKE_complexgeom_loss: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T13:36:16Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; previous representative coordinate conditioning; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_SMOKE_complexgeom_loss_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_SMOKE_complexgeom_loss_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_SMOKE_complexgeom_loss_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_SMOKE_complexgeom_loss_fold_b/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_SMOKE_complexgeom_loss_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=2, eval=1.
+- Train curriculum: {"effective_rows_ge7_records": 0, "effective_train_records": 2, "rows_ge7_quota": 0.0, "rows_ge7_repeat": 1, "train_limit_requested": 2, "unique_rows_ge7_selected": 0, "unique_selected": 2}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder with previous representative coordinate conditioning.
+- Parameters: 44074.
+- GPU/CPU: train cpu; generation/eval CPU.
+- Training time: 3.23s.
+- Inference/eval wall time: 4.23s total.
+- readable@20: 0.00%.
+- composition exact@20: 0.00%.
+- SG/Wyckoff legal@20: 0.00%.
+- match@1: 0.00%.
+- match@5: 0.00%.
+- match@20: 0.00%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 0.00%.
+- skeleton-hit match-fail@20: 0.00%.
+- collision-like candidate rate@20: 0.00%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8037: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T14:02:27Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; previous representative coordinate conditioning; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8037_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_E8037_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8037_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8037_fold_b/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8037_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=2470, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 588, "effective_train_records": 2470, "rows_ge7_quota": 0.6, "rows_ge7_repeat": 4, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder with previous representative coordinate conditioning.
+- Parameters: 2588512.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 216.31s.
+- Inference/eval wall time: 1345.48s total.
+- readable@20: 96.88%.
+- composition exact@20: 96.88%.
+- SG/Wyckoff legal@20: 96.88%.
+- match@1: 15.62%.
+- match@5: 23.44%.
+- match@20: 45.31%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 35.74%.
+- skeleton-hit match-fail@20: 37.20%.
+- collision-like candidate rate@20: 42.03%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.
+
+## E8038: Fixed-order geometry-sampler MiniCFJoint-v2 smoke (fold_b)
+- Time: 2026-06-19T14:28:10Z
+- Core hypothesis: rows>=7 failures require distributional free-param/lattice sampling instead of a single coordinate point estimate.
+- Difference vs historical failed routes: no selector, no reranker, no source-prior insertion, no candidate score ordering; each candidate is one fixed generation_index/seed path.
+- Model/data side: model-side joint generator smoke on opentry_5 grouped clean data.
+- Contains sorting/filtering: no.
+- candidate order: generation_index_then_fixed_seed; invalid candidates remain in place.
+- Geometry objective: heteroscedastic free-param/lattice NLL; previous representative coordinate conditioning; fixed-seed sampling only.
+- Read files: checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_train.jsonl, checkpoints/minicfjoint_v2_fold_b_gate0_smoke/clean_data/clean_val.jsonl, model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json.
+- Written files: eval/fixed_order_geom_sampler_smoke_E8038_fold_b/report.json, eval/fixed_order_geom_sampler_smoke_E8038_fold_b/generations.jsonl, eval/fixed_order_geom_sampler_smoke_E8038_fold_b/metrics.jsonl, checkpoints/fixed_order_geom_sampler_smoke_E8038_fold_b/best_train.pt, checkpoints/fixed_order_geom_sampler_smoke_E8038_fold_b/last.pt.
+- Data split: fold_b clean smoke; train=2470, eval=64.
+- Train curriculum: {"effective_rows_ge7_records": 588, "effective_train_records": 2470, "rows_ge7_quota": 0.6, "rows_ge7_repeat": 4, "train_limit_requested": 2029, "unique_rows_ge7_selected": 147, "unique_selected": 2029}.
+- Test read: no.
+- val512 read: no; val512 cumulative count unchanged.
+- Model: MiniCFJointV2GeomSamplerNet fixed-order decoder with previous representative coordinate conditioning.
+- Parameters: 2588512.
+- GPU/CPU: train cuda:0; generation/eval CPU.
+- Training time: 213.16s.
+- Inference/eval wall time: 1283.23s total.
+- readable@20: 98.44%.
+- composition exact@20: 98.44%.
+- SG/Wyckoff legal@20: 98.44%.
+- match@1: 14.06%.
+- match@5: 28.12%.
+- match@20: 57.81%.
+- rows>=7 match@1/5/20: 0.00%, 0.00%, 0.00%.
+- rows>=7 positive-any@20: 0.00%.
+- rows>=7 new positives@20: 0.
+- W/A-hit match-fail@20: 45.53%.
+- skeleton-hit match-fail@20: 45.16%.
+- collision-like candidate rate@20: 44.14%.
+- Gate pass: false.
+- Stop model family: false.
+- Next: run the paired grouped fold before deciding whether to stop or scale this geometry objective.

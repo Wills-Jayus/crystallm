@@ -1,0 +1,48 @@
+[
+  {
+    "budget": 20,
+    "candidate_rows": 180920,
+    "config": "model/New_model/opentry_8/frozen_strategy/config.json",
+    "dataset": "mp_20",
+    "empty_primary_groups": 0,
+    "empty_supplemental_groups": 0,
+    "official_samples": 9046,
+    "placeholder_slots": 0,
+    "primary_slots": 180920,
+    "primary_source": "/data/users/xsw/autodlmini/model/New_model/opentry_7/generations/crystallm_a_gt_sg_mp_20_test.tar.gz",
+    "samples_requiring_placeholder": 0,
+    "samples_requiring_supplemental": 0,
+    "samples_with_20_slots": 9046,
+    "samples_with_primary_candidate": 9046,
+    "samples_with_supplemental_candidate": 0,
+    "split": "test",
+    "supplemental_slots": 0,
+    "supplemental_sources": [
+      "/data/users/xsw/autodlmini/model/New_model/opentry_7/generations/strategy_stablekey_hybrid_mp_20_test_k20_candidates.jsonl"
+    ],
+    "system": "strategy_fusion"
+  },
+  {
+    "budget": 20,
+    "candidate_rows": 161920,
+    "config": "model/New_model/opentry_8/frozen_strategy/config.json",
+    "dataset": "mpts_52",
+    "empty_primary_groups": 1,
+    "empty_supplemental_groups": 0,
+    "official_samples": 8096,
+    "placeholder_slots": 0,
+    "primary_slots": 161900,
+    "primary_source": "/data/users/xsw/autodlmini/model/New_model/opentry_7/generations/crystallm_a_gt_sg_mpts_52_test.tar.gz",
+    "samples_requiring_placeholder": 0,
+    "samples_requiring_supplemental": 1,
+    "samples_with_20_slots": 8096,
+    "samples_with_primary_candidate": 8095,
+    "samples_with_supplemental_candidate": 1,
+    "split": "test",
+    "supplemental_slots": 20,
+    "supplemental_sources": [
+      "/data/users/xsw/autodlmini/model/New_model/opentry_7/generations/strategy_stablekey_hybrid_mpts_52_test_k20_candidates.jsonl"
+    ],
+    "system": "strategy_fusion"
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "accepted": {
+    "test": 500,
+    "train": 5000,
+    "val": 500
+  },
+  "angle_tolerance": 5.0,
+  "input_root": "model/scp_task/CrystaLLM/reproduce/benchmarks_gt_from_prepare_csv_benchmark_symprec0p1",
+  "processed_candidates": 6607,
+  "seed": 1337,
+  "symprec": 0.1,
+  "target": {
+    "test": 500,
+    "train": 5000,
+    "val": 500
+  }
+}

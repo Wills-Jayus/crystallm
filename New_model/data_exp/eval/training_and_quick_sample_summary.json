@@ -1,0 +1,58 @@
+{
+  "curves": {
+    "orig_cif": {
+      "best": {
+        "step": 2500,
+        "train_loss": 0.1566,
+        "val_loss": 0.2014
+      },
+      "curve_csv": "/data/users/xsw/autodlmini/model/New_model/data_exp/eval/orig_cif_loss_curve.csv",
+      "final": {
+        "step": 3500,
+        "train_loss": 0.1466,
+        "val_loss": 0.2054
+      },
+      "num_eval_points": 15
+    },
+    "symcif_v4": {
+      "best": {
+        "step": 1250,
+        "train_loss": 0.1829,
+        "val_loss": 0.3616
+      },
+      "curve_csv": "/data/users/xsw/autodlmini/model/New_model/data_exp/eval/symcif_v4_loss_curve.csv",
+      "final": {
+        "step": 3500,
+        "train_loss": 0.1524,
+        "val_loss": 0.3931
+      },
+      "num_eval_points": 15
+    }
+  },
+  "no_test_read": true,
+  "quick_sample": {
+    "orig_cif": {
+      "generations_jsonl": "/data/users/xsw/autodlmini/model/New_model/data_exp/eval/orig_cif_quick_generations.jsonl",
+      "pymatgen_parse_ok": 10,
+      "pymatgen_parse_rate": 0.625,
+      "required_tags_ok": 16,
+      "required_tags_rate": 1.0,
+      "total": 16
+    },
+    "symcif_v4": {
+      "generations_jsonl": "/data/users/xsw/autodlmini/model/New_model/data_exp/eval/symcif_v4_quick_generations.jsonl",
+      "pymatgen_parse_ok": 0,
+      "pymatgen_parse_rate": 0.0,
+      "required_tags_ok": 16,
+      "required_tags_rate": 1.0,
+      "total": 16
+    }
+  },
+  "sampling": {
+    "max_new_tokens": 1536,
+    "num_per_prompt": 2,
+    "num_prompts": 8,
+    "temperature": 0.8,
+    "top_k": 10
+  }
+}

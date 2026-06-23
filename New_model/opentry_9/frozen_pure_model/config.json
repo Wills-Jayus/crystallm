@@ -1,0 +1,6 @@
+{
+  "new_official_test_run": false,
+  "no_crystallm_candidates_mixed": true,
+  "reason": "Pure structural validation did not produce a frozen K20 model/checkpoint in opentry_9.",
+  "status": "not_frozen"
+}
