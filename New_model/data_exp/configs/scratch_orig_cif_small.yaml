@@ -1,0 +1,30 @@
+out_dir: '/data/users/xsw/autodlmini/model/New_model/data_exp/runs/scratch_orig_cif_small'
+eval_interval: 250
+eval_iters_train: 200
+eval_iters_val: 200
+log_interval: 10
+always_save_checkpoint: True
+validate: True
+init_from: 'scratch'
+
+dataset: '/data/users/xsw/autodlmini/model/New_model/data_exp/data/tokens_mpts52_orig_cif_byte'
+gradient_accumulation_steps: 4
+batch_size: 32
+block_size: 1024
+
+n_layer: 8
+n_head: 8
+n_embd: 512
+dropout: 0.1
+
+learning_rate: 1e-3
+decay_lr: True
+max_iters: 3500
+lr_decay_iters: 3500
+min_lr: 1e-4
+beta2: 0.99
+warmup_iters: 100
+
+device: 'cuda:0'
+dtype: 'bfloat16'
+compile: True

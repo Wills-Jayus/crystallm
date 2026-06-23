@@ -1,0 +1,26 @@
+{
+  "name": "opentry_8_unified_csp_evaluator",
+  "dataset_protocol": "CrystaLLM Table 3 official MP-20 and MPTS-52 splits",
+  "generation_budget": 20,
+  "failure_policy": "retain failed and missing generations as failures; never drop official test samples",
+  "structure_matcher": {
+    "ltol": 0.3,
+    "stol": 0.5,
+    "angle_tol": 10
+  },
+  "rmse_definition": "pymatgen StructureMatcher.get_rms_dist(pred, gt)[0], averaged over matched samples",
+  "match_policy": "CSP match/RMSE is independent of sensibility and SMACT validity, matching CrystaLLM bin/benchmark_metrics.py",
+  "reported_metrics": [
+    "match@1",
+    "match@5",
+    "match@20",
+    "RMSE@1",
+    "RMSE@5",
+    "RMSE@20",
+    "rows_ge7 match@1",
+    "rows_ge7 match@5",
+    "rows_ge7 match@20",
+    "rows_ge7 positive-any"
+  ],
+  "script": "scripts/opentry8_tools.py"
+}

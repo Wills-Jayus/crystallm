@@ -1,0 +1,26 @@
+out_dir: '/data/users/xsw/autodlmini/model/New_model/opentry_7/checkpoints/pure_crystallm_gt_sg_mpts_52'
+eval_interval: 250
+eval_iters_train: 200
+eval_iters_val: 200
+log_interval: 1
+
+always_save_checkpoint: False
+validate: True
+
+dataset: '/data/users/xsw/autodlmini/model/New_model/opentry_7/cache/tokens_mpts_52_official'
+gradient_accumulation_steps: 4
+batch_size: 32
+block_size: 1024
+
+n_layer: 8
+n_head: 8
+n_embd: 512
+dropout: 0.1
+
+learning_rate: 1e-3
+max_iters: 3500
+lr_decay_iters: 3500
+min_lr: 1e-4
+beta2: 0.99
+
+warmup_iters: 100

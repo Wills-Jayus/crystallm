@@ -1,0 +1,22 @@
+workdir: /data/users/xsw/autodlmini/model/New_model/opentry_5
+environment: crystallm_env
+test_access: none
+candidate_order: generation_index_then_seed
+no_ranking: true
+splits:
+  train_core: data/canonical_train/train_core.jsonl
+  dev_model: data/canonical_dev/dev_model.jsonl
+  dev_gate: data/canonical_dev/dev_gate.jsonl
+  fold_a: data/canonical_dev/fold_a.jsonl
+  fold_b: data/canonical_dev/fold_b.jsonl
+generation_protocol:
+  k: 20
+  generation_index_0: deterministic_decode
+  generation_index_1_to_4: fixed_medium_random_seeds
+  generation_index_5_to_19: fixed_diversity_seeds
+  seeds: [8000, 8001, 8002, 8003, 8004, 8010, 8011, 8012, 8013, 8014, 8020, 8021, 8022, 8023, 8024, 8030, 8031, 8032, 8033, 8034]
+model_family: B
+objective: generative_geometry_denoising_not_scoring
+input: formula_GT_SG_predicted_WA_corrupted_lattice_free_params_site_mapping
+losses: [masked_ce_site_mapping, circular_free_param_loss, huber_lattice, pair_distance_aux, collision_aux, vpa_aux]
+data: [data/geometry_denoising_train.jsonl, data/geometry_denoising_dev.jsonl]

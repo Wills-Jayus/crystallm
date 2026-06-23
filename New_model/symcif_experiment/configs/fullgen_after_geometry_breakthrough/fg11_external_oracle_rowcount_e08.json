@@ -1,0 +1,18 @@
+{
+  "clean_train": "/data/users/xsw/autodlmini/runs/symcif_v4_mp20_minicfjoint_v2/clean_data/clean_train.jsonl",
+  "clean_val": "/data/users/xsw/autodlmini/runs/symcif_v4_mp20_minicfjoint_v2/clean_data/clean_val.jsonl",
+  "command": "conda run -n crystallm_env python model/New_model/symcif_experiment/scripts/run_mp20_fullgen_after_geometry_breakthrough.py --stage all --experiment-ids fg11_external_oracle_rowcount_e08 --top-k 5",
+  "experiment": {
+    "description": "Diagnostic: filter predicted WA candidates by GT row_count before e08 geometry.",
+    "diagnostic_uses_gt_row_count": true,
+    "family": "diagnostic_oracle_rowcount",
+    "geometry_mode": "e08",
+    "id": "fg11_external_oracle_rowcount_e08",
+    "ranker": "oracle_rowcount_filter",
+    "wa_source": "external_hybrid",
+    "wa_strategy": "external_top20"
+  },
+  "retrieval_index": "in_memory_clean_train_only",
+  "seed": 1337,
+  "top_k": 5
+}

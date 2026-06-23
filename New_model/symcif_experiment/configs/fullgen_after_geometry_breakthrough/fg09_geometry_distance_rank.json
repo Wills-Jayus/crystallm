@@ -1,0 +1,17 @@
+{
+  "clean_train": "/data/users/xsw/autodlmini/runs/symcif_v4_mp20_minicfjoint_v2/clean_data/clean_train.jsonl",
+  "clean_val": "/data/users/xsw/autodlmini/runs/symcif_v4_mp20_minicfjoint_v2/clean_data/clean_val.jsonl",
+  "command": "conda run -n crystallm_env python model/New_model/symcif_experiment/scripts/run_mp20_fullgen_after_geometry_breakthrough.py --stage all --experiment-ids fg09_geometry_distance_rank --top-k 5",
+  "experiment": {
+    "description": "Rank external WA candidates by row-conditioned geometry retrieval distance and validity priors.",
+    "family": "D_candidate_selection",
+    "geometry_mode": "e08",
+    "id": "fg09_geometry_distance_rank",
+    "ranker": "geometry_distance",
+    "wa_source": "external_hybrid",
+    "wa_strategy": "external_top5"
+  },
+  "retrieval_index": "in_memory_clean_train_only",
+  "seed": 1337,
+  "top_k": 5
+}

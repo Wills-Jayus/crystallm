@@ -121,3 +121,26 @@ CrystaLLM/my_prompt.txt
 
 # Compressed pickles / caches
 *.pkl.gz
+
+# --- New_model research tree: keep source/configs/reports, ignore generated bulk ---
+New_model/**/__pycache__/
+New_model/**/runs/
+New_model/**/eval_runs/
+New_model/**/generations/
+New_model/**/candidates/
+New_model/**/cache/
+New_model/**/checkpoints/
+New_model/**/logs/
+New_model/**/vendor/
+New_model/**/external/
+New_model/**/out/
+New_model/**/data/
+New_model/**/data_smoke/
+New_model/**/data_symcif_v2_smoke/
+New_model/**/*.cif
+New_model/**/*.jsonl
+New_model/**/*.pkl
+New_model/**/*.pkl.gz
+New_model/**/*.tar
+New_model/**/*.tar.gz
+New_model/**/*.zip

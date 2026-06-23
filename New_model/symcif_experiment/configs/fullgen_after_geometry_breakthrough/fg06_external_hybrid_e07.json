@@ -1,0 +1,17 @@
+{
+  "clean_train": "/data/users/xsw/autodlmini/runs/symcif_v4_mp20_minicfjoint_v2/clean_data/clean_train.jsonl",
+  "clean_val": "/data/users/xsw/autodlmini/runs/symcif_v4_mp20_minicfjoint_v2/clean_data/clean_val.jsonl",
+  "command": "conda run -n crystallm_env python model/New_model/symcif_experiment/scripts/run_mp20_fullgen_after_geometry_breakthrough.py --stage all --experiment-ids fg06_external_hybrid_e07 --top-k 5",
+  "experiment": {
+    "description": "Current hybrid WA candidates rendered through the row-conditioned e07 geometry branch.",
+    "family": "E_geometry_aware_wa",
+    "geometry_mode": "e07",
+    "id": "fg06_external_hybrid_e07",
+    "ranker": "external_order",
+    "wa_source": "external_hybrid",
+    "wa_strategy": "external_top5"
+  },
+  "retrieval_index": "in_memory_clean_train_only",
+  "seed": 1337,
+  "top_k": 5
+}

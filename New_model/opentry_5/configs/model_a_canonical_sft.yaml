@@ -1,0 +1,23 @@
+workdir: /data/users/xsw/autodlmini/model/New_model/opentry_5
+environment: crystallm_env
+test_access: none
+candidate_order: generation_index_then_seed
+no_ranking: true
+splits:
+  train_core: data/canonical_train/train_core.jsonl
+  dev_model: data/canonical_dev/dev_model.jsonl
+  dev_gate: data/canonical_dev/dev_gate.jsonl
+  fold_a: data/canonical_dev/fold_a.jsonl
+  fold_b: data/canonical_dev/fold_b.jsonl
+generation_protocol:
+  k: 20
+  generation_index_0: deterministic_decode
+  generation_index_1_to_4: fixed_medium_random_seeds
+  generation_index_5_to_19: fixed_diversity_seeds
+  seeds: [8000, 8001, 8002, 8003, 8004, 8010, 8011, 8012, 8013, 8014, 8020, 8021, 8022, 8023, 8024, 8030, 8031, 8032, 8033, 8034]
+model_family: A
+objective: SFT formula_plus_GT_SG_to_canonical_CIF_or_sequence
+base_checkpoint: checkpoints/base_crystallm_v1_small/ckpt.pt
+curriculum: [simple, rows_4_to_6, rows_ge_7]
+condition_mix: [GT_WA, OOF_predicted_WA, synthetic_corruption]
+loss: token_ce_with_key_token_weighting

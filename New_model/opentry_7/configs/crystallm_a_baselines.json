@@ -1,0 +1,39 @@
+{
+  "published_crystallm_a_composition_only": {
+    "mp_20": {
+      "match@1": 0.5585,
+      "match@5": null,
+      "match@20": 0.7514,
+      "RMSE@1": 0.0437,
+      "RMSE@5": null,
+      "RMSE@20": 0.0395
+    },
+    "mpts_52": {
+      "match@1": 0.1747,
+      "match@5": null,
+      "match@20": 0.3298,
+      "RMSE@1": 0.1113,
+      "RMSE@5": null,
+      "RMSE@20": 0.1197
+    },
+    "source": "Historical repository reports reproducing CrystaLLM Table 3; match@5/RMSE@5 not published in the source table."
+  },
+  "reproduced_crystallm_a_composition_only": {
+    "model_source": "model/scp_task/CrystaLLM/crystallm_benchmarkmodel/cif_model_{dataset}_b/ckpt.pt",
+    "prompt_source": "official CrystaLLM make_prompts.py without --with-spacegroup on official preprocessed test CIFs",
+    "sampling": {
+      "top_k": 10,
+      "temperature": 1.0,
+      "num_generations_per_sample": 20
+    }
+  },
+  "crystallm_a_gt_sg": {
+    "model_source": "same official small/a checkpoint as reproduced composition-only",
+    "prompt_source": "official CrystaLLM make_prompts.py --with-spacegroup on official preprocessed test CIFs",
+    "sampling": {
+      "top_k": 10,
+      "temperature": 1.0,
+      "num_generations_per_sample": 20
+    }
+  }
+}

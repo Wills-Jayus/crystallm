@@ -1,0 +1,45 @@
+{
+  "name": "mp20_minicfjoint_v2",
+  "scope": {
+    "dataset": "MP-20",
+    "splits": ["train", "val"],
+    "test_used": false,
+    "mpts52_used": false,
+    "match20_used": false,
+    "crystallm_baseline_used": false
+  },
+  "paths": {
+    "script": "model/New_model/symcif_experiment/scripts/run_mp20_minicfjoint_v2.py",
+    "smoke_test": "model/New_model/symcif_experiment/scripts/test_minicfjoint_v2_smoke.py",
+    "data_root": "model/New_model/symcif_experiment/data/structured_symcif_v4_mp20",
+    "lookup_json": "model/New_model/symcif_experiment/artifacts/wyckoff_lookup_full.json",
+    "report_dir": "reports/symcif_v4_mp20_minicfjoint_v2",
+    "run_dir": "runs/symcif_v4_mp20_minicfjoint_v2"
+  },
+  "commands": {
+    "gate0": "python3 model/New_model/symcif_experiment/scripts/run_mp20_minicfjoint_v2.py --stage gate0 --eval-workers 48",
+    "design": "python3 model/New_model/symcif_experiment/scripts/run_mp20_minicfjoint_v2.py --stage design",
+    "small_overfit": "conda run -n crystallm_env python model/New_model/symcif_experiment/scripts/run_mp20_minicfjoint_v2.py --stage small-overfit --small-overfit-samples 256 --small-overfit-epochs 1200 --batch-size 256 --hidden-dim 512 --emb-dim 160 --lr 0.001 --weight-decay 0.0 --eval-every 100 --device cuda --eval-workers 48",
+    "gtwa_geometry": "conda run -n crystallm_env python model/New_model/symcif_experiment/scripts/run_mp20_minicfjoint_v2.py --stage gtwa-geometry --geometry-epochs 25 --geometry-batch-size 512 --geometry-eval-batch-size 256 --geometry-hidden-dim 256 --geometry-emb-dim 64 --geometry-lr 0.002 --geometry-weight-decay 0.0001 --geometry-coord-weight 2.0 --geometry-eval-every 25 --device cpu --eval-workers 48",
+    "smoke_test": "conda run -n crystallm_env python model/New_model/symcif_experiment/scripts/test_minicfjoint_v2_smoke.py --limit 8"
+  },
+  "model": {
+    "action_space": "hierarchical",
+    "heads": ["orbit_head", "element_head", "free_param_head", "lattice_head"],
+    "small_overfit_hidden_dim": 512,
+    "small_overfit_emb_dim": 160,
+    "gtwa_geometry_hidden_dim": 256,
+    "gtwa_geometry_emb_dim": 64
+  },
+  "gates": {
+    "gate0_clean_roundtrip_min": 0.995,
+    "small_overfit_orbit_top1_min": 0.95,
+    "small_overfit_element_top1_min": 0.95,
+    "small_overfit_row_count_min": 0.95,
+    "small_overfit_formula_closure_min": 0.99,
+    "gtwa_match1_min": 0.60,
+    "gtwa_match5_min": 0.70,
+    "gtwa_rmse1_max": 0.09,
+    "gtwa_rmse5_max": 0.08
+  }
+}

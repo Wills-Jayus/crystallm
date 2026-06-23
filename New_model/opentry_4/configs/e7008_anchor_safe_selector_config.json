@@ -1,0 +1,11 @@
+{
+  "anchor_count": 4,
+  "baseline_source": "/data/users/xsw/autodlmini/model/New_model/opentry_3/data/geometry_compat_mpts52/e424_e422_val512_features/val_candidate_features.jsonl",
+  "energy_checkpoint": "/data/users/xsw/autodlmini/model/New_model/opentry_4/checkpoints/geometry_energy_model_sklearn_e7006.joblib",
+  "energy_threshold": 0.8177651403874165,
+  "max_per_wa": 2,
+  "proposal_source": "/data/users/xsw/autodlmini/model/New_model/opentry_3/data/geometry_compat_mpts52/e704_e700_pairfield_repel_aligned216_rows7_features/val_candidate_features.jsonl",
+  "test_information_used": "no",
+  "threshold_source": "train-dev hard-negative score quantile",
+  "top_k": 50
+}

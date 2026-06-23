@@ -1,0 +1,17 @@
+{
+  "clean_train": "/data/users/xsw/autodlmini/runs/symcif_v4_mp20_minicfjoint_v2/clean_data/clean_train.jsonl",
+  "clean_val": "/data/users/xsw/autodlmini/runs/symcif_v4_mp20_minicfjoint_v2/clean_data/clean_val.jsonl",
+  "command": "conda run -n crystallm_env python model/New_model/symcif_experiment/scripts/run_mp20_fullgen_after_geometry_breakthrough.py --stage all --experiment-ids fg10_external_plus_internal_union --top-k 5",
+  "experiment": {
+    "description": "Union current hybrid WA with train-only exact-cover symbolic proposals, deduplicated by WA key.",
+    "family": "A_constrained_decoding",
+    "geometry_mode": "e08",
+    "id": "fg10_external_plus_internal_union",
+    "ranker": "external_then_internal_unique",
+    "wa_source": "hybrid_union",
+    "wa_strategy": "external_plus_internal"
+  },
+  "retrieval_index": "in_memory_clean_train_only",
+  "seed": 1337,
+  "top_k": 5
+}

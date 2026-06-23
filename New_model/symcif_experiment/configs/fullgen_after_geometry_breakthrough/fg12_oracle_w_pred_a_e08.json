@@ -1,0 +1,18 @@
+{
+  "clean_train": "/data/users/xsw/autodlmini/runs/symcif_v4_mp20_minicfjoint_v2/clean_data/clean_train.jsonl",
+  "clean_val": "/data/users/xsw/autodlmini/runs/symcif_v4_mp20_minicfjoint_v2/clean_data/clean_val.jsonl",
+  "command": "conda run -n crystallm_env python model/New_model/symcif_experiment/scripts/run_mp20_fullgen_after_geometry_breakthrough.py --stage all --experiment-ids fg12_oracle_w_pred_a_e08 --top-k 5",
+  "experiment": {
+    "description": "Diagnostic: use GT orbit rows but predict element assignment by formula/WA priors before e08 geometry.",
+    "diagnostic_uses_gt_w": true,
+    "family": "diagnostic_oracle_w",
+    "geometry_mode": "e08",
+    "id": "fg12_oracle_w_pred_a_e08",
+    "ranker": "element_assignment_prior",
+    "wa_source": "oracle_w",
+    "wa_strategy": "gt_skeleton_predicted_assignment"
+  },
+  "retrieval_index": "in_memory_clean_train_only",
+  "seed": 1337,
+  "top_k": 5
+}

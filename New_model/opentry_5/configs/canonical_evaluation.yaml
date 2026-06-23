@@ -1,0 +1,34 @@
+# opentry_5 canonical evaluation protocol
+workdir: /data/users/xsw/autodlmini/model/New_model/opentry_5
+environment: crystallm_env
+test_access: none
+candidate_order: generation_index_then_seed
+candidate_count:
+  primary_k: 20
+  extended_k: 50
+invalid_handling:
+  keep_invalid_slot: true
+  do_not_shift_later_candidates_forward: true
+structure_matcher:
+  ltol: 0.2
+  stol: 0.3
+  angle_tol: 5.0
+  primitive_cell: true
+  scale: true
+  attempt_supercell: false
+rmse:
+  definition: best_structurematcher_rmsd_among_first_k_positive_candidates
+rows_ge_7:
+  definition: row_count >= 7 from canonical structured train/dev metadata
+composition_exact:
+  definition: reduced composition equality after parse; invalid candidates count as false
+sg_wyckoff_legal:
+  definition: parsed CIF detected SG and rendered Wyckoff rows satisfy GT-SG legal orbits
+splits:
+  train_core: data/grouped_split_train_core.jsonl
+  dev_model: data/grouped_split_dev_model.jsonl
+  dev_gate: data/grouped_split_dev_gate.jsonl
+  fold_a: data/grouped_split_fold_a.jsonl
+  fold_b: data/grouped_split_fold_b.jsonl
+no_ranking:
+  forbidden: [log_probability_sort, confidence_sort, energy_sort, collision_sort, validity_sort, self_score_sort, oracle_selection, invalid_drop_and_shift]
