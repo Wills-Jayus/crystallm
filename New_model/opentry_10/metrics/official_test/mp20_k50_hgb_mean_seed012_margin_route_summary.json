@@ -1,0 +1,48 @@
+{
+  "anchor": {
+    "match_at_1": 0.7167,
+    "match_at_20": 0.8781,
+    "match_at_5": 0.8308
+  },
+  "dataset": "MP-20",
+  "delta_vs_anchor_pp": {
+    "match_at_1": -1.4400641167366834,
+    "match_at_20": -0.3238182622153474,
+    "match_at_5": -1.2095600265310646
+  },
+  "failure_reasons": [
+    "no overall match metric improves by >= 1.0 pp",
+    "match@20 drops by more than 0.2 pp"
+  ],
+  "official_test": {
+    "match_at_1": 0.7022993588326332,
+    "match_at_20": 0.8748618173778465,
+    "match_at_5": 0.8187043997346893,
+    "n_ids": 9046,
+    "rmse_at_1": 0.049965208844100786,
+    "rmse_at_20": 0.04269897493502179,
+    "rmse_at_5": 0.0436229784181553
+  },
+  "protocol": "CrystaLLM Table 3 official full-test",
+  "rows_ge7_anchor": {
+    "match_at_1": 0.6237,
+    "match_at_20": 0.8261,
+    "match_at_5": 0.7635
+  },
+  "rows_ge7_delta_vs_anchor_pp": {
+    "match_at_1": -35.17,
+    "match_at_20": -27.337272727272723,
+    "match_at_5": -33.07727272727272
+  },
+  "rows_ge7_official_test": {
+    "match_at_1": 0.272,
+    "match_at_20": 0.5527272727272727,
+    "match_at_5": 0.43272727272727274
+  },
+  "success_reasons": [
+    "rows>=7 metrics computed; no >=1 pp overall metric needs a corresponding gate"
+  ],
+  "success_standard_met": false,
+  "system": "mp20_k50_hgb_mean_seed012_margin_route",
+  "test_feedback_policy": "Do not use these official aggregates to tune thresholds or select a new route."
+}

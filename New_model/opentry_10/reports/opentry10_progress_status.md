@@ -1,6 +1,6 @@
 # opentry_10 Progress Status
 
-- Updated at: 2026-06-23T16:52:09Z
+- Updated at: 2026-06-24T03:10:34Z
 - Scope: progress checkpoint only; not a final report.
 - Write root enforced by controller: `/data/users/xsw/autodlmini/model/New_model/opentry_10`
 
@@ -25,10 +25,10 @@
 
 | dataset | total shards | completed shards | completed raw CIFs | completed post CIFs | remaining shards |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| MP-20 | 142 | 87 | 552700 | 552700 | 55 |
+| MP-20 | 142 | 142 | 904700 | 904700 | 0 |
 | MPTS-52 | 79 | 16 | 96800 | 96800 | 63 |
 
-Current live MP-20 work at this checkpoint: detached MP-20 supervisor PID 839819 is running MP-20-only controller PID 1380377. Shard 0086 is running; the last completed shard was shard 0085.
+MP-20 validation K100 shard generation is complete at this checkpoint. The completion marker `state/validation_anchor_symprec0p1_shards_mp20.complete.json` exists and records 904700 expected CIFs. No MP-20 generation process is running.
 
 ## Execution priority
 
@@ -38,7 +38,7 @@ Current live MP-20 work at this checkpoint: detached MP-20 supervisor PID 839819
 
 ## Remaining mandatory work
 
-- Complete all MP-20 validation K100 shards.
+- Assemble, export, and evaluate the complete MP-20 validation K100 anchor.
 - Complete all MPTS-52 validation K100 shards.
 - Assemble full generated tarballs and run K1/K5/K20/K50/K100 validation metrics.
 - Export full validation candidate JSONL files with provenance.
@@ -47,9 +47,9 @@ Current live MP-20 work at this checkpoint: detached MP-20 supervisor PID 839819
 
 ## Periodic runtime assessment
 
-- Current long-running step: MP-20 validation GT-SG K100 candidate generation.
+- Current long-running step: MP-20 validation GT-SG K100 candidate assembly and evaluation.
 - Why it has taken this long: the prompt requires full validation coverage, not a diagnostic subset. MP-20 has 9047 validation targets and K100 generation requires up to 904700 generated CIF candidates, followed by postprocessing and coverage checks. The controller also preserves retry/resume semantics so missing or partial outputs are repaired instead of silently dropped.
 - Current observed pace: recent MP-20 batches complete roughly 4 full shards per 45-60 minutes, with variance from generation tranche length and postprocess time.
-- Estimated remaining MP-20 anchor-generation time: about 10-14 hours for the remaining incomplete MP-20 shards at the current pace, before full validation assembly/evaluation and reranker work.
+- MP-20 anchor generation is complete; remaining MP-20 anchor work is assembly/evaluation/export before reranker work.
 - Is it worth continuing: yes for MP-20, because full K100 validation candidates are mandatory evidence for the requested rerank/fusion route and prevent misleading partial conclusions. It is not yet worth launching new large MPTS-52 work in parallel; keep MPTS-52 paused until MP-20 full-validation evidence indicates a plausible path to beating the official anchor.
 - Review cadence: refresh this assessment after each controller batch or after roughly 1-2 hours of uninterrupted generation.

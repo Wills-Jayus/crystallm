@@ -1,0 +1,93 @@
+{
+  "built_at_utc": "2026-06-25T08:13:34+00:00",
+  "created_at_utc": "2026-06-25T08:13:34+00:00",
+  "dataset": "mpts_52",
+  "id": "mpts52_k30_rf_seed1_bestscore_route",
+  "ranker": {
+    "feature_info": {
+      "categorical_features": [
+        "rank_source",
+        "generation_config_name",
+        "logprob_available",
+        "declared_sg_symbol",
+        "parse_ok",
+        "valid",
+        "sensible"
+      ],
+      "input_summary": {
+        "complete_samples": 5000,
+        "coverage_complete": true,
+        "expected_rows": 250000,
+        "features": "/data/users/xsw/autodlmini/model/New_model/opentry_10/features/mpts52_val_k50_candidate_features.jsonl",
+        "first_incomplete_samples": [],
+        "first_missing_material_ids": [],
+        "incomplete_samples": 0,
+        "input_rows_after_join": 250000,
+        "labels": "/data/users/xsw/autodlmini/model/New_model/opentry_10/labels/mpts52_val_k50_candidate_labels.jsonl",
+        "missing_samples": 0,
+        "target_materials": 5000,
+        "true_tar": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/crystallm_gt_sg_val_anchor_symprec0p1/mpts52_val_data_atomtype_gt_sg_symprec0p1_k100/tars/true.tar.gz"
+      },
+      "numeric_features": [
+        "rank",
+        "gen_index",
+        "generation_config_rank_start",
+        "temperature",
+        "top_k",
+        "seed",
+        "normalized_token_logprob",
+        "cif_num_chars",
+        "cif_num_lines",
+        "atom_site_rows",
+        "declared_sg_number",
+        "cell_length_a",
+        "cell_length_b",
+        "cell_length_c",
+        "cell_angle_alpha",
+        "cell_angle_beta",
+        "cell_angle_gamma",
+        "cell_volume",
+        "cell_formula_units_Z",
+        "lattice_length_ratio",
+        "lattice_length_mean",
+        "angle_abs_deviation_sum",
+        "candidate_volume_per_atom",
+        "rank_inverse"
+      ]
+    },
+    "model_family": "random_forest_classifier",
+    "ranker_path": "/data/users/xsw/autodlmini/model/New_model/opentry_10/frozen_strategy/mpts52_k30_rf_seed1_bestscore_route/ranker_rf_seed1.joblib",
+    "seed": 1,
+    "training_features": "/data/users/xsw/autodlmini/model/New_model/opentry_10/features/mpts52_val_k50_candidate_features.jsonl",
+    "training_labels": "/data/users/xsw/autodlmini/model/New_model/opentry_10/labels/mpts52_val_k50_candidate_labels.jsonl"
+  },
+  "route": {
+    "max_rank": 30,
+    "rule": "best_score_ge",
+    "strategy": "unconstrained_score_sort_for_routed_samples_else_baseline_k20",
+    "threshold": 0.03690556341,
+    "threshold_source": "validation OOF K30 q0.15 best_score for rf seed1"
+  },
+  "status": "frozen_test_outputs_built_pending_official_eval",
+  "test_feedback_policy": "Route and threshold are frozen from validation-only OOF evidence; do not alter them using official test results.",
+  "test_outputs": {
+    "generated_tar": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mpts52_k30_rf_seed1_bestscore_route_test_k20/tars/generated_data_atomtype_gt_sg.tar.gz",
+    "scored_k50_jsonl": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mpts52_k30_rf_seed1_bestscore_route_test_k30_scored_candidates.jsonl",
+    "selected_candidates_jsonl": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mpts52_k30_rf_seed1_bestscore_route_test_k20_candidates.jsonl",
+    "selection_manifest": {
+      "baseline_samples": 1617,
+      "candidate_rows": 161920,
+      "max_slots": 20,
+      "min_slots": 20,
+      "missing_candidate_samples_filled_with_placeholders": [
+        "mpts_52_test_orig__mp-1056831"
+      ],
+      "placeholder_slots": 20,
+      "routed_samples": 6478,
+      "samples": 8096,
+      "samples_with_20_slots": 8096,
+      "supplemental_slots": 43403
+    },
+    "true_tar": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mpts52_official_test/tars/true.tar.gz"
+  }
+}

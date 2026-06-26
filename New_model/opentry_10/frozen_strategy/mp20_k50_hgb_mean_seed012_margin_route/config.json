@@ -1,0 +1,110 @@
+{
+  "built_at_utc": "2026-06-26T05:40:29+00:00",
+  "created_at_utc": "2026-06-26T05:40:29+00:00",
+  "dataset": "mp_20",
+  "id": "mp20_k50_hgb_mean_seed012_margin_route",
+  "ranker": {
+    "ensemble": "mean_predict_proba",
+    "feature_info": {
+      "categorical_features": [
+        "rank_source",
+        "generation_config_name",
+        "logprob_available",
+        "declared_sg_symbol",
+        "parse_ok",
+        "valid",
+        "sensible"
+      ],
+      "input_summary": {
+        "complete_samples": 9047,
+        "coverage_complete": true,
+        "expected_rows": 452350,
+        "features": "/data/users/xsw/autodlmini/model/New_model/opentry_10/features/mp20_val_k50_candidate_features.jsonl",
+        "first_incomplete_samples": [],
+        "first_missing_material_ids": [],
+        "incomplete_samples": 0,
+        "input_rows_after_join": 452350,
+        "labels": "/data/users/xsw/autodlmini/model/New_model/opentry_10/labels/mp20_val_k50_candidate_labels.jsonl",
+        "missing_samples": 0,
+        "target_materials": 9047,
+        "true_tar": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/crystallm_gt_sg_val_anchor_symprec0p1/mp20_val_data_atomtype_gt_sg_symprec0p1_k100/tars/true.tar.gz"
+      },
+      "models": [
+        {
+          "model": "hgb",
+          "seed": 0
+        },
+        {
+          "model": "hgb",
+          "seed": 1
+        },
+        {
+          "model": "hgb",
+          "seed": 2
+        }
+      ],
+      "numeric_features": [
+        "rank",
+        "gen_index",
+        "generation_config_rank_start",
+        "temperature",
+        "top_k",
+        "seed",
+        "normalized_token_logprob",
+        "cif_num_chars",
+        "cif_num_lines",
+        "atom_site_rows",
+        "declared_sg_number",
+        "cell_length_a",
+        "cell_length_b",
+        "cell_length_c",
+        "cell_angle_alpha",
+        "cell_angle_beta",
+        "cell_angle_gamma",
+        "cell_volume",
+        "cell_formula_units_Z",
+        "lattice_length_ratio",
+        "lattice_length_mean",
+        "angle_abs_deviation_sum",
+        "candidate_volume_per_atom",
+        "rank_inverse"
+      ]
+    },
+    "model_family": "hist_gradient_boosting_classifier",
+    "ranker_path": "/data/users/xsw/autodlmini/model/New_model/opentry_10/frozen_strategy/mp20_k50_hgb_mean_seed012_margin_route/ranker_hgb_mean_seed012.joblib",
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "training_features": "/data/users/xsw/autodlmini/model/New_model/opentry_10/features/mp20_val_k50_candidate_features.jsonl",
+    "training_labels": "/data/users/xsw/autodlmini/model/New_model/opentry_10/labels/mp20_val_k50_candidate_labels.jsonl"
+  },
+  "route": {
+    "max_rank": 50,
+    "rule": "best_minus_rank1_ge",
+    "strategy": "unconstrained_score_sort_for_routed_samples_else_baseline_k20",
+    "threshold": 0.20066793518000028,
+    "threshold_source": "MP-20 validation OOF HGB mean seed012 best_minus_rank1_ge_q0.9"
+  },
+  "status": "frozen_test_outputs_built_pending_official_eval",
+  "test_feedback_policy": "Route and threshold are frozen from validation-only OOF evidence; do not alter them using official test results.",
+  "test_outputs": {
+    "generated_tar": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mp20_k50_hgb_mean_seed012_margin_route_test_k20/tars/generated_data_atomtype_gt_sg.tar.gz",
+    "scored_k50_jsonl": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mp20_k50_hgb_mean_seed012_margin_route_test_k50_scored_candidates.jsonl",
+    "selected_candidates_jsonl": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mp20_k50_hgb_mean_seed012_margin_route_test_k20_candidates.jsonl",
+    "selection_manifest": {
+      "baseline_samples": 8339,
+      "candidate_rows": 180920,
+      "max_slots": 20,
+      "min_slots": 20,
+      "missing_candidate_samples_filled_with_placeholders": [],
+      "placeholder_slots": 0,
+      "routed_samples": 707,
+      "samples": 9046,
+      "samples_with_20_slots": 9046,
+      "supplemental_slots": 9217
+    },
+    "true_tar": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mp20_official_test/tars/true.tar.gz"
+  }
+}

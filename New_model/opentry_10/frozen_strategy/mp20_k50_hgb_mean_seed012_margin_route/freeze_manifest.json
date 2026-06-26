@@ -1,0 +1,36 @@
+{
+  "anchor_k20": "/data/users/xsw/autodlmini/model/New_model/opentry_10/candidates/unified_mp_20_test_crystallm_a_gt_sg_anchor.jsonl",
+  "config": "/data/users/xsw/autodlmini/model/New_model/opentry_10/frozen_strategy/mp20_k50_hgb_mean_seed012_margin_route/config.json",
+  "config_sha256": "11020680d7ab53c522dd123e7818154d8a56f667bfc76b176dbb47c74851a03c",
+  "created_at": "2026-06-26T05:40:29+00:00",
+  "designation": "secondary_candidate",
+  "id": "mp20_k50_hgb_mean_seed012_margin_route",
+  "ranker_path": "/data/users/xsw/autodlmini/model/New_model/opentry_10/frozen_strategy/mp20_k50_hgb_mean_seed012_margin_route/ranker_hgb_mean_seed012.joblib",
+  "ranker_sha256": "fe1738c120c41462f9c49c1f59e1b20e5bf94674f67a361e75e812a89f78cedb",
+  "status": "pending_official_eval",
+  "supplemental_post_dir": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mp20_test_gt_sg_k50/cifs_post/data_atomtype_gt_sg",
+  "test_candidates_jsonl": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mp20_k50_hgb_mean_seed012_margin_route_test_k20_candidates.jsonl",
+  "test_candidates_jsonl_sha256": "0cf7a46bc9cf9890537054edeb751fdf74008d40c050dc7ebd2bd42c67938029",
+  "test_generated_tar": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mp20_k50_hgb_mean_seed012_margin_route_test_k20/tars/generated_data_atomtype_gt_sg.tar.gz",
+  "test_generated_tar_sha256": "6a86a7c2f4ab4d9b5f4fdb1a350404b50f4be3454855ef76d8908a38f7ef27c0",
+  "test_manifest": {
+    "baseline_samples": 8339,
+    "candidate_rows": 180920,
+    "max_slots": 20,
+    "min_slots": 20,
+    "missing_candidate_samples_filled_with_placeholders": [],
+    "placeholder_slots": 0,
+    "routed_samples": 707,
+    "samples": 9046,
+    "samples_with_20_slots": 9046,
+    "supplemental_slots": 9217
+  },
+  "test_scored_k50_jsonl": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mp20_k50_hgb_mean_seed012_margin_route_test_k50_scored_candidates.jsonl",
+  "test_scored_k50_jsonl_sha256": "4b5b3bb875689d5a2bb6bc81d5163e478a004dc44b96aaed3cd6397015652d32",
+  "test_true_tar": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mp20_official_test/tars/true.tar.gz",
+  "test_true_tar_sha256": "6f4ed6a0340a1b2a09a168b19cf6aacbd6889d3f721baf8c77c2487f5459ea88",
+  "true_manifest": {
+    "target_samples": 9046,
+    "true_tar": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mp20_official_test/tars/true.tar.gz"
+  }
+}

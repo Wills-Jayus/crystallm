@@ -1,0 +1,48 @@
+{
+  "anchor": {
+    "match_at_1": 0.2523,
+    "match_at_20": 0.4396,
+    "match_at_5": 0.3646
+  },
+  "dataset": "MPTS-52",
+  "delta_vs_anchor_pp": {
+    "match_at_1": 0.5605138339920934,
+    "match_at_20": -0.13588932806323784,
+    "match_at_5": -0.1951778656126446
+  },
+  "failure_reasons": [
+    "no overall match metric improves by >= 1.0 pp"
+  ],
+  "official_test": {
+    "match_at_1": 0.25790513833992096,
+    "match_at_20": 0.4382411067193676,
+    "match_at_5": 0.36264822134387353,
+    "n_ids": 8096,
+    "rmse_at_1": 0.12640394613062236,
+    "rmse_at_20": 0.1328968386592335,
+    "rmse_at_5": 0.1250884901757248
+  },
+  "protocol": "CrystaLLM Table 3 official full-test",
+  "rows_ge7_anchor": {
+    "match_at_1": 0.2249,
+    "match_at_20": 0.4104,
+    "match_at_5": 0.3337
+  },
+  "rows_ge7_delta_vs_anchor_pp": {
+    "match_at_1": 0.5627143981117244,
+    "match_at_20": -0.10110674009966014,
+    "match_at_5": -0.14157094151586724
+  },
+  "rows_ge7_official_test": {
+    "match_at_1": 0.23052714398111723,
+    "match_at_20": 0.4093889325990034,
+    "match_at_5": 0.3322842905848413
+  },
+  "success_reasons": [
+    "match@20 drop constraint is satisfied",
+    "rows>=7 metrics computed; no >=1 pp overall metric needs a corresponding gate"
+  ],
+  "success_standard_met": false,
+  "system": "mpts52_k50_rf_seed1_margin_route",
+  "test_feedback_policy": "Do not use these official aggregates to tune thresholds or select a new route."
+}

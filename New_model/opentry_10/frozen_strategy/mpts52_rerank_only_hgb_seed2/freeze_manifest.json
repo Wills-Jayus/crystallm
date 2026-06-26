@@ -1,0 +1,94 @@
+{
+  "candidate_source": "/data/users/xsw/autodlmini/model/New_model/opentry_10/candidates/unified_mpts_52_test_crystallm_a_gt_sg_anchor.jsonl",
+  "candidate_source_sha256": "9f877f9f45ff7d5185d33dd331efaacd093f467b869b184aecf7a3bedd110139",
+  "config": "/data/users/xsw/autodlmini/model/New_model/opentry_10/frozen_strategy/mpts52_rerank_only_hgb_seed2/config.json",
+  "config_sha256": "76a0dc5589c65436ac44e37333c06909b50f52568f6310e707f7eb78157c2bc8",
+  "created_at": "2026-06-25T04:27:27+00:00",
+  "designation": "primary",
+  "id": "mpts52_rerank_only_hgb_seed2",
+  "ranker_path": "/data/users/xsw/autodlmini/model/New_model/opentry_10/frozen_strategy/mpts52_rerank_only_hgb_seed2/ranker_hgb_seed2.joblib",
+  "ranker_sha256": "5246ae09bf5b51e2ae81986e2d6ae819e7b9df6156348ac62d1b99a199b817a7",
+  "test_candidates_jsonl": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mpts52_rerank_only_hgb_seed2_test_k20_candidates.jsonl",
+  "test_candidates_jsonl_sha256": "ae9f34f1ed7fcb88bf29c877f113ca2a3b53257622c0426255b77700ca519884",
+  "test_generated_tar": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mpts52_rerank_only_hgb_seed2_test_k20/tars/generated_data_atomtype_gt_sg.tar.gz",
+  "test_generated_tar_sha256": "600c0707134b5d39c610f4063957659028ea4d18b091a0059508fdd0e8fae04e",
+  "test_manifest": {
+    "candidate_rows": 161920,
+    "max_slots": 20,
+    "min_slots": 20,
+    "missing_candidate_samples_filled_with_placeholders": [
+      "mpts_52_test_orig__mp-1056831"
+    ],
+    "out_jsonl": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mpts52_rerank_only_hgb_seed2_test_k20_candidates.jsonl",
+    "out_tar": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mpts52_rerank_only_hgb_seed2_test_k20/tars/generated_data_atomtype_gt_sg.tar.gz",
+    "placeholder_slots": 20,
+    "samples": 8096,
+    "samples_with_20_slots": 8096,
+    "test_candidates": "/data/users/xsw/autodlmini/model/New_model/opentry_10/candidates/unified_mpts_52_test_crystallm_a_gt_sg_anchor.jsonl"
+  },
+  "test_true_tar": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mpts52_official_test/tars/true.tar.gz",
+  "test_true_tar_sha256": "3ff009608bd16c8d82c0fccb399ef09360846c97916839a71a3eeb79b7d4f002",
+  "true_manifest": {
+    "target_samples": 8096,
+    "true_tar": "/data/users/xsw/autodlmini/model/New_model/opentry_10/generations/mpts52_official_test/tars/true.tar.gz"
+  },
+  "validation_metrics": {
+    "baseline_metrics": {
+      "match@1": 0.3002,
+      "match@20": 0.48,
+      "match@5": 0.4048,
+      "rows>=7_match@1": 0.053228621291448515,
+      "rows>=7_match@20": 0.1474694589877836,
+      "rows>=7_match@5": 0.09991273996509599,
+      "rows_ge7_samples": 2292,
+      "samples": 5000
+    },
+    "bootstrap": {
+      "match@1_delta_ci95": [
+        0.00379999999999997,
+        0.02100000000000002
+      ],
+      "match@20_delta_ci95": [
+        0.0,
+        0.0
+      ],
+      "match@5_delta_ci95": [
+        -0.00040000000000001146,
+        0.014000000000000012
+      ],
+      "rows>=7_match@1_delta_ci95": [
+        -0.008726003490401396,
+        0.006544502617801047
+      ],
+      "rows>=7_match@20_delta_ci95": [
+        0.0,
+        0.0
+      ],
+      "rows>=7_match@5_delta_ci95": [
+        -0.01483420593368237,
+        0.0008726003490401313
+      ]
+    },
+    "created_at": "2026-06-25T04:15:50+00:00",
+    "deltas": {
+      "match@1": 0.012199999999999989,
+      "match@20": 0.0,
+      "match@5": 0.006800000000000028,
+      "rows>=7_match@1": -0.0013089005235602108,
+      "rows>=7_match@20": 0.0,
+      "rows>=7_match@5": -0.00698080279232112
+    },
+    "note": "Validation OOF bootstrap only; no test labels used.",
+    "predictions": "/data/users/xsw/autodlmini/model/New_model/opentry_10/features/mpts52_rerank_oof_predictions/mpts52_val_k20_hgb_seed2_oof_predictions.jsonl",
+    "rerank_metrics": {
+      "match@1": 0.3124,
+      "match@20": 0.48,
+      "match@5": 0.4116,
+      "rows>=7_match@1": 0.051919720767888304,
+      "rows>=7_match@20": 0.1474694589877836,
+      "rows>=7_match@5": 0.09293193717277487,
+      "rows_ge7_samples": 2292,
+      "samples": 5000
+    }
+  }
+}

@@ -41,6 +41,7 @@ CONTROLLER_STATE = STATE_DIR / "controller_state.json"
 JOBS_JSONL = STATE_DIR / "jobs.jsonl"
 ARTIFACT_REGISTRY = STATE_DIR / "artifact_registry.json"
 FROZEN_REGISTRY = STATE_DIR / "frozen_registry.json"
+BENCHMARK_METRICS = ROOT / "scripts/benchmark_metrics_opentry10.py"
 
 
 ANCHOR_K100_CONFIGS: list[dict[str, Any]] = [
@@ -665,6 +666,24 @@ def load_shard_plan(dataset: str) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def shard_material_index(dataset: str) -> dict[str, Path]:
+    plan = load_shard_plan(dataset)
+    index: dict[str, Path] = {}
+    for shard in plan["shards"]:
+        run_dir = Path(shard["run_dir"])
+        for material_id in shard.get("material_ids", []):
+            index[str(material_id)] = run_dir
+    return index
+
+
+def configured_bench_workers() -> int:
+    raw = os.environ.get("OPENTRY10_BENCH_WORKERS", "96")
+    try:
+        return max(1, int(raw))
+    except ValueError as exc:
+        raise ValueError(f"invalid OPENTRY10_BENCH_WORKERS={raw!r}") from exc
+
+
 def action_plan_anchor_shards(dataset: str) -> Callable[[], None]:
     def _run() -> None:
         material_ids = load_material_ids(dataset)
@@ -943,11 +962,17 @@ def action_generate_anchor_shards(dataset: str) -> Callable[[], None]:
 
 
 def generated_cif_path_from_shards(dataset: str, material_index: int, material_id: str, rank: int) -> Path:
-    plan = load_shard_plan(dataset)
-    for shard in plan["shards"]:
-        if str(material_id) in {str(x) for x in shard.get("material_ids", [])}:
-            return Path(shard["run_dir"]) / "cifs_post/data_atomtype_gt_sg" / f"{material_id}__{rank}.cif"
+    for mid, run_dir in shard_material_index(dataset).items():
+        if str(material_id) == mid:
+            return run_dir / "cifs_post/data_atomtype_gt_sg" / f"{material_id}__{rank}.cif"
     raise KeyError(f"material index {material_index} not covered by shard plan for {dataset}")
+
+
+def generated_cif_path_from_index(shard_index: dict[str, Path], material_index: int, material_id: str, rank: int) -> Path:
+    run_dir = shard_index.get(str(material_id))
+    if run_dir is None:
+        raise KeyError(f"material index {material_index} not covered by shard plan")
+    return run_dir / "cifs_post/data_atomtype_gt_sg" / f"{material_id}__{rank}.cif"
 
 
 def parse_metrics_stdout(stdout: str) -> dict[str, Any]:
@@ -966,8 +991,27 @@ def run_capture_job(stage_id: str, cmd: list[str], *, max_attempts: int = 1) -> 
     while attempt <= max_attempts:
         started = now_iso()
         log_path = LOG_DIR / f"{stage_id}.attempt{attempt}.log"
-        rc, stdout = run_capture(current_cmd)
-        write_text(log_path, f"[{started}] command: {command_text(current_cmd)}\n{stdout}")
+        ensure_dir(LOG_DIR)
+        chunks: list[str] = []
+        with under_root(log_path).open("w", encoding="utf-8") as log:
+            log.write(f"[{started}] command: {command_text(current_cmd)}\n")
+            log.flush()
+            proc = subprocess.Popen(
+                [str(x) for x in current_cmd],
+                cwd=str(WORKSPACE),
+                env=child_env(),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1,
+            )
+            assert proc.stdout is not None
+            for line in proc.stdout:
+                chunks.append(line)
+                log.write(line)
+                log.flush()
+            rc = proc.wait()
+        stdout = "".join(chunks)
         append_jsonl(
             JOBS_JSONL,
             {
@@ -995,32 +1039,47 @@ def action_assemble_anchor_from_shards(dataset: str) -> Callable[[], None]:
         ensure_dir(run_dir / "tars")
         ensure_dir(run_dir / "metrics")
         material_ids = load_material_ids(dataset)
+        shard_index = shard_material_index(dataset)
+        expected_members = len(material_ids) * 100
         gen_tar = run_dir / "tars/generated_data_atomtype_gt_sg.tar.gz"
-        missing: list[str] = []
-        with tarfile.open(under_root(gen_tar), "w:gz") as tar:
-            for material_index, mid in enumerate(material_ids):
-                for rank in range(1, 101):
-                    p = generated_cif_path_from_shards(dataset, material_index, mid, rank)
-                    if not p.is_file():
-                        missing.append(str(p))
-                        continue
-                    tar.add(str(p), arcname=f"{mid}__{rank}.cif")
-        if missing:
-            raise RuntimeError(f"cannot assemble tar; missing {len(missing)} CIFs, first={missing[:3]}")
+        member_count: int | None = None
+        if gen_tar.is_file():
+            try:
+                with tarfile.open(under_root(gen_tar), "r:gz") as tar:
+                    member_count = len(tar.getmembers())
+            except tarfile.TarError:
+                member_count = None
+        if member_count != expected_members:
+            missing: list[str] = []
+            with tarfile.open(under_root(gen_tar), "w:gz") as tar:
+                for material_index, mid in enumerate(material_ids):
+                    for rank in range(1, 101):
+                        p = generated_cif_path_from_index(shard_index, material_index, mid, rank)
+                        if not p.is_file():
+                            missing.append(str(p))
+                            continue
+                        tar.add(str(p), arcname=f"{mid}__{rank}.cif")
+            if missing:
+                raise RuntimeError(f"cannot assemble tar; missing {len(missing)} CIFs, first={missing[:3]}")
+            with tarfile.open(under_root(gen_tar), "r:gz") as tar:
+                member_count = len(tar.getmembers())
+            if member_count != expected_members:
+                raise RuntimeError(f"assembled tar has {member_count} members; expected {expected_members}")
 
         true_tar = run_dir / "tars/true.tar.gz"
         metrics_json: dict[str, Any] = {}
         summary_rows: list[dict[str, Any]] = []
+        bench_workers = str(configured_bench_workers())
         for k in (1, 5, 20, 50, 100):
             cmd = [
                 str(PY),
-                str(CRYSTALLM / "bin/benchmark_metrics.py"),
+                str(BENCHMARK_METRICS),
                 str(gen_tar),
                 str(true_tar),
                 "--num-gens",
                 str(k),
                 "--workers",
-                "32",
+                bench_workers,
                 "--unmatched-diagnostics",
                 "off",
                 "--max-sites",
@@ -1030,8 +1089,17 @@ def action_assemble_anchor_from_shards(dataset: str) -> Callable[[], None]:
                 "--hard-timeout-seconds",
                 "60.0",
             ]
-            stdout = run_capture_job(f"benchmark_validation_anchor_{dataset_short(dataset)}_k{k}", cmd, max_attempts=1)
-            write_text(run_dir / f"metrics/benchmark_k{k}.txt", stdout)
+            bench_path = run_dir / f"metrics/benchmark_k{k}.txt"
+            stdout = ""
+            if bench_path.is_file():
+                stdout = under_root(bench_path).read_text(encoding="utf-8")
+                try:
+                    parse_metrics_stdout(stdout)
+                except Exception:
+                    stdout = ""
+            if not stdout:
+                stdout = run_capture_job(f"benchmark_validation_anchor_{dataset_short(dataset)}_k{k}", cmd, max_attempts=1)
+                write_text(bench_path, stdout)
             metrics = parse_metrics_stdout(stdout)
             metrics_json[f"k{k}"] = metrics
             summary_rows.append(
@@ -1080,6 +1148,7 @@ def export_anchor_jsonl(dataset: str) -> Callable[[], None]:
         missing: list[str] = []
         rows_written = 0
         full_post_available = post_dir.is_dir() and len(list(post_dir.glob("*.cif"))) >= len(material_ids) * samples
+        shard_index = None if full_post_available else shard_material_index(dataset)
         with under_root(out_path).open("w", encoding="utf-8") as f:
             for material_index, material_id in enumerate(material_ids):
                 sample_id = f"{prefix}_val_orig__{material_id}"
@@ -1087,7 +1156,8 @@ def export_anchor_jsonl(dataset: str) -> Callable[[], None]:
                     if full_post_available:
                         cif_path = post_dir / f"{material_id}__{rank}.cif"
                     else:
-                        cif_path = generated_cif_path_from_shards(dataset, material_index, material_id, rank)
+                        assert shard_index is not None
+                        cif_path = generated_cif_path_from_index(shard_index, material_index, material_id, rank)
                     if not cif_path.is_file():
                         missing.append(str(cif_path))
                         continue
@@ -1177,6 +1247,116 @@ def action_validation_anchor_report() -> None:
     write_text(ROOT / "reports/crystallm_validation_anchor_report.md", "\n".join(lines) + "\n")
 
 
+def env_int(name: str, default: int) -> int:
+    raw = os.environ.get(name, str(default))
+    try:
+        return int(raw)
+    except ValueError as exc:
+        raise ValueError(f"invalid {name}={raw!r}") from exc
+
+
+def count_jsonl_rows(path: Path) -> int:
+    if not path.exists():
+        return 0
+    with path.open("rb") as f:
+        return sum(1 for _ in f)
+
+
+def action_build_mp20_k50_selector_inputs() -> None:
+    run_logged(
+        "build_mp20_k50_selector_inputs",
+        [
+            str(PY),
+            str(ROOT / "scripts/build_mp20_k50_selector_inputs.py"),
+            "--input",
+            str(ROOT / "candidates/crystallm_gt_sg_mp20_val_k100.jsonl"),
+            "--max-rank",
+            "50",
+            "--out",
+            str(ROOT / "features/mp20_val_k50_candidate_features.jsonl"),
+            "--summary",
+            str(ROOT / "metrics/mp20_val_k50_selector_input_summary.json"),
+            "--report",
+            str(ROOT / "reports/mp20_k50_selector_inputs.md"),
+        ],
+        max_attempts=1,
+    )
+
+
+def action_label_mp20_k50_candidates() -> None:
+    labels = ROOT / "labels/mp20_val_k50_candidate_labels.jsonl"
+    summary = ROOT / "metrics/mp20_val_k50_candidate_label_summary.json"
+    expected_rows = 9047 * 50
+    if labels.exists() and not summary.exists():
+        rows = count_jsonl_rows(labels)
+        raise RuntimeError(
+            f"refusing to overwrite existing incomplete MP-20 K50 label file: {labels} has {rows}/{expected_rows} rows "
+            "and the summary is not present; wait for the active label process or move to a new explicit output path"
+        )
+    run_logged(
+        "label_mp20_k50_candidates",
+        [
+            str(PY),
+            str(ROOT / "scripts/label_mp20_k50_candidates.py"),
+            "--workers",
+            str(env_int("OPENTRY10_LABEL_WORKERS", 24)),
+            "--window",
+            str(env_int("OPENTRY10_LABEL_WINDOW", 24)),
+            "--hard-timeout-seconds",
+            os.environ.get("OPENTRY10_LABEL_HARD_TIMEOUT", "90"),
+            "--out",
+            str(labels),
+            "--summary",
+            str(summary),
+        ],
+        max_attempts=1,
+    )
+
+
+def action_summarize_mp20_k50_labels() -> None:
+    run_logged(
+        "summarize_mp20_k50_labels",
+        [
+            str(PY),
+            str(ROOT / "scripts/summarize_mp20_k50_labels.py"),
+            "--labels",
+            str(ROOT / "labels/mp20_val_k50_candidate_labels.jsonl"),
+            "--out",
+            str(ROOT / "metrics/mp20_val_k50_candidate_label_metrics.json"),
+            "--report",
+            str(ROOT / "reports/mp20_k50_label_summary.md"),
+        ],
+        max_attempts=1,
+    )
+
+
+def action_run_mp20_k20_rerank_oof() -> None:
+    run_logged(
+        "run_mp20_k20_rerank_oof",
+        [
+            str(PY),
+            str(ROOT / "scripts/run_mp20_k20_rerank_oof.py"),
+            "--features",
+            str(ROOT / "features/mp20_val_k50_candidate_features.jsonl"),
+            "--labels",
+            str(ROOT / "labels/mp20_val_k50_candidate_labels.jsonl"),
+            "--models",
+            os.environ.get("OPENTRY10_RERANK_MODELS", "logistic,hgb,rf"),
+            "--seeds",
+            os.environ.get("OPENTRY10_RERANK_SEEDS", "0,1,2"),
+            "--bootstrap",
+            os.environ.get("OPENTRY10_RERANK_BOOTSTRAP", "1000"),
+            "--out",
+            str(ROOT / "metrics/rerank_oof_results.json"),
+            "--report",
+            str(ROOT / "reports/rerank_model_search.md"),
+            "--predictions-dir",
+            str(ROOT / "features/rerank_oof_predictions"),
+        ],
+        max_attempts=1,
+    )
+
+
 @dataclass(frozen=True)
 class Stage:
     stage_id: str
@@ -1252,6 +1432,55 @@ def stages() -> list[Stage]:
             action_copy_anchor_metrics("mp_20"),
             [val_run_dir("mp_20") / "metrics/metrics.json"],
             [ROOT / "metrics/crystallm_gt_sg_mp20_val.json"],
+        ),
+        Stage(
+            "build_mp20_k50_selector_inputs",
+            action_build_mp20_k50_selector_inputs,
+            [ROOT / "candidates/crystallm_gt_sg_mp20_val_k100.jsonl"],
+            [
+                ROOT / "features/mp20_val_k50_candidate_features.jsonl",
+                ROOT / "metrics/mp20_val_k50_selector_input_summary.json",
+                ROOT / "reports/mp20_k50_selector_inputs.md",
+            ],
+        ),
+        Stage(
+            "label_mp20_k50_candidates",
+            action_label_mp20_k50_candidates,
+            [
+                ROOT / "candidates/crystallm_gt_sg_mp20_val_k100.jsonl",
+                val_run_dir("mp_20") / "tars/true.tar.gz",
+            ],
+            [
+                ROOT / "labels/mp20_val_k50_candidate_labels.jsonl",
+                ROOT / "metrics/mp20_val_k50_candidate_label_summary.json",
+            ],
+            long_running=True,
+        ),
+        Stage(
+            "summarize_mp20_k50_labels",
+            action_summarize_mp20_k50_labels,
+            [
+                ROOT / "labels/mp20_val_k50_candidate_labels.jsonl",
+                val_run_dir("mp_20") / "tars/true.tar.gz",
+            ],
+            [
+                ROOT / "metrics/mp20_val_k50_candidate_label_metrics.json",
+                ROOT / "reports/mp20_k50_label_summary.md",
+            ],
+        ),
+        Stage(
+            "run_mp20_k20_rerank_oof",
+            action_run_mp20_k20_rerank_oof,
+            [
+                ROOT / "features/mp20_val_k50_candidate_features.jsonl",
+                ROOT / "labels/mp20_val_k50_candidate_labels.jsonl",
+                val_run_dir("mp_20") / "tars/true.tar.gz",
+            ],
+            [
+                ROOT / "metrics/rerank_oof_results.json",
+                ROOT / "reports/rerank_model_search.md",
+            ],
+            long_running=True,
         ),
         Stage(
             "plan_validation_anchor_symprec0p1_mpts52_shards",

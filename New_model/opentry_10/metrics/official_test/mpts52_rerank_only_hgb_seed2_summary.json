@@ -1,0 +1,27 @@
+{
+  "system": "mpts52_rerank_only_hgb_seed2",
+  "dataset": "MPTS-52",
+  "protocol": "CrystaLLM Table 3 official full-test",
+  "anchor": {
+    "match_at_1": 0.2523,
+    "match_at_5": 0.3646,
+    "match_at_20": 0.4396
+  },
+  "official_test": {
+    "match_at_1": 0.24938241106719367,
+    "match_at_5": 0.35931324110671936,
+    "match_at_20": 0.4395998023715415,
+    "rmse_at_1": 0.1239473068642693,
+    "rmse_at_5": 0.12454628723877618,
+    "rmse_at_20": 0.13340106131432547,
+    "n_ids": 8096
+  },
+  "delta_vs_anchor_pp": {
+    "match_at_1": -0.29175889328063285,
+    "match_at_5": -0.5286758893280643,
+    "match_at_20": -0.000019762845851235512
+  },
+  "success_standard_met": false,
+  "failure_reason": "No match metric exceeds the corresponding CrystaLLM-a GT-SG official anchor by >= 1.0 percentage point. match@20 is effectively unchanged, but match@1 and match@5 are below anchor.",
+  "test_feedback_policy": "This result must not be used to tune thresholds, rerun the same method, or claim success."
+}

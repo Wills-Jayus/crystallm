@@ -1,3 +1,96 @@
+# opentry_10 Final Report
+
+## Bottom line
+
+opentry_10 completed frozen-system official full-test evaluation, but no frozen system exceeded the CrystaLLM-a GT-SG anchor under the formal success standard.
+
+This report must not claim "successfully exceeded". The paper-usable conclusion is negative: the validation-selected rerank/fusion systems did not transfer to official test with a >=1.0 percentage-point match improvement while preserving match@20 and rows>=7 performance.
+
+## Formal success check
+
+Formal standard from `prompt.md`:
+
+- at least one official-test match metric improves over the corresponding CrystaLLM-a GT-SG anchor by >=1.0 pp;
+- the same system's match@20 does not drop by more than 0.2 pp;
+- rows>=7 corresponding metrics do not clearly drop;
+- no test target, test StructureMatcher label, or test oracle selection is used for training/selection.
+
+Result: `false` for every frozen official-test line evaluated in opentry_10.
+
+## Official full-test results
+
+| dataset | frozen system | match@1 | delta | match@5 | delta | match@20 | delta | status |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| MP-20 | `mp20_k50_hgb_mean_seed012_margin_route` | 70.230% | -1.440 pp | 81.870% | -1.210 pp | 87.486% | -0.324 pp | failed |
+| MPTS-52 | `mpts52_rerank_only_hgb_seed2` | 24.938% | -0.292 pp | 35.931% | -0.529 pp | 43.960% | -0.000 pp | failed |
+| MPTS-52 | `mpts52_k30_rf_seed1_bestscore_route` | 26.075% | +0.845 pp | 36.228% | -0.232 pp | 44.059% | +0.099 pp | failed |
+| MPTS-52 | `mpts52_k50_rf_seed1_margin_route` | 25.791% | +0.561 pp | 36.265% | -0.195 pp | 43.824% | -0.136 pp | failed |
+
+Anchors:
+
+- MP-20 CrystaLLM-a GT-SG: match@1/5/20 = 71.67% / 83.08% / 87.81%.
+- MPTS-52 CrystaLLM-a GT-SG: match@1/5/20 = 25.23% / 36.46% / 43.96%.
+
+## rows>=7 results
+
+| dataset | frozen system | rows>=7 match@1 | delta | rows>=7 match@5 | delta | rows>=7 match@20 | delta |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| MP-20 | `mp20_k50_hgb_mean_seed012_margin_route` | 27.200% | -35.170 pp | 43.273% | -33.077 pp | 55.273% | -27.337 pp |
+| MPTS-52 | `mpts52_k50_rf_seed1_margin_route` | 23.053% | +0.563 pp | 33.228% | -0.142 pp | 40.939% | -0.101 pp |
+
+rows>=7 anchors:
+
+- MP-20 CrystaLLM-a GT-SG: match@1/5/20 = 62.37% / 76.35% / 82.61%.
+- MPTS-52 CrystaLLM-a GT-SG: match@1/5/20 = 22.49% / 33.37% / 41.04%.
+
+## RMSE
+
+| dataset | frozen system | RMSE@1 | RMSE@5 | RMSE@20 |
+| --- | --- | ---: | ---: | ---: |
+| MP-20 | `mp20_k50_hgb_mean_seed012_margin_route` | 0.049965 | 0.043623 | 0.042699 |
+| MPTS-52 | `mpts52_rerank_only_hgb_seed2` | 0.123947 | 0.124546 | 0.133401 |
+| MPTS-52 | `mpts52_k30_rf_seed1_bestscore_route` | 0.121638 | 0.122237 | 0.131714 |
+| MPTS-52 | `mpts52_k50_rf_seed1_margin_route` | 0.126404 | 0.125088 | 0.132897 |
+
+## Validation and search work completed
+
+- Built and evaluated MP-20 validation CrystaLLM GT-SG K100 anchor bank: `candidates/crystallm_gt_sg_mp20_val_k100.jsonl`.
+- Built MP-20 K50 candidate features/labels and OOF rerank/fusion searches.
+- Completed MP-20 rerank-only OOF over logistic regression and HistGradientBoosting seeds; best rerank-only validation improved match@1 by +0.707 pp but did not meet a freeze-worthy official gate.
+- Completed MP-20 K50 conservative selector and residual selector OOF. Best fixed/quota route improved validation match@20 by less than +1 pp.
+- Completed MPTS-52 validation/fusion branches and froze/evaluated three MPTS-52 official-test lines.
+- Completed MP-20 K50 test generation, postprocessing, frozen K20 construction, and official evaluation for the best validation-selected MP-20 HGB ensemble route.
+
+## Candidate generation volume
+
+- MP-20 validation K100: 904,700 generated validation CIF members.
+- MP-20 test K50 supplemental generation completed all blocks 21-50 and built final K20 for 9,046 official test samples; final manifest had 9,046 samples with exactly 20 slots and no placeholder slots.
+- MPTS-52 official frozen lines used 8,096 official test samples; the original MPTS anchor line contains one known missing sample filled by placeholders, so that line was not treated as a meaningful success source.
+
+## Leakage and test feedback policy
+
+No frozen threshold or route in this report was selected using official-test per-sample labels. Official aggregate results were read only after frozen artifacts were built and registered. The failed official results must not be used to retune the same thresholds/routes and rerun them as if pre-registered.
+
+## Paper-usable conclusion
+
+Usable as a negative result: validation-selected CrystaLLM GT-SG rerank/fusion routes showed limited validation headroom but did not produce a formal official-test exceed over CrystaLLM-a GT-SG. The MPTS-52 K30 route came closest, with +0.845 pp match@1, but it still missed the >=1.0 pp requirement and lowered match@5.
+
+Not usable as a success claim: none of the opentry_10 frozen official-test systems.
+
+## Primary artifacts
+
+- MP-20 official summary: `metrics/official_test/mp20_k50_hgb_mean_seed012_margin_route_summary.json`
+- MPTS-52 official summaries: `metrics/official_test/mpts52_rerank_only_hgb_seed2_summary.json`, `metrics/official_test/mpts52_k30_rf_seed1_bestscore_route_summary.json`, `metrics/official_test/mpts52_k50_rf_seed1_margin_route_summary.json`
+- Official-test reports: `reports/*official_test.md`
+- Frozen registry: `state/frozen_registry.json`
+- Experiment log: `experiment_log.md`
+
+---
+
+# Archived copied artifact below
+
+The remaining content below was copied from `opentry_9` earlier to preserve mistakenly written artifacts. It is retained only as archive text and is not the opentry_10 final conclusion.
+
 # INVALID COPIED ARTIFACT - NOT AN OPENTRY_10 FINAL REPORT
 
 This file was copied from `opentry_9` at the user's request to preserve the mistakenly written artifacts.
