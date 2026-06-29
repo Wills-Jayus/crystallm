@@ -1,0 +1,149 @@
+{
+  "created_at_utc": "2026-06-29T04:02:24.042296+00:00",
+  "dataset": {
+    "matcher": null,
+    "name": "mpts_52",
+    "samples_all": 8096,
+    "samples_rows_ge7": 7626,
+    "split": "test"
+  },
+  "deltas": {
+    "c2s3c15_vs_internal_low_baseline_all": {
+      "match@1": -0.00037055335968377845,
+      "match@20": 0.09622035573122528,
+      "match@5": 0.11709486166007907
+    },
+    "c2s3c15_vs_internal_low_baseline_rows_ge7": {
+      "match@1": -0.00039339103068450343,
+      "match@20": 0.10057697351167055,
+      "match@5": 0.12063991607658014
+    },
+    "c2s3c15_vs_true_gt_sg_anchor_all": {
+      "match@1": -0.08090415019762842,
+      "match@20": -0.028162055335968383,
+      "match@5": -0.0040760869565217295
+    },
+    "c2s3c15_vs_true_gt_sg_anchor_rows_ge7": {
+      "match@1": -0.08208759506949909,
+      "match@20": -0.031077891424075577,
+      "match@5": -0.003671649619721995
+    }
+  },
+  "experiment": "opentry_13_exp2_c2s3c15_true_gt_sg_anchor_replay_audit",
+  "gate": {
+    "passes_main_claim_gate": false,
+    "requires_at_least_two_match_metrics_plus5pp_vs_true_anchor": false,
+    "requires_rows_ge7_not_degraded": false
+  },
+  "restriction": "Fixed C2S3C15; no C/S ratio tuning, threshold tuning, scorer, or official-result feedback.",
+  "systems": {
+    "c2s3c15": {
+      "all_match": {
+        "match@1": 0.17144268774703558,
+        "match@20": 0.4114377470355731,
+        "match@5": 0.36054841897233203
+      },
+      "all_rmse": {
+        "RMSE@1": 0.16545565377369317,
+        "RMSE@20": 0.12967171157198326,
+        "RMSE@5": 0.11700977981708627
+      },
+      "candidate_source": "/data/users/xsw/autodlmini/model/New_model/opentry_12/candidates/c2s3c15_mpts52_test_k20.jsonl.gz",
+      "quality_diagnostics": {
+        "formula_ok_any@1": 0.46282114624505927,
+        "formula_ok_any@20": 0.9376235177865613,
+        "formula_ok_any@5": 0.9129199604743083,
+        "known_exact_cover_any@1": 0.0,
+        "known_exact_cover_any@20": 0.8588191699604744,
+        "known_exact_cover_any@5": 0.8588191699604744,
+        "slot_formula_consistency_rate": 0.4798171936758893,
+        "slot_sg_consistency_rate": 0.9329668972332016,
+        "slot_valid_rate": 0.9392848320158103,
+        "source_counts": {
+          "C": 142720,
+          "S": 19200
+        },
+        "space_group_ok_any@1": 0.8780879446640316,
+        "space_group_ok_any@20": 0.9891304347826086,
+        "space_group_ok_any@5": 0.9880187747035574,
+        "symcif_skeleton_hit_candidates": 4622,
+        "symcif_skeleton_hit_to_match_conversion": 0.19428818693206404,
+        "symcif_slot_exact_cover_feasible_rate": 0.9808854166666666,
+        "valid_any@1": 0.8830286561264822,
+        "valid_any@20": 0.9898715415019763,
+        "valid_any@5": 0.9895009881422925
+      },
+      "rows_ge7_match": {
+        "match@1": 0.14280094413847363,
+        "match@20": 0.37936008392341986,
+        "match@5": 0.33005507474429585
+      },
+      "rows_ge7_rmse": {
+        "RMSE@1": 0.18505425292547562,
+        "RMSE@20": 0.1393844818530717,
+        "RMSE@5": 0.12604647374846972
+      },
+      "source": "/data/users/xsw/autodlmini/model/New_model/opentry_12/results/experiment_1_c2s3c15_official.json"
+    },
+    "internal_low_baseline_pure_model": {
+      "all_match": {
+        "match@1": 0.17181324110671936,
+        "match@20": 0.31521739130434784,
+        "match@5": 0.24345355731225296
+      },
+      "all_rmse": {
+        "RMSE@1": 0.16551166506411208,
+        "RMSE@20": 0.17464967883940366,
+        "RMSE@5": 0.17020933874568023
+      },
+      "candidate_source": "generations/pure_crystallm_gt_sg_mpts_52_test.tar.gz",
+      "quality_diagnostics": {
+        "available": false,
+        "reason": "opentry_7 metric JSON stores match/RMSE only, not valid/formula/SG/exact-cover diagnostics."
+      },
+      "rows_ge7_match": {
+        "match@1": 0.14319433516915814,
+        "match@20": 0.2787831104117493,
+        "match@5": 0.2094151586677157
+      },
+      "rows_ge7_rmse": {
+        "RMSE@1": 0.1850717583352901,
+        "RMSE@20": 0.19412066380458354,
+        "RMSE@5": 0.19034882854406532
+      },
+      "source": "/data/users/xsw/autodlmini/model/New_model/opentry_7/metrics/pure_crystallm_gt_sg_mpts_52_test_k20.json"
+    },
+    "true_gt_sg_anchor_crystallm_a": {
+      "all_match": {
+        "match@1": 0.252346837944664,
+        "match@20": 0.4395998023715415,
+        "match@5": 0.36462450592885376
+      },
+      "all_rmse": {
+        "RMSE@1": 0.12110278576321938,
+        "RMSE@20": 0.13340106131432547,
+        "RMSE@5": 0.12573424156501198
+      },
+      "candidate_source": "generations/crystallm_a_gt_sg_mpts_52_test.tar.gz",
+      "quality_diagnostics": {
+        "available": false,
+        "reason": "opentry_7 metric JSON stores match/RMSE only, not valid/formula/SG/exact-cover diagnostics."
+      },
+      "rows_ge7_match": {
+        "match@1": 0.22488853920797272,
+        "match@20": 0.41043797534749543,
+        "match@5": 0.33372672436401785
+      },
+      "rows_ge7_rmse": {
+        "RMSE@1": 0.13103627495241027,
+        "RMSE@20": 0.1444271062669175,
+        "RMSE@5": 0.13557703770863538
+      },
+      "source": "/data/users/xsw/autodlmini/model/New_model/opentry_7/metrics/crystallm_a_gt_sg_mpts_52_test_k20.json"
+    }
+  },
+  "verdict": {
+    "classification": "auxiliary_hybrid_result",
+    "reason": "C2S3C15 is below the true GT-SG anchor on match@1/5/20 overall and rows>=7, so it cannot support the main claim."
+  }
+}

@@ -2615,3 +2615,109 @@ rows>=7 关键点：实验 6 显示 CrystaLLM K50 rows>=7 top50=18.431%，SymCIF
 最终判决：main_method_success=False；auxiliary_hybrid_success_mpts52=True；mp20_overall_transfer_success=False；coverage_solved=False。因此 C2S3C15 只能作为 auxiliary hybrid official result；Track A/RF/HGB/hard-negative scorer 只保留为诊断或停止；主线继续 exact-cover constrained skeleton proposer + symmetry-preserving learned geometry repair，尤其 rows>=7 专门路线。
 
 下一步：若继续迭代，必须先写明失败原因和预期提升，使用 MP-20/MPTS-52 train 数据训练 rows>=7-specialized skeleton proposer；先过 validation/half-train gate，再考虑 frozen official。禁止继续调 C/S 比例、ordinary rerank、threshold tuning 或 official feedback。
+
+
+<!-- OPENTRY13_EXP1_BASELINE_AUDIT -->
+## opentry_13 实验 1：主 baseline 口径复核
+
+结果文件：`model/New_model/opentry_13/results/experiment_1_baseline_protocol_audit.json`
+
+- 为什么做：opentry_12 C2S3C15 official 使用了 `17.181 / 24.345 / 31.522` 作为 baseline，但全局主 GT-SG CrystaLLM-a anchor 是 `25.23 / 36.46 / 43.96`。本实验只复核 split、evaluator、input condition 与 candidate source，防止用低 baseline 宣称主目标。
+- 核心假设：如果两个 baseline 不是同一 candidate source / model checkpoint，即使 split 和 evaluator 相同，也不能混用为主比较 anchor。
+- 数据规模：MPTS-52 official test，overall `8096` 个样本；rows>=7 `7626` 个样本。
+- baseline：低 internal baseline 是 pure CrystaLLM GT-SG line，match@1/5/20 = `17.181 / 24.345 / 31.522`；true GT-SG anchor 是 CrystaLLM-a GT-SG，match@1/5/20 = `25.235 / 36.462 / 43.960`。
+- 口径核查：split 相同，均为 MPTS-52 official test；evaluator 相同，StructureMatcher 参数为 `{'angle_tol': 10, 'ltol': 0.3, 'stol': 0.5}`；输入条件名义上均为 composition + GT-SG；candidate source 不同，低 baseline 来自 `generations/pure_crystallm_gt_sg_mpts_52_test.tar.gz`，true anchor 来自 `generations/crystallm_a_gt_sg_mpts_52_test.tar.gz`，C2S3C15 来自 `/data/users/xsw/autodlmini/model/New_model/opentry_12/candidates/c2s3c15_mpts52_test_k20.jsonl.gz`。
+- 结果：`17.181 / 24.345 / 31.522` 不是全局主 GT-SG CrystaLLM-a anchor，而是 opentry_7 pure model line。C2S3C15 不能使用该低 baseline 作为主目标达成依据。
+- 可信度：高。结论直接来自 opentry_7 机器 JSON、opentry_12 机器 JSON 与全局 bundle 中已登记的 anchor，且 sample count / matcher 参数一致可核验。
+- 和历史实验关系：opentry_12 的 C2S3C15 仍可作为辅助 hybrid 结果，但不能替代 opentry_7/opentry_10 登记的主 anchor。
+- 最终判决：主比较必须使用 true GT-SG CrystaLLM-a anchor：`25.23 / 36.46 / 43.96`。
+- 下一步：在 fixed C2S3C15 条件下重算其相对 true anchor 的 delta，并决定是否降级。
+
+
+<!-- OPENTRY13_EXP2_C2S3C15_TRUE_ANCHOR -->
+## opentry_13 实验 2：C2S3C15 true GT-SG anchor replay / audit
+
+结果文件：`model/New_model/opentry_13/results/experiment_2_c2s3c15_true_anchor_replay.json`
+
+- 为什么做：固定 C2S3C15，不再调整 C/S 比例、不做 threshold tuning、不接 scorer，只回答它在 true GT-SG anchor 口径下是否真的超过主目标。
+- 核心假设：如果 C2S3C15 只是相对 pure-model low baseline 有提升，而相对 CrystaLLM-a GT-SG anchor 没有 +5pp，则只能是 auxiliary hybrid result。
+- 数据规模：MPTS-52 official test，overall `8096`；rows>=7 `7626`；candidate records `161920`。
+- baseline：internal low baseline match@1/5/20 = `17.181 / 24.345 / 31.522`，rows>=7 = `14.319 / 20.942 / 27.878`；true GT-SG anchor match@1/5/20 = `25.235 / 36.462 / 43.960`，rows>=7 = `22.489 / 33.373 / 41.044`。
+- 方法变化：无新方法。仅把 opentry_12 fixed C2S3C15 official 结果改挂到 true GT-SG anchor 上审计。
+- 结果：C2S3C15 overall match@1/5/20 = `17.144 / 36.055 / 41.144`，RMSE = `0.165456 / 0.117010 / 0.129672`；rows>=7 match@1/5/20 = `14.280 / 33.006 / 37.936`，RMSE = `0.185054 / 0.126046 / 0.139384`。相对 true anchor overall delta = `-8.090pp / -0.408pp / -2.816pp`；rows>=7 delta = `-8.209pp / -0.367pp / -3.108pp`。相对 internal low baseline overall delta = `-0.037pp / +11.709pp / +9.622pp`。
+- 结构质量：C2S3C15 valid any@1/5/20 = `88.303` / `98.950` / `98.987`；formula consistency slot rate = `47.982`；SG consistency slot rate = `93.297`；known exact-cover any@20 = `85.882`；SymCIF slot exact-cover feasible = `98.089`。
+- 可信度：高。没有使用 official 结果回调；只读取冻结 C2S3C15 official JSON 与 opentry_7 anchor JSON。internal baseline 和 true anchor 的 valid/formula/SG/exact-cover 诊断在 opentry_7 指标 JSON 中未记录，因此报告为不可用，不做外推。
+- 和历史实验关系：opentry_12 中 C2S3C15 相对 pure baseline 提升 match@5/20，但在 true CrystaLLM-a GT-SG anchor 下 match@1/5/20 全部为负 delta。
+- 最终判决：C2S3C15 未达到 true anchor +5pp，也没有 rows>=7 不恶化；降级为 auxiliary hybrid result，禁止作为论文主方法 claim。
+- 下一步：转向 rows>=7-specialized skeleton proposer，目标是让候选池中真实增加可 match 的 skeleton/geometry，而不是继续调 C/S 比例或 scorer。
+
+
+<!-- OPENTRY13_EXP3_ROWS7_SKELETON_PROPOSER -->
+## opentry_13 实验 3：rows>=7-specialized skeleton proposer validation gate
+
+结果文件：`model/New_model/opentry_13/results/experiment_3_rows_ge7_skeleton_proposer_validation_gate.json`  
+候选文件：`model/New_model/opentry_13/artifacts/exp3_rows7_skeleton_proposer/proposals.jsonl`
+
+- 为什么做：停止把普通 rerank/scorer 当主方法，直接检查 train-derived rows>=7 skeleton proposer 是否让候选池中出现更多可 match 的 skeleton/结构。
+- 核心假设：若 rows>=7 的主瓶颈是 skeleton coverage，则只用 composition + GT-SG + train rows>=7 prototypes 的 exact-cover proposer 应提高 top50 skeleton-hit；若 skeleton-hit 不能转化为 match，则下一步必须接 learned geometry repair。
+- 数据规模：train repr `25998`，其中 rows>=7 `6863`；validation repr `4727`，其中 rows>=7 `2197`；已有 hydrated eval candidates `25840`。未重新跑 StructureMatcher。
+- baseline：opentry_12 exp6 validation rows>=7 CrystaLLM K50 top5/top20/top50 = `10.109%` / `14.858%` / `18.431%`；SymCIF v5 rows>=7 top5/top20/top50 = `14.292%` / `14.553%` / `14.553%`。
+- 方法变化：新增 rows>=7 train exact-cover skeleton proposer。推理期只使用 formula/composition、GT-SG 和 train skeleton prototypes；不使用 GT-WA、GT-skeleton、match/RMSD/StructureMatcher label、RF/HGB/rerank 或 threshold tuning。
+- 结果 overall：top1/5/20 skeleton-hit = `59.827% / 77.491% / 80.897%`；hydrated match@1/5/20 = `26.127% / 36.662% / 37.529%`；top50 hydrated match = `37.529%`。
+- 结果 rows>=7：top1/5/20 skeleton-hit = `61.038% / 75.330% / 76.513%`；top50 skeleton-hit = `76.513%`；top1/5/20 hydrated match = `10.605% / 14.838% / 15.112%`；top50 hydrated match = `15.112%`；top50 exact-cover feasible any = `92.535%`；top50 proposal-skeleton-to-hydrated-match conversion = `19.750%`；top50 hydrated-skeleton-to-match conversion = `20.660%`。
+- 可信度：中等。proposal-only 指标覆盖 validation repr 全部 `4727` 样本；match 指标只在已有 SymCIF v5 hydrated/evaluated candidate 上计算，未把未渲染 skeleton 自动算成 match，因此偏保守。它是 validation gate，不是 official 结果。
+- 和历史实验关系：区别于 opentry_12 exp6 的 scorer/边界审计，本实验真正输出 train-derived top50 skeleton proposals；但 hydrated match 仍受既有 geometry 生成质量限制。
+- 最终判决：validation gate 未通过。rows>=7 skeleton-hit 有信号，但 hydrated match@5/20 和 skeleton-to-match conversion 不足，不能进入 official，也不能作为主结果 claim。
+- 下一步：将这些 predicted exact-cover skeleton 绑定 learned geometry repair，重点修 lattice/free parameters/site mapping/collision/local geometry，而不是再做普通 scorer。
+
+
+<!-- OPENTRY13_EXP4_PREDICTED_SKELETON_GEOMETRY_REPAIR -->
+## opentry_13 实验 4：predicted-skeleton learned geometry repair validation
+
+结果文件：`model/New_model/opentry_13/results/experiment_4_predicted_skeleton_geometry_repair.json`  
+候选评估：`model/New_model/opentry_13/artifacts/exp4_predicted_skeleton_geometry_repair/evaluated_repair_candidates.jsonl`
+
+- 为什么做：GT-WA learned geometry repair 很强，但不能作为 inference 主结果。本实验把 repair 绑定到 exp3 的 predicted exact-cover skeleton，在固定 composition + GT-SG 条件下检查 lattice/free parameters/site mapping/local geometry 是否能把 skeleton-hit 转成 StructureMatcher match。
+- 核心假设：如果当前瓶颈主要是 geometry，则在 predicted skeleton 已命中时，learned geometry repair 应带来 K5/K20 提升和非零 repair conversion；如果 conversion 仍低，说明 site mapping / local geometry / collision 仍未打通。
+- 数据规模：validation subset 抽样 `768` 样本，其中 rows>=7 `384`、rows<7 `384`；实际有可用 predicted-skeleton 候选并进入评估的样本 overall `712`、rows>=7 `359`；topK `20`；candidate records `2920`。StructureMatcher worker `12`，线程环境 OMP/MKL/OPENBLAS/NUMEXPR=1。
+- baseline：before 使用 exp3 同一 predicted skeleton proposal 的 hydrated-existing-eval match；after 使用 learned geometry model 重新渲染后的 StructureMatcher。true official anchor 不参与本 validation repair gate。
+- 方法变化：新增 composition exact-cover site mapping + learned lattice/free-parameter prediction；推理期不使用 GT-WA、GT-skeleton、match/RMSD/StructureMatcher label、official feedback、RF/HGB/rerank 或 threshold tuning。
+- 结果 overall：before match@1/5/20 = `26.966% / 37.640% / 38.483%`；after match@1/5/20 = `3.792% / 6.461% / 6.742%`；delta = `-23.174pp / -31.180pp / -31.742pp`；repair conversion@1/5/20 = `0.385% / 0.000% / 0.000%`；valid rate `18.596%`，formula consistency `41.610%`，SG consistency `31.130%`，exact-cover retained `100.000%`。
+- 结果 rows>=7：before match@1/5/20 = `12.813% / 16.435% / 16.435%`；after match@1/5/20 = `0.000% / 0.000% / 0.000%`；delta = `-12.813pp / -16.435pp / -16.435pp`；repair conversion@1/5/20 = `0.000% / 0.000% / 0.000%`；valid rate `1.138%`，formula consistency `16.228%`，SG consistency `4.790%`，exact-cover retained `100.000%`；skeleton-to-match conversion@20 `0.000%`。
+- 可信度：中等。这是真 predicted-skeleton repair，不是 GT-WA oracle；但只是 validation subset，且 site mapping 是 composition exact-cover 的 deterministic mapping，未重新训练专门适配 predicted skeleton 的 geometry model。
+- 和历史实验关系：opentry_12 deterministic repair conversion=0，GT-WA learned repair 很强；本实验把 learned repair 接到 predicted skeleton 上，验证 inference 链路仍不足。
+- 最终判决：validation gate 未通过，不能进入 official，也不能作为主结果 claim。它保留为主方法候选的失败/诊断实验。
+- 下一步：训练/微调 geometry repair 以适配 predicted skeleton 与 exact-cover site mapping 噪声，并加入可微或搜索式 local collision repair；在 validation gate 通过前不做 official。
+
+<!-- OPENTRY13_EXP5_MAIN_ABLATION_BOUNDARY -->
+## opentry_13 实验 5：主方法消融与最终边界判定
+
+结果文件：`model/New_model/opentry_13/results/experiment_5_main_ablation_and_final_boundary.json`
+
+- 为什么做：把主方法候选、辅助结果和诊断结果拆开，统一报告 overall 与 rows>=7 的 match@1/5/20，避免把 C2S3C15、Track A、hard-negative scorer、oracle union 或 GT-WA oracle 包装成论文主贡献。
+- 核心假设：真正可 claim 的主方法必须是 inference-time `skeleton proposer + learned geometry repair`，并且在 true GT-SG CrystaLLM-a official anchor 上至少两个 match 指标 +5pp，rows>=7 不恶化；否则只能辅助或诊断。
+- 数据规模：official test `8096` 样本、rows>=7 `7626`；validation strict ablation `5000` 样本；exp3 validation repr `4727`；exp4 predicted-skeleton repair subset 有候选样本 `712`；oracle union validation `5000` 样本；GT-WA oracle MPTS-52 test subset `180` 样本。
+- baseline：主 official anchor 是 true GT-SG CrystaLLM-a，match@1/5/20 = `25.235% / 36.462% / 43.960%`，rows>=7 = `22.489% / 33.373% / 41.044%`。低 pure-model baseline 只保留为历史参考，不允许作为主 anchor。
+- 方法变化：本实验不新增方法、不调 C/S 比例、不做 threshold tuning、不训练 scorer；只读取既有 JSON/JSONL 做 replay/audit。oracle union 是 `C@K OR SymCIF@K` coverage upper-bound，最多 2K 候选，不是 ranked topK 方法。
+
+主方法候选：
+- rows>=7 train-derived skeleton proposer [skeleton_proposer_validation_gate]: overall 26.127% / 36.662% / 37.529%; rows>=7 10.605% / 14.838% / 15.112%; gate=fail_validation_gate.
+- predicted-skeleton learned geometry repair [skeleton_proposer_plus_learned_repair_validation]: overall 3.792% / 6.461% / 6.742%; rows>=7 0.000% / 0.000% / 0.000%; gate=fail_validation_gate.
+- SymCIF v5 neural skeleton/geometry proposer [symcif_v5_generation_diagnostic]: overall 26.080% / 35.240% / 35.900%; rows>=7 10.501% / 14.292% / 14.553%; gate=fail_main_gate.
+
+辅助结果：
+- C2S3C15 frozen official [auxiliary_hybrid_official]: overall 17.144% / 36.055% / 41.144%; rows>=7 14.280% / 33.006% / 37.936%; gate=fail_true_anchor_main_gate.
+- baseline + Track A scorer [track_a_scorer]: overall 33.120% / 41.980% / 48.900%; rows>=7 6.501% / 10.777% / 15.794%; gate=fail_main_gate.
+- baseline + hard-negative structural scorer v2 [hard_negative_scorer]: overall 32.540% / 42.180% / 48.960%; rows>=7 7.024% / 12.173% / 15.881%; gate=fail_main_gate.
+
+诊断结果：
+- baseline + exact-cover filter/proxy [exact_cover_proxy]: overall 31.980% / 42.080% / 49.160%; rows>=7 6.588% / 11.387% / 15.838%; gate=fail_main_gate.
+- skeleton proposal + geometry repair + structural scorer proxy [combined_proxy]: overall 32.360% / 42.180% / 49.100%; rows>=7 6.937% / 11.824% / 15.707%; gate=fail_main_gate.
+- oracle union coverage C@K OR SymCIF@K [oracle_union_coverage_upper_bound]: overall 39.580% / 49.240% / 54.300%; rows>=7 13.900% / 19.739% / 23.399%; gate=diagnostic_upper_bound_not_ranked_method.
+- GT-WA learned geometry repair oracle [gt_wa_geometry_repair_oracle]: overall 30.000% / 37.778% / 41.667%; rows>=7 25.150% / 32.934% / 37.126%; gate=diagnostic_oracle_only.
+
+- 关键 official 判定：C2S3C15 相对 true anchor delta = `-8.090pp / -0.408pp / -2.816pp`；rows>=7 delta = `-8.209pp / -0.367pp / -3.108pp`。它没有任何一个 true-anchor 指标达到 +5pp，rows>=7 也全部下降，因此只能是 auxiliary hybrid result。
+- 可信度：高。没有重新跑 official、没有使用 official 反馈回调、没有训练新 scorer；GT-WA 与 oracle union 明确标为 diagnostic。限制是 validation/official/500-sample oracle 的 split 和样本规模不同，表内已用 scope 区分，不做跨 split 主 claim。
+- 和历史实验关系：exp1/2 已证明低 baseline 不能当主 anchor；exp3 说明 skeleton-hit 有信号但 hydrated match/conversion 不够；exp4 说明 predicted-skeleton repair 链路失败；opentry_11/12 的 Track A、hard-negative、exact-cover proxy 继续只作为辅助/诊断。
+- 最终判决：`allowed_main_result_claim=False`。当前没有任何 inference-time 主方法满足 true GT-SG anchor 上至少两个 match 指标 +5pp 且 rows>=7 不恶化。C2S3C15 降级 auxiliary；Track A/hard-negative 停止作为主线；oracle union、GT-WA repair、exact-cover proxy 只作为诊断。
+- 下一步：继续主线只能做 train-data 设计的 rows>=7 skeleton proposer 与适配 predicted skeleton/site-mapping 噪声的 learned/local geometry repair；先过 validation gate，再考虑 official。禁止继续调 C2S3C15 比例、普通 rerank、threshold tuning 或 official 结果回调。

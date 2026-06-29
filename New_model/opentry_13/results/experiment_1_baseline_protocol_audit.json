@@ -1,0 +1,99 @@
+{
+  "created_at_utc": "2026-06-29T04:02:24.042296+00:00",
+  "experiment": "opentry_13_exp1_baseline_protocol_audit",
+  "metrics": {
+    "c2s3c15": {
+      "all_match": {
+        "match@1": 0.17144268774703558,
+        "match@20": 0.4114377470355731,
+        "match@5": 0.36054841897233203
+      },
+      "all_rmse": {
+        "RMSE@1": 0.16545565377369317,
+        "RMSE@20": 0.12967171157198326,
+        "RMSE@5": 0.11700977981708627
+      },
+      "rows_ge7_match": {
+        "match@1": 0.14280094413847363,
+        "match@20": 0.37936008392341986,
+        "match@5": 0.33005507474429585
+      },
+      "rows_ge7_rmse": {
+        "RMSE@1": 0.18505425292547562,
+        "RMSE@20": 0.1393844818530717,
+        "RMSE@5": 0.12604647374846972
+      }
+    },
+    "low_internal_baseline": {
+      "all_match": {
+        "match@1": 0.17181324110671936,
+        "match@20": 0.31521739130434784,
+        "match@5": 0.24345355731225296
+      },
+      "all_rmse": {
+        "RMSE@1": 0.16551166506411208,
+        "RMSE@20": 0.17464967883940366,
+        "RMSE@5": 0.17020933874568023
+      },
+      "rows_ge7_match": {
+        "match@1": 0.14319433516915814,
+        "match@20": 0.2787831104117493,
+        "match@5": 0.2094151586677157
+      },
+      "rows_ge7_rmse": {
+        "RMSE@1": 0.1850717583352901,
+        "RMSE@20": 0.19412066380458354,
+        "RMSE@5": 0.19034882854406532
+      }
+    },
+    "true_gt_sg_anchor": {
+      "all_match": {
+        "match@1": 0.252346837944664,
+        "match@20": 0.4395998023715415,
+        "match@5": 0.36462450592885376
+      },
+      "all_rmse": {
+        "RMSE@1": 0.12110278576321938,
+        "RMSE@20": 0.13340106131432547,
+        "RMSE@5": 0.12573424156501198
+      },
+      "rows_ge7_match": {
+        "match@1": 0.22488853920797272,
+        "match@20": 0.41043797534749543,
+        "match@5": 0.33372672436401785
+      },
+      "rows_ge7_rmse": {
+        "RMSE@1": 0.13103627495241027,
+        "RMSE@20": 0.1444271062669175,
+        "RMSE@5": 0.13557703770863538
+      }
+    }
+  },
+  "paths": {
+    "c2s3c15_official": "/data/users/xsw/autodlmini/model/New_model/opentry_12/results/experiment_1_c2s3c15_official.json",
+    "low_internal_baseline": "/data/users/xsw/autodlmini/model/New_model/opentry_7/metrics/pure_crystallm_gt_sg_mpts_52_test_k20.json",
+    "true_gt_sg_anchor": "/data/users/xsw/autodlmini/model/New_model/opentry_7/metrics/crystallm_a_gt_sg_mpts_52_test_k20.json"
+  },
+  "protocol_comparison": {
+    "candidate_sources": {
+      "c2s3c15": "/data/users/xsw/autodlmini/model/New_model/opentry_12/candidates/c2s3c15_mpts52_test_k20.jsonl.gz",
+      "low_internal_baseline": "generations/pure_crystallm_gt_sg_mpts_52_test.tar.gz",
+      "true_gt_sg_anchor": "generations/crystallm_a_gt_sg_mpts_52_test.tar.gz"
+    },
+    "same_candidate_source": false,
+    "same_dataset": true,
+    "same_evaluator": true,
+    "same_input_condition": "Nominal composition + GT-SG for all compared files; however the 17.181/24.345/31.522 line is a pure-model candidate source, not the CrystaLLM-a GT-SG anchor.",
+    "same_model_family_or_checkpoint": false,
+    "same_sample_count_all": true,
+    "same_sample_count_rows_ge7": true,
+    "same_split": true
+  },
+  "question": "Check whether opentry_12 C2S3C15 low baseline and the global GT-SG CrystaLLM-a anchor share split/evaluator/input/candidate source.",
+  "verdict": {
+    "low_baseline_is_main_anchor": false,
+    "main_anchor": "CrystaLLM-a GT-SG MPTS-52 official full test: 25.23 / 36.46 / 43.96",
+    "reason": "The low baseline shares split/evaluator but uses a different candidate source/model and is explicitly the pure-model line.",
+    "use_low_baseline_for_main_claim": false
+  }
+}

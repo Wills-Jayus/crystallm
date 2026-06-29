@@ -1,0 +1,605 @@
+{
+  "cpu_policy": {
+    "parallel_workers": 1,
+    "structurematcher_rerun": false,
+    "thread_env": {
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "training": false
+  },
+  "data_sources": {
+    "c2s3c15_true_anchor_replay": "/data/users/xsw/autodlmini/model/New_model/opentry_13/results/experiment_2_c2s3c15_true_anchor_replay.json",
+    "gtwa_mpts52_oracle_metrics": "/data/users/xsw/autodlmini/model/New_model/symcif_experiment/reports/symcif_v4_geometry_model_gtwa/no_oversampling/metrics/baseline_per_generation_metrics.jsonl",
+    "oracle_union_crystallm_labels": "/data/users/xsw/autodlmini/model/New_model/opentry_10/labels/mpts52_val_k50_candidate_labels.jsonl",
+    "oracle_union_symcif_metrics": "/data/users/xsw/autodlmini/runs/symcif_v5_multidataset_wa_decoder/mpts52/val/metrics/v5_fullgen_eval_pool_metrics.jsonl",
+    "predicted_skeleton_repair": "/data/users/xsw/autodlmini/model/New_model/opentry_13/results/experiment_4_predicted_skeleton_geometry_repair.json",
+    "rows7_skeleton_proposer": "/data/users/xsw/autodlmini/model/New_model/opentry_13/results/experiment_3_rows_ge7_skeleton_proposer_validation_gate.json",
+    "validation_strict_ablation": "/data/users/xsw/autodlmini/model/New_model/opentry_11/results/experiment_8_strict_integrated_ablation.json"
+  },
+  "experiment": "opentry_13_exp5_main_ablation_and_final_boundary",
+  "final_judgment": {
+    "allowed_main_result_claim": false,
+    "main_candidate_validation_gates": {
+      "exp3_skeleton_proposer_validation_gate_pass": false,
+      "exp4_predicted_skeleton_repair_validation_gate_pass": false
+    },
+    "official_c2s3c15_plus5_metric_count_vs_true_anchor": 0,
+    "official_c2s3c15_rows_ge7_not_degraded": false,
+    "official_true_anchor_for_claim": "true GT-SG CrystaLLM-a anchor",
+    "reason": "No inference-time main candidate exceeds the true GT-SG CrystaLLM-a official anchor by +5pp on at least two match metrics. C2S3C15 is below the true anchor; skeleton proposer and predicted-skeleton repair fail validation; oracle/GT-WA results are diagnostic only.",
+    "result_classification": {
+      "auxiliary_results": "C2S3C15/Track A/hard-negative only",
+      "diagnostic_results": "oracle union/GT-WA repair/exact-cover proxy only",
+      "main_method_candidates": "failed_validation_or_diagnostic_only"
+    }
+  },
+  "oracle_union_diagnostic": {
+    "candidate_budget_note": "diagnostic oracle coverage: C@K OR S@K can use up to 2K candidates and is not a ranked topK method",
+    "crystallm_summary": {
+      "match@1": {
+        "overall": 0.3002,
+        "rows_ge7": 0.05359477124183006,
+        "rows_ge7_samples": 2295,
+        "samples": 5000
+      },
+      "match@20": {
+        "overall": 0.48,
+        "rows_ge7": 0.1485838779956427,
+        "rows_ge7_samples": 2295,
+        "samples": 5000
+      },
+      "match@5": {
+        "overall": 0.4048,
+        "rows_ge7": 0.10108932461873639,
+        "rows_ge7_samples": 2295,
+        "samples": 5000
+      }
+    },
+    "samples": 5000,
+    "symcif_summary": {
+      "match@1": {
+        "overall": 0.2608,
+        "rows_ge7": 0.10501089324618737,
+        "rows_ge7_samples": 2295,
+        "samples": 5000
+      },
+      "match@20": {
+        "overall": 0.359,
+        "rows_ge7": 0.14553376906318083,
+        "rows_ge7_samples": 2295,
+        "samples": 5000
+      },
+      "match@5": {
+        "overall": 0.3524,
+        "rows_ge7": 0.14291938997821352,
+        "rows_ge7_samples": 2295,
+        "samples": 5000
+      }
+    },
+    "union_summary": {
+      "match@1": {
+        "overall": 0.3958,
+        "rows_ge7": 0.13899782135076252,
+        "rows_ge7_samples": 2295,
+        "samples": 5000
+      },
+      "match@20": {
+        "overall": 0.543,
+        "rows_ge7": 0.23398692810457516,
+        "rows_ge7_samples": 2295,
+        "samples": 5000
+      },
+      "match@5": {
+        "overall": 0.4924,
+        "rows_ge7": 0.19738562091503267,
+        "rows_ge7_samples": 2295,
+        "samples": 5000
+      }
+    }
+  },
+  "rows": [
+    {
+      "baseline_name": null,
+      "boundary": "Only official anchor allowed for main claim.",
+      "category": "reference",
+      "delta_vs_baseline": null,
+      "gate": "reference",
+      "name": "true GT-SG CrystaLLM-a anchor",
+      "notes": [],
+      "overall_match": {
+        "match@1": 0.252346837944664,
+        "match@20": 0.4395998023715415,
+        "match@5": 0.36462450592885376
+      },
+      "quality": {
+        "available": false,
+        "reason": "opentry_7 metric JSON stores match/RMSE only, not valid/formula/SG/exact-cover diagnostics."
+      },
+      "role": "official_true_anchor",
+      "rows_ge7_delta_vs_baseline": null,
+      "rows_ge7_match": {
+        "match@1": 0.22488853920797272,
+        "match@20": 0.41043797534749543,
+        "match@5": 0.33372672436401785
+      },
+      "scope": "MPTS-52 official test K20 full",
+      "source": "/data/users/xsw/autodlmini/model/New_model/opentry_7/metrics/crystallm_a_gt_sg_mpts_52_test_k20.json"
+    },
+    {
+      "baseline_name": "true GT-SG CrystaLLM-a anchor",
+      "boundary": "Different candidate source from CrystaLLM-a; cannot be used to claim main success.",
+      "category": "reference",
+      "delta_vs_baseline": {
+        "match@1": -0.08053359683794464,
+        "match@20": -0.12438241106719367,
+        "match@5": -0.1211709486166008
+      },
+      "gate": "not_a_main_anchor",
+      "name": "internal low pure-model baseline",
+      "notes": [],
+      "overall_match": {
+        "match@1": 0.17181324110671936,
+        "match@20": 0.31521739130434784,
+        "match@5": 0.24345355731225296
+      },
+      "quality": {
+        "available": false,
+        "reason": "opentry_7 metric JSON stores match/RMSE only, not valid/formula/SG/exact-cover diagnostics."
+      },
+      "role": "official_low_internal_baseline_not_main_anchor",
+      "rows_ge7_delta_vs_baseline": {
+        "match@1": -0.08169420403881458,
+        "match@20": -0.13165486493574613,
+        "match@5": -0.12431156569630214
+      },
+      "rows_ge7_match": {
+        "match@1": 0.14319433516915814,
+        "match@20": 0.2787831104117493,
+        "match@5": 0.2094151586677157
+      },
+      "scope": "MPTS-52 official test K20 full",
+      "source": "/data/users/xsw/autodlmini/model/New_model/opentry_7/metrics/pure_crystallm_gt_sg_mpts_52_test_k20.json"
+    },
+    {
+      "baseline_name": "true GT-SG CrystaLLM-a anchor",
+      "boundary": "Auxiliary hybrid only; fixed C2S3C15 is below true official anchor.",
+      "category": "auxiliary",
+      "delta_vs_baseline": {
+        "match@1": -0.08090415019762842,
+        "match@20": -0.028162055335968383,
+        "match@5": -0.0040760869565217295
+      },
+      "gate": "fail_true_anchor_main_gate",
+      "name": "C2S3C15 frozen official",
+      "notes": [
+        "No C/S retuning, no threshold tuning, no scorer."
+      ],
+      "overall_match": {
+        "match@1": 0.17144268774703558,
+        "match@20": 0.4114377470355731,
+        "match@5": 0.36054841897233203
+      },
+      "quality": {
+        "formula_ok_any@1": 0.46282114624505927,
+        "formula_ok_any@20": 0.9376235177865613,
+        "formula_ok_any@5": 0.9129199604743083,
+        "known_exact_cover_any@1": 0.0,
+        "known_exact_cover_any@20": 0.8588191699604744,
+        "known_exact_cover_any@5": 0.8588191699604744,
+        "slot_formula_consistency_rate": 0.4798171936758893,
+        "slot_sg_consistency_rate": 0.9329668972332016,
+        "slot_valid_rate": 0.9392848320158103,
+        "source_counts": {
+          "C": 142720,
+          "S": 19200
+        },
+        "space_group_ok_any@1": 0.8780879446640316,
+        "space_group_ok_any@20": 0.9891304347826086,
+        "space_group_ok_any@5": 0.9880187747035574,
+        "symcif_skeleton_hit_candidates": 4622,
+        "symcif_skeleton_hit_to_match_conversion": 0.19428818693206404,
+        "symcif_slot_exact_cover_feasible_rate": 0.9808854166666666,
+        "valid_any@1": 0.8830286561264822,
+        "valid_any@20": 0.9898715415019763,
+        "valid_any@5": 0.9895009881422925
+      },
+      "role": "auxiliary_hybrid_official",
+      "rows_ge7_delta_vs_baseline": {
+        "match@1": -0.08208759506949909,
+        "match@20": -0.031077891424075577,
+        "match@5": -0.003671649619721995
+      },
+      "rows_ge7_match": {
+        "match@1": 0.14280094413847363,
+        "match@20": 0.37936008392341986,
+        "match@5": 0.33005507474429585
+      },
+      "scope": "MPTS-52 official test K20 full",
+      "source": "/data/users/xsw/autodlmini/model/New_model/opentry_12/results/experiment_1_c2s3c15_official.json"
+    },
+    {
+      "baseline_name": null,
+      "boundary": "Validation reference only; not interchangeable with official test anchor.",
+      "category": "reference",
+      "delta_vs_baseline": null,
+      "gate": "reference",
+      "name": "validation GT-SG baseline",
+      "notes": [],
+      "overall_match": {
+        "match@1": 0.3002,
+        "match@20": 0.48,
+        "match@5": 0.4048
+      },
+      "quality": {
+        "collision_rate": 0.37008,
+        "exact_cover_feasible_rate": 0.78029,
+        "formula_consistency": 0.96743,
+        "rows_ge7_selected_candidates": 45840,
+        "selected_candidates": 100000,
+        "sg_consistency": 0.99843,
+        "skeleton_hit_to_match_conversion": 0.3854976995732356,
+        "valid_rate": 0.74868
+      },
+      "role": "validation_reference_baseline",
+      "rows_ge7_delta_vs_baseline": null,
+      "rows_ge7_match": {
+        "match@1": 0.053228621291448515,
+        "match@20": 0.1474694589877836,
+        "match@5": 0.09991273996509599
+      },
+      "scope": "MPTS-52 validation K50 full",
+      "source": "/data/users/xsw/autodlmini/model/New_model/opentry_11/results/experiment_8_strict_integrated_ablation.json"
+    },
+    {
+      "baseline_name": "validation GT-SG baseline",
+      "boundary": "Main-route proposer candidate, but match conversion is insufficient.",
+      "category": "main_method_candidate",
+      "delta_vs_baseline": {
+        "match@1": -0.038934927015020104,
+        "match@20": -0.10470911783372117,
+        "match@5": -0.03818269515548972
+      },
+      "gate": "fail_validation_gate",
+      "name": "rows>=7 train-derived skeleton proposer",
+      "notes": [],
+      "overall_match": {
+        "match@1": 0.2612650729849799,
+        "match@20": 0.3752908821662788,
+        "match@5": 0.36661730484451027
+      },
+      "quality": {
+        "overall_top20_skeleton_hit_coverage": 0.808969748254707,
+        "rows_ge7_top20_skeleton_hit_coverage": 0.7651342740100137,
+        "rows_ge7_top50_exact_cover_feasible_any": 0.9253527537551206,
+        "rows_ge7_top50_proposal_skeleton_to_hydrated_match_conversion": 0.19750148720999405
+      },
+      "role": "skeleton_proposer_validation_gate",
+      "rows_ge7_delta_vs_baseline": {
+        "match@1": 0.05282508831255695,
+        "match@20": 0.0036456980445331855,
+        "match@5": 0.04847142025338376
+      },
+      "rows_ge7_match": {
+        "match@1": 0.10605370960400547,
+        "match@20": 0.1511151570323168,
+        "match@5": 0.14838416021847975
+      },
+      "scope": "MPTS-52 validation; hydrated existing SymCIF candidates",
+      "source": "/data/users/xsw/autodlmini/model/New_model/opentry_13/results/experiment_3_rows_ge7_skeleton_proposer_validation_gate.json"
+    },
+    {
+      "baseline_name": "pre-repair same predicted skeleton subset",
+      "boundary": "True predicted-skeleton repair, but formula/SG validity and conversion fail.",
+      "category": "main_method_candidate",
+      "delta_vs_baseline": {
+        "match@1": -0.23174157303370785,
+        "match@20": -0.31741573033707865,
+        "match@5": -0.31179775280898875
+      },
+      "gate": "fail_validation_gate",
+      "name": "predicted-skeleton learned geometry repair",
+      "notes": [],
+      "overall_match": {
+        "match@1": 0.037921348314606744,
+        "match@20": 0.06741573033707865,
+        "match@5": 0.06460674157303371
+      },
+      "quality": {
+        "exact_cover_retained_rate": 1.0,
+        "overall_formula_consistency_rate": 0.4160958904109589,
+        "overall_repair_conversion@20": 0.0,
+        "overall_repair_conversion@5": 0.0,
+        "overall_sg_consistency_rate": 0.3113013698630137,
+        "rows_ge7_formula_consistency_rate": 0.16227544910179642,
+        "rows_ge7_repair_conversion@20": 0.0,
+        "rows_ge7_repair_conversion@5": 0.0,
+        "rows_ge7_sg_consistency_rate": 0.04790419161676647
+      },
+      "role": "skeleton_proposer_plus_learned_repair_validation",
+      "rows_ge7_delta_vs_baseline": {
+        "match@1": -0.12813370473537605,
+        "match@20": -0.16434540389972144,
+        "match@5": -0.16434540389972144
+      },
+      "rows_ge7_match": {
+        "match@1": 0.0,
+        "match@20": 0.0,
+        "match@5": 0.0
+      },
+      "scope": "MPTS-52 validation subset; predicted skeleton top20",
+      "source": "/data/users/xsw/autodlmini/model/New_model/opentry_13/results/experiment_4_predicted_skeleton_geometry_repair.json"
+    },
+    {
+      "baseline_name": "validation GT-SG baseline",
+      "boundary": "Generation-side main candidate diagnostic; validation only.",
+      "category": "main_method_candidate",
+      "delta_vs_baseline": {
+        "match@1": -0.039400000000000046,
+        "match@20": -0.121,
+        "match@5": -0.0524
+      },
+      "gate": "fail_main_gate",
+      "name": "SymCIF v5 neural skeleton/geometry proposer",
+      "notes": [],
+      "overall_match": {
+        "match@1": 0.2608,
+        "match@20": 0.359,
+        "match@5": 0.3524
+      },
+      "quality": {
+        "exact_cover_feasible_rate": 0.9685758513931888,
+        "formula_consistency": 0.9692724458204335,
+        "sg_consistency": 0.9692724458204335,
+        "skeleton_hit_to_match_conversion": 0.23652611002513266,
+        "valid_rate": 0.3363777089783282
+      },
+      "role": "symcif_v5_generation_diagnostic",
+      "rows_ge7_delta_vs_baseline": {
+        "match@1": 0.051782271954738855,
+        "match@20": -0.0019356899246027737,
+        "match@5": 0.04300665001311753
+      },
+      "rows_ge7_match": {
+        "match@1": 0.10501089324618737,
+        "match@20": 0.14553376906318083,
+        "match@5": 0.14291938997821352
+      },
+      "scope": "MPTS-52 validation full, missing artifacts as fail",
+      "source": "/data/users/xsw/autodlmini/model/New_model/opentry_12/results/experiment_7_main_ablation_boundary.json"
+    },
+    {
+      "baseline_name": "validation GT-SG baseline",
+      "boundary": "Auxiliary scorer/rerank, not a main method.",
+      "category": "auxiliary",
+      "delta_vs_baseline": {
+        "match@1": 0.030999999999999972,
+        "match@20": 0.009000000000000008,
+        "match@5": 0.015000000000000013
+      },
+      "gate": "fail_main_gate",
+      "name": "baseline + Track A scorer",
+      "notes": [],
+      "overall_match": {
+        "match@1": 0.3312,
+        "match@20": 0.489,
+        "match@5": 0.4198
+      },
+      "quality": {
+        "exact_cover_feasible_rate": 0.874,
+        "formula_consistency": 0.98061,
+        "sg_consistency": 0.99845,
+        "skeleton_hit_to_match_conversion": 0.3685240274599542,
+        "valid_rate": 0.82598
+      },
+      "role": "track_a_scorer",
+      "rows_ge7_delta_vs_baseline": {
+        "match@1": 0.01178010471204189,
+        "match@20": 0.010471204188481659,
+        "match@5": 0.007853403141361251
+      },
+      "rows_ge7_match": {
+        "match@1": 0.0650087260034904,
+        "match@20": 0.15794066317626526,
+        "match@5": 0.10776614310645724
+      },
+      "scope": "MPTS-52 validation K50 full",
+      "source": "/data/users/xsw/autodlmini/model/New_model/opentry_12/results/experiment_7_main_ablation_boundary.json"
+    },
+    {
+      "baseline_name": "validation GT-SG baseline",
+      "boundary": "Auxiliary scorer trained from validation labels; not a main method.",
+      "category": "auxiliary",
+      "delta_vs_baseline": {
+        "match@1": 0.0252,
+        "match@20": 0.009599999999999997,
+        "match@5": 0.017000000000000015
+      },
+      "gate": "fail_main_gate",
+      "name": "baseline + hard-negative structural scorer v2",
+      "notes": [],
+      "overall_match": {
+        "match@1": 0.3254,
+        "match@20": 0.4896,
+        "match@5": 0.4218
+      },
+      "quality": {
+        "exact_cover_feasible_rate": 0.87454,
+        "formula_consistency": 0.98018,
+        "sg_consistency": 0.99826,
+        "skeleton_hit_to_match_conversion": 0.36377981567452605,
+        "valid_rate": 0.79493
+      },
+      "role": "hard_negative_scorer",
+      "rows_ge7_delta_vs_baseline": {
+        "match@1": 0.01701570680628272,
+        "match@20": 0.011343804537521818,
+        "match@5": 0.02181500872600349
+      },
+      "rows_ge7_match": {
+        "match@1": 0.07024432809773123,
+        "match@20": 0.15881326352530542,
+        "match@5": 0.12172774869109948
+      },
+      "scope": "MPTS-52 validation K50 full",
+      "source": "/data/users/xsw/autodlmini/model/New_model/opentry_12/results/experiment_7_main_ablation_boundary.json"
+    },
+    {
+      "baseline_name": "validation GT-SG baseline",
+      "boundary": "Diagnostic proxy only; uses candidate filtering, not a proposer success.",
+      "category": "diagnostic",
+      "delta_vs_baseline": {
+        "match@1": 0.01959999999999995,
+        "match@20": 0.0116,
+        "match@5": 0.016000000000000014
+      },
+      "gate": "fail_main_gate",
+      "name": "baseline + exact-cover filter/proxy",
+      "notes": [],
+      "overall_match": {
+        "match@1": 0.3198,
+        "match@20": 0.4916,
+        "match@5": 0.4208
+      },
+      "quality": {
+        "exact_cover_feasible_rate": 0.89585,
+        "formula_consistency": 0.99002,
+        "sg_consistency": 0.99894,
+        "skeleton_hit_to_match_conversion": 0.35522687949991627,
+        "valid_rate": 0.79402
+      },
+      "role": "exact_cover_proxy",
+      "rows_ge7_delta_vs_baseline": {
+        "match@1": 0.012652705061082022,
+        "match@20": 0.010907504363001724,
+        "match@5": 0.013961605584642225
+      },
+      "rows_ge7_match": {
+        "match@1": 0.06588132635253054,
+        "match@20": 0.15837696335078533,
+        "match@5": 0.11387434554973822
+      },
+      "scope": "MPTS-52 validation K50 full",
+      "source": "/data/users/xsw/autodlmini/model/New_model/opentry_12/results/experiment_7_main_ablation_boundary.json"
+    },
+    {
+      "baseline_name": "validation GT-SG baseline",
+      "boundary": "Proxy/scorer diagnostic; not an inference-time main pipeline.",
+      "category": "diagnostic",
+      "delta_vs_baseline": {
+        "match@1": 0.023399999999999976,
+        "match@20": 0.01100000000000001,
+        "match@5": 0.017000000000000015
+      },
+      "gate": "fail_main_gate",
+      "name": "skeleton proposal + geometry repair + structural scorer proxy",
+      "notes": [],
+      "overall_match": {
+        "match@1": 0.3236,
+        "match@20": 0.491,
+        "match@5": 0.4218
+      },
+      "quality": {
+        "exact_cover_feasible_rate": 0.89585,
+        "formula_consistency": 0.98157,
+        "sg_consistency": 0.99879,
+        "skeleton_hit_to_match_conversion": 0.35740358318914994,
+        "valid_rate": 0.80223
+      },
+      "role": "combined_proxy",
+      "rows_ge7_delta_vs_baseline": {
+        "match@1": 0.01614310645724259,
+        "match@20": 0.009598603839441527,
+        "match@5": 0.018324607329842924
+      },
+      "rows_ge7_match": {
+        "match@1": 0.0693717277486911,
+        "match@20": 0.15706806282722513,
+        "match@5": 0.11823734729493891
+      },
+      "scope": "MPTS-52 validation K50 full",
+      "source": "/data/users/xsw/autodlmini/model/New_model/opentry_12/results/experiment_7_main_ablation_boundary.json"
+    },
+    {
+      "baseline_name": "validation GT-SG baseline",
+      "boundary": "Oracle coverage/fusion upper bound, not a ranked topK inference method.",
+      "category": "diagnostic",
+      "delta_vs_baseline": {
+        "match@1": 0.09559999999999996,
+        "match@20": 0.06300000000000006,
+        "match@5": 0.08760000000000001
+      },
+      "gate": "diagnostic_upper_bound_not_ranked_method",
+      "name": "oracle union coverage C@K OR SymCIF@K",
+      "notes": [],
+      "overall_match": {
+        "match@1": 0.3958,
+        "match@20": 0.543,
+        "match@5": 0.4924
+      },
+      "quality": {
+        "candidate_budget_note": "diagnostic oracle coverage: C@K OR S@K can use up to 2K candidates and is not a ranked topK method",
+        "samples": 5000
+      },
+      "role": "oracle_union_coverage_upper_bound",
+      "rows_ge7_delta_vs_baseline": {
+        "match@1": 0.08576920005931402,
+        "match@20": 0.08651746911679156,
+        "match@5": 0.09747288094993668
+      },
+      "rows_ge7_match": {
+        "match@1": 0.13899782135076252,
+        "match@20": 0.23398692810457516,
+        "match@5": 0.19738562091503267
+      },
+      "scope": "MPTS-52 validation full; up to 2K candidates per K",
+      "source": "/data/users/xsw/autodlmini/model/New_model/opentry_13/results/experiment_5_main_ablation_and_final_boundary.json"
+    },
+    {
+      "baseline_name": null,
+      "boundary": "Uses GT-WA/GT-skeleton; component signal only, never an inference result.",
+      "category": "diagnostic",
+      "delta_vs_baseline": null,
+      "gate": "diagnostic_oracle_only",
+      "name": "GT-WA learned geometry repair oracle",
+      "notes": [
+        "opentry_12 MP-20 GT-WA K5 also showed strong geometry signal, but GT-WA is forbidden at inference.",
+        "MP-20 GT-WA K1/K5 all=77.158% / 82.939% / NA."
+      ],
+      "overall_match": {
+        "match@1": 0.3,
+        "match@20": 0.4166666666666667,
+        "match@5": 0.37777777777777777
+      },
+      "quality": {
+        "condition": "GT-WA/GT-skeleton oracle on the MPTS-52 subset of a mixed 500-sample evaluation; diagnostic only",
+        "exact_cover_any@1": 0.45,
+        "exact_cover_any@20": 0.8777777777777778,
+        "exact_cover_any@5": 0.75,
+        "formula_ok_any@1": 0.45,
+        "formula_ok_any@20": 0.8777777777777778,
+        "formula_ok_any@5": 0.75,
+        "rows_ge7_samples": 167,
+        "samples": 180,
+        "sg_ok_any@1": 0.45,
+        "sg_ok_any@20": 0.8777777777777778,
+        "sg_ok_any@5": 0.75,
+        "valid_any@1": 0.31666666666666665,
+        "valid_any@20": 0.6611111111111111,
+        "valid_any@5": 0.5
+      },
+      "role": "gt_wa_geometry_repair_oracle",
+      "rows_ge7_delta_vs_baseline": null,
+      "rows_ge7_match": {
+        "match@1": 0.25149700598802394,
+        "match@20": 0.3712574850299401,
+        "match@5": 0.32934131736526945
+      },
+      "scope": "MPTS-52 test subset from mixed GT-WA/GT-skeleton oracle top20",
+      "source": "/data/users/xsw/autodlmini/model/New_model/symcif_experiment/reports/symcif_v4_geometry_model_gtwa/no_oversampling/metrics/baseline_per_generation_metrics.jsonl"
+    }
+  ],
+  "time": "2026-06-29T05:15:10+00:00"
+}
