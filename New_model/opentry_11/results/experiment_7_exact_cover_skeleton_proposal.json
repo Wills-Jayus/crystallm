@@ -1,0 +1,42 @@
+{
+  "exact_cover_policy_deltas": {
+    "match@1": 0.01959999999999995,
+    "match@20": 0.0116,
+    "match@5": 0.016000000000000014,
+    "rows>=7_match@1": 0.012652705061082022,
+    "rows>=7_match@20": 0.010907504363001724,
+    "rows>=7_match@5": 0.013961605584642225
+  },
+  "exact_cover_policy_diagnostics": {
+    "collision_rate": 0.17757,
+    "exact_cover_feasible_rate": 0.89585,
+    "formula_consistency": 0.99002,
+    "rows_ge7_selected_candidates": 45840,
+    "selected_candidates": 100000,
+    "sg_consistency": 0.99894,
+    "skeleton_hit_to_match_conversion": 0.35522687949991627,
+    "valid_rate": 0.79402
+  },
+  "exact_cover_policy_metrics": {
+    "match@1": 0.3198,
+    "match@20": 0.4916,
+    "match@5": 0.4208,
+    "rmsd@1": 0.12426720980375235,
+    "rmsd@20": 0.12644896389495525,
+    "rmsd@5": 0.11985996299115971,
+    "rows>=7_match@1": 0.06588132635253054,
+    "rows>=7_match@20": 0.15837696335078533,
+    "rows>=7_match@5": 0.11387434554973822,
+    "rows>=7_rmsd@1": 0.21269853178344372,
+    "rows>=7_rmsd@20": 0.25008410179917356,
+    "rows>=7_rmsd@5": 0.22714548112873562,
+    "rows_ge7_samples": 2292,
+    "samples": 5000
+  },
+  "rows7_top50_any_match_rate": 0.18324607329842932,
+  "rows7_top50_any_skeleton_rate": 0.9467713787085514,
+  "rows7_top50_skeleton_to_match_rate": 0.1823734729493892,
+  "top50_any_match_rate": 0.5272,
+  "top50_any_skeleton_rate": 0.9684,
+  "top50_skeleton_to_match_rate": 0.526
+}

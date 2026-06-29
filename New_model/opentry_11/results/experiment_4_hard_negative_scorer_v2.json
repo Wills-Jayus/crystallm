@@ -1,0 +1,125 @@
+{
+  "deltas": {
+    "match@1": 0.0252,
+    "match@20": 0.009599999999999997,
+    "match@5": 0.017000000000000015,
+    "rows>=7_match@1": 0.01701570680628272,
+    "rows>=7_match@20": 0.011343804537521818,
+    "rows>=7_match@5": 0.02181500872600349
+  },
+  "diagnostics": {
+    "collision_rate": 0.243,
+    "exact_cover_feasible_rate": 0.87454,
+    "formula_consistency": 0.98018,
+    "rows_ge7_selected_candidates": 45840,
+    "selected_candidates": 100000,
+    "sg_consistency": 0.99826,
+    "skeleton_hit_to_match_conversion": 0.36377981567452605,
+    "valid_rate": 0.79493
+  },
+  "metrics": {
+    "match@1": 0.3254,
+    "match@20": 0.4896,
+    "match@5": 0.4218,
+    "rmsd@1": 0.11980487848438845,
+    "rmsd@20": 0.1258821484367647,
+    "rmsd@5": 0.11978739377847321,
+    "rows>=7_match@1": 0.07024432809773123,
+    "rows>=7_match@20": 0.15881326352530542,
+    "rows>=7_match@5": 0.12172774869109948,
+    "rows>=7_rmsd@1": 0.20220146147639753,
+    "rows>=7_rmsd@20": 0.24534998882142858,
+    "rows>=7_rmsd@5": 0.2285018706433692,
+    "rows_ge7_samples": 2292,
+    "samples": 5000
+  },
+  "training": {
+    "folds": [
+      {
+        "fold": 0,
+        "models": {
+          "score_hard_negative_v2": {
+            "pair_groups": 1676,
+            "pairs": 176196,
+            "train_rows": 198200,
+            "train_samples": 3964
+          },
+          "score_rows7_hard_negative_v2": {
+            "pair_groups": 316,
+            "pairs": 33082,
+            "train_rows": 91400,
+            "train_samples": 1828
+          }
+        }
+      },
+      {
+        "fold": 1,
+        "models": {
+          "score_hard_negative_v2": {
+            "pair_groups": 1699,
+            "pairs": 177946,
+            "train_rows": 199550,
+            "train_samples": 3991
+          },
+          "score_rows7_hard_negative_v2": {
+            "pair_groups": 333,
+            "pairs": 34652,
+            "train_rows": 90800,
+            "train_samples": 1816
+          }
+        }
+      },
+      {
+        "fold": 2,
+        "models": {
+          "score_hard_negative_v2": {
+            "pair_groups": 1724,
+            "pairs": 184146,
+            "train_rows": 200400,
+            "train_samples": 4008
+          },
+          "score_rows7_hard_negative_v2": {
+            "pair_groups": 344,
+            "pairs": 37116,
+            "train_rows": 91950,
+            "train_samples": 1839
+          }
+        }
+      },
+      {
+        "fold": 3,
+        "models": {
+          "score_hard_negative_v2": {
+            "pair_groups": 1752,
+            "pairs": 185624,
+            "train_rows": 199750,
+            "train_samples": 3995
+          },
+          "score_rows7_hard_negative_v2": {
+            "pair_groups": 333,
+            "pairs": 35852,
+            "train_rows": 90750,
+            "train_samples": 1815
+          }
+        }
+      },
+      {
+        "fold": 4,
+        "models": {
+          "score_hard_negative_v2": {
+            "pair_groups": 1729,
+            "pairs": 184008,
+            "train_rows": 202100,
+            "train_samples": 4042
+          },
+          "score_rows7_hard_negative_v2": {
+            "pair_groups": 342,
+            "pairs": 37010,
+            "train_rows": 93500,
+            "train_samples": 1870
+          }
+        }
+      }
+    ]
+  }
+}

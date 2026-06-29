@@ -1,0 +1,266 @@
+{
+  "gpu_necessary": false,
+  "gpu_reason": "coverage diagnostic over existing validation candidates and generation artifacts; no MP-20/MPTS-52 train dataset training",
+  "source_note": "This is diagnostic coverage/fusion upper-bound analysis, not a main method contribution.",
+  "subsets": {
+    "a1": {
+      "deltas_vs_crystallm20": {
+        "budget_c10_s10": {
+          "match": 0.03554051195261265,
+          "rows>=7_match": 0.06235776058261264
+        },
+        "budget_c15_s5": {
+          "match": 0.05077215993230377,
+          "rows>=7_match": 0.07601274465179789
+        },
+        "coverage_c50_s20": {
+          "match": 0.09519779987306953,
+          "rows>=7_match": 0.11106053709604002
+        },
+        "crystallm@1": {
+          "match": -0.1781256610958325,
+          "rows>=7_match": -0.09057806099226218
+        },
+        "crystallm@20": {
+          "match": 0.0,
+          "rows>=7_match": 0.0
+        },
+        "crystallm@5": {
+          "match": -0.0753120372329173,
+          "rows>=7_match": -0.048702776513427415
+        },
+        "crystallm@50": {
+          "match": 0.046964247937380965,
+          "rows>=7_match": 0.03504779244424214
+        },
+        "union_c20_s20": {
+          "match": 0.061561243917918285,
+          "rows>=7_match": 0.08557123350022758
+        },
+        "union_c20_s5": {
+          "match": 0.061561243917918285,
+          "rows>=7_match": 0.08557123350022758
+        },
+        "v5_a1_exact_cover_sg_formula_e08@1": {
+          "match": -0.19949227840067701,
+          "rows>=7_match": -0.031406463359126086
+        },
+        "v5_a1_exact_cover_sg_formula_e08@20": {
+          "match": -0.1171990691770679,
+          "rows>=7_match": 0.002730996813837039
+        },
+        "v5_a1_exact_cover_sg_formula_e08@5": {
+          "match": -0.1171990691770679,
+          "rows>=7_match": 0.002730996813837039
+        }
+      },
+      "metrics": {
+        "budget_c10_s10": {
+          "match": 0.5100486566532685,
+          "rows>=7_match": 0.20345926263086025,
+          "rows>=7_samples": 2197,
+          "samples": 4727
+        },
+        "budget_c15_s5": {
+          "match": 0.5252803046329596,
+          "rows>=7_match": 0.2171142467000455,
+          "rows>=7_samples": 2197,
+          "samples": 4727
+        },
+        "coverage_c50_s20": {
+          "match": 0.5697059445737254,
+          "rows>=7_match": 0.25216203914428764,
+          "rows>=7_samples": 2197,
+          "samples": 4727
+        },
+        "crystallm@1": {
+          "match": 0.29638248360482333,
+          "rows>=7_match": 0.050523441055985434,
+          "rows>=7_samples": 2197,
+          "samples": 4727
+        },
+        "crystallm@20": {
+          "match": 0.47450814470065583,
+          "rows>=7_match": 0.14110150204824762,
+          "rows>=7_samples": 2197,
+          "samples": 4727
+        },
+        "crystallm@5": {
+          "match": 0.39919610746773854,
+          "rows>=7_match": 0.0923987255348202,
+          "rows>=7_samples": 2197,
+          "samples": 4727
+        },
+        "crystallm@50": {
+          "match": 0.5214723926380368,
+          "rows>=7_match": 0.17614929449248976,
+          "rows>=7_samples": 2197,
+          "samples": 4727
+        },
+        "union_c20_s20": {
+          "match": 0.5360693886185741,
+          "rows>=7_match": 0.2266727355484752,
+          "rows>=7_samples": 2197,
+          "samples": 4727
+        },
+        "union_c20_s5": {
+          "match": 0.5360693886185741,
+          "rows>=7_match": 0.2266727355484752,
+          "rows>=7_samples": 2197,
+          "samples": 4727
+        },
+        "v5_a1_exact_cover_sg_formula_e08@1": {
+          "match": 0.2750158662999788,
+          "rows>=7_match": 0.10969503868912153,
+          "rows>=7_samples": 2197,
+          "samples": 4727
+        },
+        "v5_a1_exact_cover_sg_formula_e08@20": {
+          "match": 0.3573090755235879,
+          "rows>=7_match": 0.14383249886208466,
+          "rows>=7_samples": 2197,
+          "samples": 4727
+        },
+        "v5_a1_exact_cover_sg_formula_e08@5": {
+          "match": 0.3573090755235879,
+          "rows>=7_match": 0.14383249886208466,
+          "rows>=7_samples": 2197,
+          "samples": 4727
+        }
+      },
+      "rows>=7_samples": 2197,
+      "samples": 4727,
+      "symcif_prefix": "v5_a1_exact_cover_sg_formula_e08"
+    },
+    "pool": {
+      "deltas_vs_crystallm20": {
+        "budget_c10_s10": {
+          "match": 0.04416265850459122,
+          "rows>=7_match": 0.0697674418604651
+        },
+        "budget_c15_s5": {
+          "match": 0.05706165282028863,
+          "rows>=7_match": 0.08258186995728523
+        },
+        "coverage_c50_s20": {
+          "match": 0.10231744643637952,
+          "rows>=7_match": 0.11912672045562411
+        },
+        "crystallm@1": {
+          "match": -0.17883690424136423,
+          "rows>=7_match": -0.09254864736592312
+        },
+        "crystallm@20": {
+          "match": 0.0,
+          "rows>=7_match": 0.0
+        },
+        "crystallm@5": {
+          "match": -0.074989068648885,
+          "rows>=7_match": -0.049359278595159
+        },
+        "crystallm@50": {
+          "match": 0.04831657192829031,
+          "rows>=7_match": 0.03654485049833886
+        },
+        "union_c20_s20": {
+          "match": 0.06886751202448627,
+          "rows>=7_match": 0.09302325581395349
+        },
+        "union_c20_s5": {
+          "match": 0.06733712286838656,
+          "rows>=7_match": 0.09207403891789273
+        },
+        "v5_fullgen_eval_pool@1": {
+          "match": -0.19785745518146042,
+          "rows>=7_match": -0.03084954912197438
+        },
+        "v5_fullgen_eval_pool@20": {
+          "match": -0.09051158723218189,
+          "rows>=7_match": 0.013289036544850502
+        },
+        "v5_fullgen_eval_pool@5": {
+          "match": -0.09772627896808045,
+          "rows>=7_match": 0.010441385856668234
+        }
+      },
+      "metrics": {
+        "budget_c10_s10": {
+          "match": 0.5271097507651946,
+          "rows>=7_match": 0.21499762695775984,
+          "rows>=7_samples": 2107,
+          "samples": 4574
+        },
+        "budget_c15_s5": {
+          "match": 0.540008745080892,
+          "rows>=7_match": 0.22781205505457996,
+          "rows>=7_samples": 2107,
+          "samples": 4574
+        },
+        "coverage_c50_s20": {
+          "match": 0.5852645386969829,
+          "rows>=7_match": 0.26435690555291885,
+          "rows>=7_samples": 2107,
+          "samples": 4574
+        },
+        "crystallm@1": {
+          "match": 0.30411018801923917,
+          "rows>=7_match": 0.05268153773137162,
+          "rows>=7_samples": 2107,
+          "samples": 4574
+        },
+        "crystallm@20": {
+          "match": 0.4829470922606034,
+          "rows>=7_match": 0.14523018509729474,
+          "rows>=7_samples": 2107,
+          "samples": 4574
+        },
+        "crystallm@5": {
+          "match": 0.4079580236117184,
+          "rows>=7_match": 0.09587090650213574,
+          "rows>=7_samples": 2107,
+          "samples": 4574
+        },
+        "crystallm@50": {
+          "match": 0.5312636641888937,
+          "rows>=7_match": 0.1817750355956336,
+          "rows>=7_samples": 2107,
+          "samples": 4574
+        },
+        "union_c20_s20": {
+          "match": 0.5518146042850897,
+          "rows>=7_match": 0.23825344091124823,
+          "rows>=7_samples": 2107,
+          "samples": 4574
+        },
+        "union_c20_s5": {
+          "match": 0.55028421512899,
+          "rows>=7_match": 0.23730422401518747,
+          "rows>=7_samples": 2107,
+          "samples": 4574
+        },
+        "v5_fullgen_eval_pool@1": {
+          "match": 0.285089637079143,
+          "rows>=7_match": 0.11438063597532036,
+          "rows>=7_samples": 2107,
+          "samples": 4574
+        },
+        "v5_fullgen_eval_pool@20": {
+          "match": 0.3924355050284215,
+          "rows>=7_match": 0.15851922164214524,
+          "rows>=7_samples": 2107,
+          "samples": 4574
+        },
+        "v5_fullgen_eval_pool@5": {
+          "match": 0.38522081329252295,
+          "rows>=7_match": 0.15567157095396297,
+          "rows>=7_samples": 2107,
+          "samples": 4574
+        }
+      },
+      "rows>=7_samples": 2107,
+      "samples": 4574,
+      "symcif_prefix": "v5_fullgen_eval_pool"
+    }
+  },
+  "time": "2026-06-28T17:53:40+00:00"
+}

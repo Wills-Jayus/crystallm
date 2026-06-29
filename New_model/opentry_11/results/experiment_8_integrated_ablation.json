@@ -1,0 +1,851 @@
+{
+  "ablation_rows": [
+    {
+      "deltas": {
+        "match@1": 0.0,
+        "match@20": 0.0,
+        "match@5": 0.0,
+        "rows>=7_match@1": 0.0,
+        "rows>=7_match@20": 0.0,
+        "rows>=7_match@5": 0.0
+      },
+      "diagnostics": {
+        "collision_rate": 0.37008,
+        "exact_cover_feasible_rate": 0.78029,
+        "formula_consistency": 0.96743,
+        "rows_ge7_selected_candidates": 45840,
+        "selected_candidates": 100000,
+        "sg_consistency": 0.99843,
+        "skeleton_hit_to_match_conversion": 0.3854976995732356,
+        "valid_rate": 0.74868
+      },
+      "metrics": {
+        "match@1": 0.3002,
+        "match@20": 0.48,
+        "match@5": 0.4048,
+        "rmsd@1": 0.1255473167029314,
+        "rmsd@20": 0.12916433166141666,
+        "rmsd@5": 0.1202741141764822,
+        "rows>=7_match@1": 0.053228621291448515,
+        "rows>=7_match@20": 0.1474694589877836,
+        "rows>=7_match@5": 0.09991273996509599,
+        "rows>=7_rmsd@1": 0.22097429556639345,
+        "rows>=7_rmsd@20": 0.26146418570828406,
+        "rows>=7_rmsd@5": 0.23216901133886464,
+        "rows_ge7_samples": 2292,
+        "samples": 5000
+      },
+      "name": "原 GT-SG baseline"
+    },
+    {
+      "deltas": {
+        "match@1": 0.030999999999999972,
+        "match@20": 0.009000000000000008,
+        "match@5": 0.015000000000000013,
+        "rows>=7_match@1": 0.01178010471204189,
+        "rows>=7_match@20": 0.010471204188481659,
+        "rows>=7_match@5": 0.007853403141361251
+      },
+      "diagnostics": {
+        "collision_rate": 0.26388,
+        "exact_cover_feasible_rate": 0.874,
+        "formula_consistency": 0.98061,
+        "rows_ge7_selected_candidates": 45840,
+        "selected_candidates": 100000,
+        "sg_consistency": 0.99845,
+        "skeleton_hit_to_match_conversion": 0.3685240274599542,
+        "valid_rate": 0.82598
+      },
+      "metrics": {
+        "match@1": 0.3312,
+        "match@20": 0.489,
+        "match@5": 0.4198,
+        "rmsd@1": 0.11685216175513287,
+        "rmsd@20": 0.12632144750854807,
+        "rmsd@5": 0.1144563389542163,
+        "rows>=7_match@1": 0.0650087260034904,
+        "rows>=7_match@20": 0.15794066317626526,
+        "rows>=7_match@5": 0.10776614310645724,
+        "rows>=7_rmsd@1": 0.1764946081885906,
+        "rows>=7_rmsd@20": 0.250626605501105,
+        "rows>=7_rmsd@5": 0.21363822245182187,
+        "rows_ge7_samples": 2292,
+        "samples": 5000
+      },
+      "name": "baseline + Track A scorer"
+    },
+    {
+      "deltas": {
+        "match@1": 0.01959999999999995,
+        "match@20": 0.0116,
+        "match@5": 0.016000000000000014,
+        "rows>=7_match@1": 0.012652705061082022,
+        "rows>=7_match@20": 0.010907504363001724,
+        "rows>=7_match@5": 0.013961605584642225
+      },
+      "diagnostics": {
+        "collision_rate": 0.17757,
+        "exact_cover_feasible_rate": 0.89585,
+        "formula_consistency": 0.99002,
+        "rows_ge7_selected_candidates": 45840,
+        "selected_candidates": 100000,
+        "sg_consistency": 0.99894,
+        "skeleton_hit_to_match_conversion": 0.35522687949991627,
+        "valid_rate": 0.79402
+      },
+      "metrics": {
+        "match@1": 0.3198,
+        "match@20": 0.4916,
+        "match@5": 0.4208,
+        "rmsd@1": 0.12426720980375235,
+        "rmsd@20": 0.12644896389495525,
+        "rmsd@5": 0.11985996299115971,
+        "rows>=7_match@1": 0.06588132635253054,
+        "rows>=7_match@20": 0.15837696335078533,
+        "rows>=7_match@5": 0.11387434554973822,
+        "rows>=7_rmsd@1": 0.21269853178344372,
+        "rows>=7_rmsd@20": 0.25008410179917356,
+        "rows>=7_rmsd@5": 0.22714548112873562,
+        "rows_ge7_samples": 2292,
+        "samples": 5000
+      },
+      "name": "baseline + exact-cover filter/proposal"
+    },
+    {
+      "deltas": {
+        "match@1": 0.0252,
+        "match@20": 0.009599999999999997,
+        "match@5": 0.017000000000000015,
+        "rows>=7_match@1": 0.01701570680628272,
+        "rows>=7_match@20": 0.011343804537521818,
+        "rows>=7_match@5": 0.02181500872600349
+      },
+      "diagnostics": {
+        "collision_rate": 0.243,
+        "exact_cover_feasible_rate": 0.87454,
+        "formula_consistency": 0.98018,
+        "rows_ge7_selected_candidates": 45840,
+        "selected_candidates": 100000,
+        "sg_consistency": 0.99826,
+        "skeleton_hit_to_match_conversion": 0.36377981567452605,
+        "valid_rate": 0.79493
+      },
+      "metrics": {
+        "match@1": 0.3254,
+        "match@20": 0.4896,
+        "match@5": 0.4218,
+        "rmsd@1": 0.11980487848438845,
+        "rmsd@20": 0.1258821484367647,
+        "rmsd@5": 0.11978739377847321,
+        "rows>=7_match@1": 0.07024432809773123,
+        "rows>=7_match@20": 0.15881326352530542,
+        "rows>=7_match@5": 0.12172774869109948,
+        "rows>=7_rmsd@1": 0.20220146147639753,
+        "rows>=7_rmsd@20": 0.24534998882142858,
+        "rows>=7_rmsd@5": 0.2285018706433692,
+        "rows_ge7_samples": 2292,
+        "samples": 5000
+      },
+      "name": "baseline + hard-negative structural scorer v2"
+    },
+    {
+      "deltas": {
+        "match@1": 0.0,
+        "match@20": 0.0,
+        "match@5": 0.0,
+        "rows>=7_match@1": 0.0,
+        "rows>=7_match@20": 0.0,
+        "rows>=7_match@5": 0.0
+      },
+      "diagnostics": {
+        "collision_rate": 0.37008,
+        "exact_cover_feasible_rate": 0.78029,
+        "formula_consistency": 0.96743,
+        "rows_ge7_selected_candidates": 45840,
+        "selected_candidates": 100000,
+        "sg_consistency": 0.99843,
+        "skeleton_hit_to_match_conversion": 0.3854976995732356,
+        "valid_rate": 0.74868
+      },
+      "metrics": {
+        "match@1": 0.3002,
+        "match@20": 0.48,
+        "match@5": 0.4048,
+        "rmsd@1": 0.1255473167029314,
+        "rmsd@20": 0.12916433166141666,
+        "rmsd@5": 0.1202741141764822,
+        "rows>=7_match@1": 0.053228621291448515,
+        "rows>=7_match@20": 0.1474694589877836,
+        "rows>=7_match@5": 0.09991273996509599,
+        "rows>=7_rmsd@1": 0.22097429556639345,
+        "rows>=7_rmsd@20": 0.26146418570828406,
+        "rows>=7_rmsd@5": 0.23216901133886464,
+        "rows_ge7_samples": 2292,
+        "samples": 5000
+      },
+      "name": "baseline + geometry repair"
+    },
+    {
+      "deltas": {
+        "match@1": 0.01959999999999995,
+        "match@20": 0.0116,
+        "match@5": 0.016000000000000014,
+        "rows>=7_match@1": 0.012652705061082022,
+        "rows>=7_match@20": 0.010907504363001724,
+        "rows>=7_match@5": 0.013961605584642225
+      },
+      "diagnostics": {
+        "collision_rate": 0.17757,
+        "exact_cover_feasible_rate": 0.89585,
+        "formula_consistency": 0.99002,
+        "rows_ge7_selected_candidates": 45840,
+        "selected_candidates": 100000,
+        "sg_consistency": 0.99894,
+        "skeleton_hit_to_match_conversion": 0.35522687949991627,
+        "valid_rate": 0.79402
+      },
+      "metrics": {
+        "match@1": 0.3198,
+        "match@20": 0.4916,
+        "match@5": 0.4208,
+        "rmsd@1": 0.12426720980375235,
+        "rmsd@20": 0.12644896389495525,
+        "rmsd@5": 0.11985996299115971,
+        "rows>=7_match@1": 0.06588132635253054,
+        "rows>=7_match@20": 0.15837696335078533,
+        "rows>=7_match@5": 0.11387434554973822,
+        "rows>=7_rmsd@1": 0.21269853178344372,
+        "rows>=7_rmsd@20": 0.25008410179917356,
+        "rows>=7_rmsd@5": 0.22714548112873562,
+        "rows_ge7_samples": 2292,
+        "samples": 5000
+      },
+      "name": "skeleton proposal + geometry repair"
+    },
+    {
+      "deltas": {
+        "match@1": 0.023399999999999976,
+        "match@20": 0.01100000000000001,
+        "match@5": 0.017000000000000015,
+        "rows>=7_match@1": 0.01614310645724259,
+        "rows>=7_match@20": 0.009598603839441527,
+        "rows>=7_match@5": 0.018324607329842924
+      },
+      "diagnostics": {
+        "collision_rate": 0.17626,
+        "exact_cover_feasible_rate": 0.89585,
+        "formula_consistency": 0.98157,
+        "rows_ge7_selected_candidates": 45840,
+        "selected_candidates": 100000,
+        "sg_consistency": 0.99879,
+        "skeleton_hit_to_match_conversion": 0.35740358318914994,
+        "valid_rate": 0.80223
+      },
+      "metrics": {
+        "match@1": 0.3236,
+        "match@20": 0.491,
+        "match@5": 0.4218,
+        "rmsd@1": 0.11899617757082818,
+        "rmsd@20": 0.12558129816431773,
+        "rmsd@5": 0.12000728875248932,
+        "rows>=7_match@1": 0.0693717277486911,
+        "rows>=7_match@20": 0.15706806282722513,
+        "rows>=7_match@5": 0.11823734729493891,
+        "rows>=7_rmsd@1": 0.20163340956415093,
+        "rows>=7_rmsd@20": 0.24451965811611112,
+        "rows>=7_rmsd@5": 0.22806985718302583,
+        "rows_ge7_samples": 2292,
+        "samples": 5000
+      },
+      "name": "skeleton proposal + geometry repair + structural scorer"
+    },
+    {
+      "deltas": {
+        "match@1": 0.030999999999999972,
+        "match@20": 0.009000000000000008,
+        "match@5": 0.015000000000000013,
+        "rows>=7_match@1": 0.01178010471204189,
+        "rows>=7_match@20": 0.010471204188481659,
+        "rows>=7_match@5": 0.007853403141361251
+      },
+      "diagnostics": {
+        "collision_rate": 0.26388,
+        "exact_cover_feasible_rate": 0.874,
+        "formula_consistency": 0.98061,
+        "rows_ge7_selected_candidates": 45840,
+        "selected_candidates": 100000,
+        "sg_consistency": 0.99845,
+        "skeleton_hit_to_match_conversion": 0.3685240274599542,
+        "valid_rate": 0.82598
+      },
+      "metrics": {
+        "match@1": 0.3312,
+        "match@20": 0.489,
+        "match@5": 0.4198,
+        "rmsd@1": 0.11685216175513287,
+        "rmsd@20": 0.12632144750854807,
+        "rmsd@5": 0.1144563389542163,
+        "rows>=7_match@1": 0.0650087260034904,
+        "rows>=7_match@20": 0.15794066317626526,
+        "rows>=7_match@5": 0.10776614310645724,
+        "rows>=7_rmsd@1": 0.1764946081885906,
+        "rows>=7_rmsd@20": 0.250626605501105,
+        "rows>=7_rmsd@5": 0.21363822245182187,
+        "rows_ge7_samples": 2292,
+        "samples": 5000
+      },
+      "name": "rows>=7 specialized route"
+    }
+  ],
+  "achieved_plus5pp_two_metrics": false,
+  "combined_policy": {
+    "deltas": {
+      "match@1": 0.023399999999999976,
+      "match@20": 0.01100000000000001,
+      "match@5": 0.017000000000000015,
+      "rows>=7_match@1": 0.01614310645724259,
+      "rows>=7_match@20": 0.009598603839441527,
+      "rows>=7_match@5": 0.018324607329842924
+    },
+    "diagnostics": {
+      "collision_rate": 0.17626,
+      "exact_cover_feasible_rate": 0.89585,
+      "formula_consistency": 0.98157,
+      "rows_ge7_selected_candidates": 45840,
+      "selected_candidates": 100000,
+      "sg_consistency": 0.99879,
+      "skeleton_hit_to_match_conversion": 0.35740358318914994,
+      "valid_rate": 0.80223
+    },
+    "metrics": {
+      "match@1": 0.3236,
+      "match@20": 0.491,
+      "match@5": 0.4218,
+      "rmsd@1": 0.11899617757082818,
+      "rmsd@20": 0.12558129816431773,
+      "rmsd@5": 0.12000728875248932,
+      "rows>=7_match@1": 0.0693717277486911,
+      "rows>=7_match@20": 0.15706806282722513,
+      "rows>=7_match@5": 0.11823734729493891,
+      "rows>=7_rmsd@1": 0.20163340956415093,
+      "rows>=7_rmsd@20": 0.24451965811611112,
+      "rows>=7_rmsd@5": 0.22806985718302583,
+      "rows_ge7_samples": 2292,
+      "samples": 5000
+    }
+  },
+  "geometry_repair_actual_pilot": {
+    "candidate_pool_skeleton_hit_failed_top20": 47949,
+    "collision_free_after_proxy": null,
+    "pilot_conversion_rate": 0.0,
+    "pilot_converted": 0,
+    "pilot_evaluated": 298,
+    "pilot_requested": 300,
+    "repair": "wrap fractional coordinates into [0,1); apply deterministic tiny fractional jitter only for collision-proxy candidates; keep SG/formula/multiplicity rows unchanged.",
+    "rows": [
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-727071",
+        "min_radius_ratio": 0.3097913143,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-727071",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": false,
+        "material_id": "mp-9815",
+        "min_radius_ratio": 0.6925840455000001,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-9815",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": false,
+        "material_id": "mp-570779",
+        "min_radius_ratio": 0.771714475,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-570779",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-1204814",
+        "min_radius_ratio": 0.5507073051,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-1204814",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": false,
+        "material_id": "mp-557669",
+        "min_radius_ratio": 0.6198361889,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-557669",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-1204588",
+        "min_radius_ratio": 0.5187050315,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-1204588",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-570971",
+        "min_radius_ratio": 0.5846087559,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-570971",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": false,
+        "material_id": "mp-707250",
+        "min_radius_ratio": 1.2162210128,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-707250",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-727951",
+        "min_radius_ratio": 0.20263210140000001,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-727951",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": false,
+        "material_id": "mp-723625",
+        "min_radius_ratio": 0.6497023176000001,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-723625",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-8570",
+        "min_radius_ratio": 0.4386128198,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-8570",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-16864",
+        "min_radius_ratio": 0.5212197463,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-16864",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-542883",
+        "min_radius_ratio": 0.3643826087,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-542883",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-557704",
+        "min_radius_ratio": 0.2917763107,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-557704",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": false,
+        "material_id": "mp-1192496",
+        "min_radius_ratio": 1.4429238328,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-1192496",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": false,
+        "material_id": "mp-722381",
+        "min_radius_ratio": 0.7835801199,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-722381",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-6452",
+        "min_radius_ratio": 0.5915958816,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-6452",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-698310",
+        "min_radius_ratio": 0.4707503112,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-698310",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-6426",
+        "min_radius_ratio": 0.1422571394,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-6426",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": false,
+        "material_id": "mp-1196015",
+        "min_radius_ratio": 0.880641921,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-1196015",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": false,
+        "material_id": "mp-9509",
+        "min_radius_ratio": 0.6212160067,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-9509",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-733844",
+        "min_radius_ratio": 0.0809020914,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-733844",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-697253",
+        "min_radius_ratio": 0.5910427526,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-697253",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": false,
+        "material_id": "mp-29129",
+        "min_radius_ratio": 0.7910626915000001,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-29129",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-29127",
+        "min_radius_ratio": 0.5793804327000001,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-29127",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": false,
+        "material_id": "mp-572298",
+        "min_radius_ratio": 0.7433079948,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-572298",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-697451",
+        "min_radius_ratio": 0.4635724855,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-697451",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": false,
+        "material_id": "mp-697592",
+        "min_radius_ratio": 0.9404665010000001,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-697592",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-733858",
+        "min_radius_ratio": 0.43062638750000004,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-733858",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": false,
+        "material_id": "mp-697670",
+        "min_radius_ratio": 0.7676109668000001,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-697670",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-22804",
+        "min_radius_ratio": 0.23908689460000002,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-22804",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-505312",
+        "min_radius_ratio": 0.4656098012,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-505312",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-703343",
+        "min_radius_ratio": 0.5955741825,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-703343",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": false,
+        "material_id": "mp-1204532",
+        "min_radius_ratio": 0.8705722667,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-1204532",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-559460",
+        "min_radius_ratio": 0.5858992922,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-559460",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-560493",
+        "min_radius_ratio": 0.48410418510000003,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-560493",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-28450",
+        "min_radius_ratio": 0.3945099738,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-28450",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": false,
+        "material_id": "mp-699317",
+        "min_radius_ratio": 0.6390393522000001,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-699317",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-505310",
+        "min_radius_ratio": 0.0493291224,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-505310",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": false,
+        "material_id": "mp-28455",
+        "min_radius_ratio": 0.6248881911,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-28455",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-731713",
+        "min_radius_ratio": 0.3758908166,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-731713",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": false,
+        "material_id": "mp-28463",
+        "min_radius_ratio": 0.7941265579,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-28463",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-505307",
+        "min_radius_ratio": 0.48736982170000004,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-505307",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-1198278",
+        "min_radius_ratio": 0.38431938250000003,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-1198278",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": false,
+        "material_id": "mp-505311",
+        "min_radius_ratio": 0.6247329425,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-505311",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-554239",
+        "min_radius_ratio": 0.5548997457,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-554239",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-17761",
+        "min_radius_ratio": 0.2415929057,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-17761",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": false,
+        "material_id": "mp-626973",
+        "min_radius_ratio": 0.6701702831,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-626973",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-17349",
+        "min_radius_ratio": 0.47264079010000004,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-17349",
+        "target_rows_ge7": true
+      },
+      {
+        "after_match": false,
+        "before_match": false,
+        "collision_proxy": true,
+        "material_id": "mp-1189282",
+        "min_radius_ratio": 0.2650947224,
+        "rank": 1,
+        "sample_id": "mpts_52_val_orig__mp-1189282",
+        "target_rows_ge7": true
+      }
+    ],
+    "rows7_pilot_conversion_rate": 0.0,
+    "rows7_pilot_converted": 0,
+    "rows7_pilot_evaluated": 298
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "artifacts": {
+    "eval": "/data/users/xsw/autodlmini/model/New_model/opentry_11/results/experiment_5_half_repair_eval.jsonl",
+    "pairs": "/data/users/xsw/autodlmini/model/New_model/opentry_11/results/experiment_5_half_repair_pairs.jsonl"
+  },
+  "baseline": {
+    "diagnostics": {
+      "exact_cover_feasible_rate": 0.78228,
+      "formula_consistency": 0.96926,
+      "sg_consistency": 0.99886,
+      "skeleton_hit_to_match_conversion": 0.39034616761261953,
+      "valid_rate": 0.75582
+    },
+    "metrics": {
+      "match@1": 0.3012,
+      "match@20": 0.484,
+      "match@5": 0.4096,
+      "rows>=7_match@1": 0.05235602094240838,
+      "rows>=7_match@20": 0.14397905759162305,
+      "rows>=7_match@5": 0.10034904013961606,
+      "rows>=7_samples": 1146,
+      "samples": 2500
+    }
+  },
+  "data": {
+    "candidates": 125000,
+    "repair_pairs_written": 23738,
+    "repair_pool_candidates": 23738,
+    "repair_pool_samples": 2019,
+    "rows>=7_samples": 1146,
+    "samples": 2500
+  },
+  "delta_vs_baseline": {
+    "match@1": 0.0,
+    "match@20": 0.0,
+    "match@5": 0.0,
+    "rows>=7_match@1": 0.0,
+    "rows>=7_match@20": 0.0,
+    "rows>=7_match@5": 0.0
+  },
+  "gate": {
+    "overall_metrics_over_5pp": 0,
+    "pass": false,
+    "rows7_k5_k20_over_5pp": false,
+    "threshold": 0.05
+  },
+  "gpu_necessary": false,
+  "gpu_reason": "deterministic geometry repair has no trainable model; StructureMatcher evaluation is CPU-bound",
+  "repair_eval": {
+    "after_match_none": 1,
+    "conversion_rate": 0.0,
+    "converted": 0,
+    "evaluated_valid": 23737,
+    "rows>=7_conversion_rate": 0.0,
+    "rows>=7_converted": 0,
+    "rows>=7_evaluated_valid": 12745
+  },
+  "repaired": {
+    "diagnostics": {
+      "exact_cover_feasible_rate": 0.78228,
+      "formula_consistency": 0.96926,
+      "sg_consistency": 0.99886,
+      "skeleton_hit_to_match_conversion": 0.39034616761261953,
+      "valid_rate": 0.75582
+    },
+    "metrics": {
+      "match@1": 0.3012,
+      "match@20": 0.484,
+      "match@5": 0.4096,
+      "rows>=7_match@1": 0.05235602094240838,
+      "rows>=7_match@20": 0.14397905759162305,
+      "rows>=7_match@5": 0.10034904013961606,
+      "rows>=7_samples": 1146,
+      "samples": 2500
+    }
+  },
+  "stage": "half",
+  "time": "2026-06-28T17:38:55+00:00"
+}

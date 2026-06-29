@@ -1,0 +1,57 @@
+{
+  "baseline_top20_wrong": 69854,
+  "baseline_track_a_overlap": {
+    "K1": {
+      "baseline对_TrackA错": 140,
+      "baseline对_TrackA错_rows<7": 104,
+      "baseline对_TrackA错_rows>=7": 36,
+      "baseline错_TrackA对": 295,
+      "baseline错_TrackA对_rows<7": 232,
+      "baseline错_TrackA对_rows>=7": 63,
+      "两者都对": 1361,
+      "两者都对_rows<7": 1275,
+      "两者都对_rows>=7": 86,
+      "两者都错": 3204,
+      "两者都错_rows<7": 1097,
+      "两者都错_rows>=7": 2107
+    },
+    "K20": {
+      "baseline对_TrackA错": 90,
+      "baseline对_TrackA错_rows<7": 62,
+      "baseline对_TrackA错_rows>=7": 28,
+      "baseline错_TrackA对": 135,
+      "baseline错_TrackA对_rows<7": 83,
+      "baseline错_TrackA对_rows>=7": 52,
+      "两者都对": 2310,
+      "两者都对_rows<7": 2000,
+      "两者都对_rows>=7": 310,
+      "两者都错": 2465,
+      "两者都错_rows<7": 563,
+      "两者都错_rows>=7": 1902
+    },
+    "K5": {
+      "baseline对_TrackA错": 119,
+      "baseline对_TrackA错_rows<7": 79,
+      "baseline对_TrackA错_rows>=7": 40,
+      "baseline错_TrackA对": 194,
+      "baseline错_TrackA对_rows<7": 136,
+      "baseline错_TrackA对_rows>=7": 58,
+      "两者都对": 1905,
+      "两者都对_rows<7": 1716,
+      "两者都对_rows>=7": 189,
+      "两者都错": 2782,
+      "两者都错_rows<7": 777,
+      "两者都错_rows>=7": 2005
+    }
+  },
+  "collision_failure_rate": 0.5059266470066138,
+  "formula_ok_structure_wrong_rate": 0.953903856615226,
+  "free_parameter_proxy_bad_coord_rate": 0.004566667621038165,
+  "lattice_proxy_bad_rate": 0.0049102413605520085,
+  "rows7_collision_failure_rate": 0.6280137772675086,
+  "rows7_formula_ok_structure_wrong_rate": 0.9482663605051664,
+  "rows7_skeleton_ok_geometry_wrong_rate": 0.5862456946039035,
+  "sg_ok_wyckoff_wrong_rate": 0.2648094597302946,
+  "site_mapping_proxy_exact_cover_bad_rate": 0.3087439516706273,
+  "skeleton_ok_geometry_wrong_rate": 0.6864173848312194
+}

@@ -1,0 +1,320 @@
+{
+  "achieved_stop_threshold": false,
+  "data": {
+    "candidates": 250000,
+    "rows>=7_samples": 2292,
+    "samples": 5000
+  },
+  "deltas_vs_baseline": {
+    "pure_structural_hgb": {
+      "match@1": 0.04199999999999998,
+      "match@20": 0.017000000000000015,
+      "match@5": 0.030200000000000005,
+      "rows>=7_match@1": 0.020506108202443286,
+      "rows>=7_match@20": 0.014397905759162305,
+      "rows>=7_match@5": 0.01614310645724258
+    },
+    "stacked_oof_hgb": {
+      "match@1": 0.05299999999999999,
+      "match@20": 0.017600000000000005,
+      "match@5": 0.032799999999999996,
+      "rows>=7_match@1": 0.024432809773123905,
+      "rows>=7_match@20": 0.014397905759162305,
+      "rows>=7_match@5": 0.017888307155322858
+    }
+  },
+  "gpu_necessary": false,
+  "gpu_reason": "validation OOF sklearn HGB; no MP-20/MPTS-52 train dataset training",
+  "leakage_controls": {
+    "excluded": [
+      "match",
+      "rmsd",
+      "label_status",
+      "target_rows_ge7",
+      "parse_ok_label",
+      "skeleton_ok_geometry_wrong",
+      "formula_sg_geometry_wrong",
+      "collision_free_wrong"
+    ],
+    "pure_structural_uses_score_cols": false,
+    "stacked_uses_oof_score_cols": true
+  },
+  "model_meta": {
+    "pure": {
+      "feature_count": 69,
+      "features": [
+        "rank",
+        "rank_inv",
+        "rank_le5",
+        "rank_le20",
+        "rank_le30",
+        "rank_tail31_50",
+        "gen_index",
+        "temperature",
+        "top_k",
+        "cif_num_chars",
+        "cif_num_lines",
+        "atom_site_rows",
+        "candidate_rows_ge7",
+        "candidate_rows_ge10",
+        "declared_sg_number",
+        "prompt_sg_number",
+        "sg_number_match",
+        "sg_symbol_match",
+        "sg_number_abs_diff",
+        "formula_reduced_match",
+        "formula_element_jaccard",
+        "formula_l1_prompt",
+        "candidate_formula_atoms",
+        "prompt_formula_atoms",
+        "candidate_prompt_atom_ratio",
+        "multiplicity_total",
+        "multiplicity_prompt_ratio",
+        "multiplicity_formula_ratio",
+        "exact_cover_l1_prompt",
+        "exact_cover_l1_formula",
+        "multiplicity_matches_prompt",
+        "multiplicity_matches_formula",
+        "orbit_feasible",
+        "noninteger_multiplicity_rows",
+        "bad_occupancy_rows",
+        "bad_coord_rows",
+        "multiplicity_min",
+        "multiplicity_max",
+        "multiplicity_entropy",
+        "cell_length_a",
+        "cell_length_b",
+        "cell_length_c",
+        "cell_angle_alpha",
+        "cell_angle_beta",
+        "cell_angle_gamma",
+        "cell_volume",
+        "cell_formula_units_Z",
+        "cell_valid",
+        "length_ratio",
+        "length_mean",
+        "angle_abs_deviation_sum",
+        "volume_per_mult_atom",
+        "volume_per_prompt_atom",
+        "rows7_hard_bucket",
+        "rows7_rank_interaction",
+        "geom_parseable",
+        "min_pair_dist",
+        "nn_dist_mean",
+        "nn_dist_p10",
+        "nn_radius_ratio_mean",
+        "min_radius_ratio",
+        "collision_lt_0p5",
+        "radius_collision_lt_0p6",
+        "close_pair_frac",
+        "structural_tail_ok",
+        "rows7_tail_ok",
+        "complex_proxy",
+        "skeleton_hit",
+        "formula_sg_ok"
+      ],
+      "fold_meta": [
+        {
+          "fold": 0,
+          "train_candidates": 198200,
+          "train_positive": 58633,
+          "val_candidates": 51800
+        },
+        {
+          "fold": 1,
+          "train_candidates": 199550,
+          "train_positive": 60467,
+          "val_candidates": 50450
+        },
+        {
+          "fold": 2,
+          "train_candidates": 200400,
+          "train_positive": 60085,
+          "val_candidates": 49600
+        },
+        {
+          "fold": 3,
+          "train_candidates": 199750,
+          "train_positive": 60458,
+          "val_candidates": 50250
+        },
+        {
+          "fold": 4,
+          "train_candidates": 202100,
+          "train_positive": 58805,
+          "val_candidates": 47900
+        }
+      ]
+    },
+    "stacked": {
+      "feature_count": 73,
+      "features": [
+        "rank",
+        "rank_inv",
+        "rank_le5",
+        "rank_le20",
+        "rank_le30",
+        "rank_tail31_50",
+        "gen_index",
+        "temperature",
+        "top_k",
+        "cif_num_chars",
+        "cif_num_lines",
+        "atom_site_rows",
+        "candidate_rows_ge7",
+        "candidate_rows_ge10",
+        "declared_sg_number",
+        "prompt_sg_number",
+        "sg_number_match",
+        "sg_symbol_match",
+        "sg_number_abs_diff",
+        "formula_reduced_match",
+        "formula_element_jaccard",
+        "formula_l1_prompt",
+        "candidate_formula_atoms",
+        "prompt_formula_atoms",
+        "candidate_prompt_atom_ratio",
+        "multiplicity_total",
+        "multiplicity_prompt_ratio",
+        "multiplicity_formula_ratio",
+        "exact_cover_l1_prompt",
+        "exact_cover_l1_formula",
+        "multiplicity_matches_prompt",
+        "multiplicity_matches_formula",
+        "orbit_feasible",
+        "noninteger_multiplicity_rows",
+        "bad_occupancy_rows",
+        "bad_coord_rows",
+        "multiplicity_min",
+        "multiplicity_max",
+        "multiplicity_entropy",
+        "cell_length_a",
+        "cell_length_b",
+        "cell_length_c",
+        "cell_angle_alpha",
+        "cell_angle_beta",
+        "cell_angle_gamma",
+        "cell_volume",
+        "cell_formula_units_Z",
+        "cell_valid",
+        "length_ratio",
+        "length_mean",
+        "angle_abs_deviation_sum",
+        "volume_per_mult_atom",
+        "volume_per_prompt_atom",
+        "rows7_hard_bucket",
+        "rows7_rank_interaction",
+        "geom_parseable",
+        "min_pair_dist",
+        "nn_dist_mean",
+        "nn_dist_p10",
+        "nn_radius_ratio_mean",
+        "min_radius_ratio",
+        "collision_lt_0p5",
+        "radius_collision_lt_0p6",
+        "close_pair_frac",
+        "structural_tail_ok",
+        "rows7_tail_ok",
+        "complex_proxy",
+        "skeleton_hit",
+        "formula_sg_ok",
+        "score_core_exactcover_comp_sg",
+        "score_geometry_quality",
+        "score_rows7_specialized_gate",
+        "score_shallow_pairwise_replay"
+      ],
+      "fold_meta": [
+        {
+          "fold": 0,
+          "train_candidates": 198200,
+          "train_positive": 58633,
+          "val_candidates": 51800
+        },
+        {
+          "fold": 1,
+          "train_candidates": 199550,
+          "train_positive": 60467,
+          "val_candidates": 50450
+        },
+        {
+          "fold": 2,
+          "train_candidates": 200400,
+          "train_positive": 60085,
+          "val_candidates": 49600
+        },
+        {
+          "fold": 3,
+          "train_candidates": 199750,
+          "train_positive": 60458,
+          "val_candidates": 50250
+        },
+        {
+          "fold": 4,
+          "train_candidates": 202100,
+          "train_positive": 58805,
+          "val_candidates": 47900
+        }
+      ]
+    }
+  },
+  "policies": {
+    "baseline": {
+      "diagnostics": {
+        "exact_cover_feasible_rate": 0.78029,
+        "formula_consistency": 0.96743,
+        "sg_consistency": 0.99843,
+        "skeleton_hit_to_match_conversion": 0.3854976995732356,
+        "valid_rate": 0.74868
+      },
+      "metrics": {
+        "match@1": 0.3002,
+        "match@20": 0.48,
+        "match@5": 0.4048,
+        "rows>=7_match@1": 0.053228621291448515,
+        "rows>=7_match@20": 0.1474694589877836,
+        "rows>=7_match@5": 0.09991273996509599,
+        "rows>=7_samples": 2292,
+        "samples": 5000
+      }
+    },
+    "pure_structural_hgb": {
+      "diagnostics": {
+        "exact_cover_feasible_rate": 0.89395,
+        "formula_consistency": 0.97492,
+        "sg_consistency": 0.99848,
+        "skeleton_hit_to_match_conversion": 0.36941663403993513,
+        "valid_rate": 0.78859
+      },
+      "metrics": {
+        "match@1": 0.3422,
+        "match@20": 0.497,
+        "match@5": 0.435,
+        "rows>=7_match@1": 0.0737347294938918,
+        "rows>=7_match@20": 0.1618673647469459,
+        "rows>=7_match@5": 0.11605584642233857,
+        "rows>=7_samples": 2292,
+        "samples": 5000
+      }
+    },
+    "stacked_oof_hgb": {
+      "diagnostics": {
+        "exact_cover_feasible_rate": 0.89388,
+        "formula_consistency": 0.97875,
+        "sg_consistency": 0.99846,
+        "skeleton_hit_to_match_conversion": 0.3754866425023493,
+        "valid_rate": 0.81884
+      },
+      "metrics": {
+        "match@1": 0.3532,
+        "match@20": 0.4976,
+        "match@5": 0.4376,
+        "rows>=7_match@1": 0.07766143106457242,
+        "rows>=7_match@20": 0.1618673647469459,
+        "rows>=7_match@5": 0.11780104712041885,
+        "rows>=7_samples": 2292,
+        "samples": 5000
+      }
+    }
+  },
+  "time": "2026-06-28T17:50:57+00:00"
+}

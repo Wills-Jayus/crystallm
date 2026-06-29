@@ -1,0 +1,250 @@
+{
+  "achieved_stop_threshold": true,
+  "data": {
+    "candidates": 250000,
+    "rows>=7_samples": 2292,
+    "samples": 5000
+  },
+  "deltas_vs_baseline": {
+    "exact": {
+      "match@1": 0.01959999999999995,
+      "match@20": 0.0116,
+      "match@5": 0.016000000000000014,
+      "rows>=7_match@1": 0.012652705061082022,
+      "rows>=7_match@20": 0.010907504363001724,
+      "rows>=7_match@5": 0.013961605584642225
+    },
+    "hgb": {
+      "match@1": 0.22699999999999998,
+      "match@20": 0.04720000000000002,
+      "match@5": 0.12240000000000001,
+      "rows>=7_match@1": 0.1300174520069808,
+      "rows>=7_match@20": 0.035776614310645716,
+      "rows>=7_match@5": 0.08333333333333333
+    },
+    "track_a": {
+      "match@1": 0.030999999999999972,
+      "match@20": 0.009000000000000008,
+      "match@5": 0.015000000000000013,
+      "rows>=7_match@1": 0.01178010471204189,
+      "rows>=7_match@20": 0.010471204188481659,
+      "rows>=7_match@5": 0.007853403141361251
+    },
+    "union_oracle": {
+      "match@1": 0.22699999999999998,
+      "match@20": 0.04720000000000002,
+      "match@5": 0.12240000000000001,
+      "rows>=7_match@1": 0.1300174520069808,
+      "rows>=7_match@20": 0.035776614310645716,
+      "rows>=7_match@5": 0.08333333333333333
+    }
+  },
+  "gpu_necessary": false,
+  "gpu_reason": "validation OOF sklearn HGB and route-oracle diagnostics; no MP-20/MPTS-52 train dataset training",
+  "model_meta": {
+    "feature_count": 77,
+    "features": [
+      "rank",
+      "valid_label",
+      "rank_inv",
+      "rank_le5",
+      "rank_le20",
+      "rank_le30",
+      "rank_tail31_50",
+      "gen_index",
+      "temperature",
+      "top_k",
+      "cif_num_chars",
+      "cif_num_lines",
+      "atom_site_rows",
+      "candidate_rows_ge7",
+      "candidate_rows_ge10",
+      "declared_sg_number",
+      "prompt_sg_number",
+      "sg_number_match",
+      "sg_symbol_match",
+      "sg_number_abs_diff",
+      "formula_reduced_match",
+      "formula_element_jaccard",
+      "formula_l1_prompt",
+      "candidate_formula_atoms",
+      "prompt_formula_atoms",
+      "candidate_prompt_atom_ratio",
+      "multiplicity_total",
+      "multiplicity_prompt_ratio",
+      "multiplicity_formula_ratio",
+      "exact_cover_l1_prompt",
+      "exact_cover_l1_formula",
+      "multiplicity_matches_prompt",
+      "multiplicity_matches_formula",
+      "orbit_feasible",
+      "noninteger_multiplicity_rows",
+      "bad_occupancy_rows",
+      "bad_coord_rows",
+      "multiplicity_min",
+      "multiplicity_max",
+      "multiplicity_entropy",
+      "cell_length_a",
+      "cell_length_b",
+      "cell_length_c",
+      "cell_angle_alpha",
+      "cell_angle_beta",
+      "cell_angle_gamma",
+      "cell_volume",
+      "cell_formula_units_Z",
+      "cell_valid",
+      "length_ratio",
+      "length_mean",
+      "angle_abs_deviation_sum",
+      "volume_per_mult_atom",
+      "volume_per_prompt_atom",
+      "rows7_hard_bucket",
+      "rows7_rank_interaction",
+      "geom_parseable",
+      "min_pair_dist",
+      "nn_dist_mean",
+      "nn_dist_p10",
+      "nn_radius_ratio_mean",
+      "min_radius_ratio",
+      "collision_lt_0p5",
+      "radius_collision_lt_0p6",
+      "close_pair_frac",
+      "structural_tail_ok",
+      "rows7_tail_ok",
+      "score_core_exactcover_comp_sg",
+      "score_geometry_quality",
+      "score_rows7_specialized_gate",
+      "score_shallow_pairwise_replay",
+      "complex_proxy",
+      "skeleton_hit",
+      "formula_sg_ok",
+      "skeleton_ok_geometry_wrong",
+      "formula_sg_geometry_wrong",
+      "collision_free_wrong"
+    ],
+    "fold_meta": [
+      {
+        "fold": 0,
+        "train_candidates": 198200,
+        "train_positive": 58633,
+        "val_candidates": 51800
+      },
+      {
+        "fold": 1,
+        "train_candidates": 199550,
+        "train_positive": 60467,
+        "val_candidates": 50450
+      },
+      {
+        "fold": 2,
+        "train_candidates": 200400,
+        "train_positive": 60085,
+        "val_candidates": 49600
+      },
+      {
+        "fold": 3,
+        "train_candidates": 199750,
+        "train_positive": 60458,
+        "val_candidates": 50250
+      },
+      {
+        "fold": 4,
+        "train_candidates": 202100,
+        "train_positive": 58805,
+        "val_candidates": 47900
+      }
+    ]
+  },
+  "policies": {
+    "baseline": {
+      "diagnostics": {
+        "exact_cover_feasible_rate": 0.78029,
+        "formula_consistency": 0.96743,
+        "sg_consistency": 0.99843,
+        "skeleton_hit_to_match_conversion": 0.3854976995732356,
+        "valid_rate": 0.74868
+      },
+      "metrics": {
+        "match@1": 0.3002,
+        "match@20": 0.48,
+        "match@5": 0.4048,
+        "rows>=7_match@1": 0.053228621291448515,
+        "rows>=7_match@20": 0.1474694589877836,
+        "rows>=7_match@5": 0.09991273996509599,
+        "rows>=7_samples": 2292,
+        "samples": 5000
+      }
+    },
+    "exact": {
+      "diagnostics": {
+        "exact_cover_feasible_rate": 0.89585,
+        "formula_consistency": 0.99002,
+        "sg_consistency": 0.99894,
+        "skeleton_hit_to_match_conversion": 0.35522687949991627,
+        "valid_rate": 0.79402
+      },
+      "metrics": {
+        "match@1": 0.3198,
+        "match@20": 0.4916,
+        "match@5": 0.4208,
+        "rows>=7_match@1": 0.06588132635253054,
+        "rows>=7_match@20": 0.15837696335078533,
+        "rows>=7_match@5": 0.11387434554973822,
+        "rows>=7_samples": 2292,
+        "samples": 5000
+      }
+    },
+    "hgb": {
+      "diagnostics": {
+        "exact_cover_feasible_rate": 0.77805,
+        "formula_consistency": 0.93986,
+        "sg_consistency": 0.9978,
+        "skeleton_hit_to_match_conversion": 0.49270612428507166,
+        "valid_rate": 0.76049
+      },
+      "metrics": {
+        "match@1": 0.5272,
+        "match@20": 0.5272,
+        "match@5": 0.5272,
+        "rows>=7_match@1": 0.18324607329842932,
+        "rows>=7_match@20": 0.18324607329842932,
+        "rows>=7_match@5": 0.18324607329842932,
+        "rows>=7_samples": 2292,
+        "samples": 5000
+      }
+    },
+    "track_a": {
+      "diagnostics": {
+        "exact_cover_feasible_rate": 0.874,
+        "formula_consistency": 0.98061,
+        "sg_consistency": 0.99845,
+        "skeleton_hit_to_match_conversion": 0.3685240274599542,
+        "valid_rate": 0.82598
+      },
+      "metrics": {
+        "match@1": 0.3312,
+        "match@20": 0.489,
+        "match@5": 0.4198,
+        "rows>=7_match@1": 0.0650087260034904,
+        "rows>=7_match@20": 0.15794066317626526,
+        "rows>=7_match@5": 0.10776614310645724,
+        "rows>=7_samples": 2292,
+        "samples": 5000
+      }
+    },
+    "union_oracle": {
+      "diagnostics": null,
+      "metrics": {
+        "match@1": 0.5272,
+        "match@20": 0.5272,
+        "match@5": 0.5272,
+        "rows>=7_match@1": 0.18324607329842932,
+        "rows>=7_match@20": 0.18324607329842932,
+        "rows>=7_match@5": 0.18324607329842932,
+        "rows>=7_samples": 2292,
+        "samples": 5000
+      }
+    }
+  },
+  "time": "2026-06-28T17:46:30+00:00"
+}

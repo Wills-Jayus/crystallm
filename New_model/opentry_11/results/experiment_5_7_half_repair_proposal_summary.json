@@ -1,0 +1,130 @@
+{
+  "proposal": {
+    "baseline": {
+      "diagnostics": {
+        "exact_cover_feasible_rate": 0.7803722504230118,
+        "formula_consistency": 0.970748730964467,
+        "sg_consistency": 0.9991962774957699,
+        "skeleton_hit_to_match_conversion": 0.3823991760624458,
+        "valid_rate": 0.7521573604060914
+      },
+      "metrics": {
+        "match@1": 0.30160744500846026,
+        "match@20": 0.4763113367174281,
+        "match@5": 0.40313028764805414,
+        "rows>=7_match@1": 0.05004549590536852,
+        "rows>=7_match@20": 0.14740673339399454,
+        "rows>=7_match@5": 0.09827115559599636,
+        "rows>=7_samples": 1099,
+        "samples": 2364
+      }
+    },
+    "data": {
+      "a1_candidates": 11820,
+      "pool_candidates": 12976,
+      "rows>=7_samples": 1099,
+      "samples": 2364
+    },
+    "deltas_vs_baseline": {
+      "exact_cover_a1": {
+        "match@1": -0.03172588832487311,
+        "match@20": -0.11928934010152287,
+        "match@5": -0.04610829103214892,
+        "rows>=7_match@1": 0.060964513193812554,
+        "rows>=7_match@20": 0.004549590536851694,
+        "rows>=7_match@5": 0.053685168334849875
+      },
+      "fullgen_pool": {
+        "match@1": -0.029616724738675992,
+        "match@20": -0.09146341463414637,
+        "match@5": -0.029181184668989557,
+        "rows>=7_match@1": 0.06314797360980207,
+        "rows>=7_match@20": 0.014137606032045252,
+        "rows>=7_match@5": 0.060320452403393024
+      }
+    },
+    "exact_cover_a1": {
+      "diagnostics": {
+        "candidate_count": 11820,
+        "exact_cover_feasible_rate": 0.7188663282571912,
+        "formula_consistency": 0.7189509306260575,
+        "selected_candidate_count": 11820,
+        "sg_consistency": 0.7189509306260575,
+        "skeleton_hit_rate": 0.14560067681895092,
+        "skeleton_hit_to_match_conversion": 0.22545031958163858,
+        "valid_rate": 0.2786802030456853,
+        "wa_hit_rate": 0.028341793570219966
+      },
+      "metrics": {
+        "match@1": 0.26988155668358715,
+        "match@20": 0.3570219966159052,
+        "match@5": 0.3570219966159052,
+        "rows>=7_match@1": 0.11101000909918107,
+        "rows>=7_match@20": 0.15195632393084624,
+        "rows>=7_match@5": 0.15195632393084624,
+        "rows>=7_samples": 1099,
+        "samples": 2364
+      }
+    },
+    "fullgen_pool": {
+      "diagnostics": {
+        "candidate_count": 12976,
+        "exact_cover_feasible_rate": 0.966861898890259,
+        "formula_consistency": 0.967786683107275,
+        "selected_candidate_count": 12976,
+        "sg_consistency": 0.967786683107275,
+        "skeleton_hit_rate": 0.13794697903822442,
+        "skeleton_hit_to_match_conversion": 0.23184357541899442,
+        "valid_rate": 0.33353884093711467,
+        "wa_hit_rate": 0.027127003699136867
+      },
+      "metrics": {
+        "match@1": 0.2787456445993031,
+        "match@20": 0.3915505226480836,
+        "match@5": 0.3819686411149826,
+        "rows>=7_match@1": 0.11498586239396795,
+        "rows>=7_match@20": 0.16588124410933083,
+        "rows>=7_match@5": 0.16211121583411875,
+        "rows>=7_samples": 1061,
+        "samples": 2296
+      }
+    },
+    "gate": {
+      "exact_cover_a1": {
+        "overall_metrics_over_5pp": 0,
+        "pass": false,
+        "rows7_k5_k20_over_5pp": false,
+        "threshold": 0.05
+      },
+      "fullgen_pool": {
+        "overall_metrics_over_5pp": 0,
+        "pass": false,
+        "rows7_k5_k20_over_5pp": false,
+        "threshold": 0.05
+      }
+    },
+    "gpu_necessary": false,
+    "gpu_reason": "this half-data audit reuses existing SymCIF v5 generated/evaluated artifacts; retraining a neural W/A decoder would need GPU, but this experiment evaluates generation-side candidates rather than training a new model",
+    "pool_baseline": {
+      "diagnostics": {
+        "exact_cover_feasible_rate": 0.7915940766550522,
+        "formula_consistency": 0.9743031358885017,
+        "sg_consistency": 0.9992595818815331,
+        "skeleton_hit_to_match_conversion": 0.3861898211829436,
+        "valid_rate": 0.7601263066202091
+      },
+      "metrics": {
+        "match@1": 0.3083623693379791,
+        "match@20": 0.48301393728222997,
+        "match@5": 0.41114982578397213,
+        "rows>=7_match@1": 0.051837888784165884,
+        "rows>=7_match@20": 0.15174363807728558,
+        "rows>=7_match@5": 0.10179076343072573,
+        "rows>=7_samples": 1061,
+        "samples": 2296
+      }
+    },
+    "stage": "half",
+    "time": "2026-06-28T17:40:26+00:00"
+  }
+}

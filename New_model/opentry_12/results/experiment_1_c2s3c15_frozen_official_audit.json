@@ -1,0 +1,158 @@
+{
+  "audit_pass": true,
+  "experiment": "experiment_1_c2s3c15_frozen_official_preaudit",
+  "frozen_route": "C2S3C15",
+  "leakage_audit": {
+    "official_result_can_change_route": false,
+    "ratio_search_after_freeze": false,
+    "uses_fixed_candidate_order_only": true,
+    "uses_gt_wa_or_gt_skeleton_for_routing": false,
+    "uses_match_or_rmsd_for_routing": false,
+    "uses_structurematcher_label_for_routing": false,
+    "uses_test_feedback_for_routing": false
+  },
+  "official_baseline_all": {
+    "RMSE@1": 0.16551166506411208,
+    "RMSE@20": 0.17464967883940366,
+    "RMSE@5": 0.17020933874568023,
+    "match@1": 0.17181324110671936,
+    "match@20": 0.31521739130434784,
+    "match@5": 0.24345355731225296,
+    "matched_samples_for_RMSE@1": 1391,
+    "matched_samples_for_RMSE@20": 2552,
+    "matched_samples_for_RMSE@5": 1971,
+    "positive_any": 2552,
+    "positive_any_rate": 0.31521739130434784,
+    "samples": 8096
+  },
+  "official_baseline_rows_ge7": {
+    "RMSE@1": 0.1850717583352901,
+    "RMSE@20": 0.19412066380458354,
+    "RMSE@5": 0.19034882854406532,
+    "match@1": 0.14319433516915814,
+    "match@20": 0.2787831104117493,
+    "match@5": 0.2094151586677157,
+    "matched_samples_for_RMSE@1": 1092,
+    "matched_samples_for_RMSE@20": 2126,
+    "matched_samples_for_RMSE@5": 1597,
+    "positive_any": 2126,
+    "positive_any_rate": 0.2787831104117493,
+    "samples": 7626
+  },
+  "official_baseline_source": "/data/users/xsw/autodlmini/model/New_model/opentry_7/metrics/pure_crystallm_gt_sg_mpts_52_test_k20.json",
+  "official_once_policy": {
+    "allowed_route": "C2S3C15",
+    "default_refuse_if_summary_exists": true,
+    "summary_path": "/data/users/xsw/autodlmini/model/New_model/opentry_12/official_eval/c2s3c15_mpts52_test_clean_rerun2_20260629/summary.json"
+  },
+  "route_manifest": {
+    "crystallm_source": "/data/users/xsw/autodlmini/model/New_model/opentry_7/generations/pure_crystallm_gt_sg_mpts_52_test.tar.gz",
+    "missing_crystallm_samples": 1,
+    "missing_symcif_samples_full_crystallm_fallback": 1072,
+    "not_used_for_routing": [
+      "match",
+      "rms",
+      "StructureMatcher result",
+      "test feedback",
+      "GT-WA",
+      "GT-skeleton",
+      "diagnostic skeleton_hit/wa_hit labels"
+    ],
+    "partial_symcif_samples_slot_fallback": 1872,
+    "route": "C2S3C15",
+    "route_records": 161920,
+    "routing_inputs": [
+      "fixed source sequence C2S3C15",
+      "CrystaLLM original candidate order",
+      "SymCIF fullgen pool generation_score order with gen_index tie-break",
+      "sample-level fallback to CrystaLLM when SymCIF has no official candidate"
+    ],
+    "samples": 8096,
+    "sequence": [
+      "C",
+      "C",
+      "S",
+      "S",
+      "S",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C"
+    ],
+    "source_counts": {
+      "C": 142720,
+      "S": 19200
+    },
+    "symcif_generation_source": "/data/users/xsw/autodlmini/runs/symcif_v5_multidataset_test_full/mpts52/test/generations/v5_fullgen_eval_pool.jsonl",
+    "symcif_metric_source_for_nonrouting_diagnostics": "/data/users/xsw/autodlmini/runs/symcif_v5_multidataset_test_full/mpts52/test/metrics/v5_fullgen_eval_pool_metrics.jsonl",
+    "time": "2026-06-29T02:25:41+00:00"
+  },
+  "sequence": [
+    "C",
+    "C",
+    "S",
+    "S",
+    "S",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C"
+  ],
+  "source_checks": {
+    "crystallm_baseline_exists": true,
+    "crystallm_tar_exists": true,
+    "mpts52_test_csv_exists": true,
+    "symcif_generation_exists": true,
+    "symcif_manifest_exists": true,
+    "symcif_metrics_exists": true,
+    "validation_frozen_result_exists": true
+  },
+  "time": "2026-06-29T02:25:52+00:00",
+  "validation_frozen_best": {
+    "achieved": true,
+    "delta_vs_c20": {
+      "match@1": 0.0,
+      "match@20": 0.05020000000000002,
+      "match@5": 0.0534,
+      "rows>=7_match@1": 0.0,
+      "rows>=7_match@20": 0.07722513089005234,
+      "rows>=7_match@5": 0.07635253054101222
+    },
+    "metrics": {
+      "match@1": 0.3002,
+      "match@20": 0.5302,
+      "match@5": 0.4582,
+      "missing_symcif_samples": 426,
+      "pattern": "C2S3C15",
+      "rows>=7_match@1": 0.053228621291448515,
+      "rows>=7_match@20": 0.22469458987783594,
+      "rows>=7_match@5": 0.1762652705061082,
+      "rows>=7_samples": 2292,
+      "samples": 5000
+    },
+    "pattern": "C2S3C15"
+  },
+  "validation_frozen_source": "/data/users/xsw/autodlmini/model/New_model/opentry_11/results/iteration_04b_fixed_hybrid_full_fallback.json"
+}

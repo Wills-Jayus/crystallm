@@ -1,0 +1,185 @@
+{
+  "baseline_all": {
+    "RMSE@1": 0.051468111249665736,
+    "RMSE@20": 0.040491418125724134,
+    "RMSE@5": 0.043647531283870465,
+    "hits@1": 6580,
+    "hits@20": 7928,
+    "hits@5": 7517,
+    "match@1": 0.7273129214104123,
+    "match@20": 0.8763125898087764,
+    "match@5": 0.8308831656902841,
+    "samples": 9047
+  },
+  "baseline_rows_ge7": {
+    "RMSE@1": 0.12543890827812146,
+    "RMSE@20": 0.11333863086544127,
+    "RMSE@5": 0.10881580760503823,
+    "hits@1": 425,
+    "hits@20": 807,
+    "hits@5": 644,
+    "match@1": 0.29310344827586204,
+    "match@20": 0.5565517241379311,
+    "match@5": 0.44413793103448274,
+    "samples": 1450
+  },
+  "count_delta_all": {
+    "hits@1": 0,
+    "hits@20": 215,
+    "hits@5": 297
+  },
+  "count_delta_rows_ge7": {
+    "hits@1": 0,
+    "hits@20": 102,
+    "hits@5": 141
+  },
+  "cpu_safeguard": {
+    "parallel_workers": 1,
+    "structurematcher_rerun": false,
+    "thread_env_defaults": {
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    }
+  },
+  "dataset": "mp_20",
+  "delta_vs_crystallm_baseline_all": {
+    "match@1": 0.0,
+    "match@20": 0.02376478390626735,
+    "match@5": 0.032828561954239
+  },
+  "delta_vs_crystallm_baseline_rows_ge7": {
+    "match@1": 0.0,
+    "match@20": 0.07034482758620686,
+    "match@5": 0.09724137931034482
+  },
+  "experiment": "experiment_3_mp20_validation_transfer_c2s3c15",
+  "hybrid_all": {
+    "RMSE@1": 0.051468111249665736,
+    "RMSE@20": 0.03680738266100378,
+    "RMSE@5": 0.040890847218967914,
+    "hits@1": 6580,
+    "hits@20": 8143,
+    "hits@5": 7814,
+    "match@1": 0.7273129214104123,
+    "match@20": 0.9000773737150437,
+    "match@5": 0.8637117276445231,
+    "samples": 9047
+  },
+  "hybrid_rows_ge7": {
+    "RMSE@1": 0.12543890827812146,
+    "RMSE@20": 0.09649683121764466,
+    "RMSE@5": 0.10224240701044966,
+    "hits@1": 425,
+    "hits@20": 909,
+    "hits@5": 785,
+    "match@1": 0.29310344827586204,
+    "match@20": 0.6268965517241379,
+    "match@5": 0.5413793103448276,
+    "samples": 1450
+  },
+  "inputs": {
+    "crystallm_labels": "/data/users/xsw/autodlmini/model/New_model/opentry_10/labels/mp20_val_k50_candidate_labels.jsonl",
+    "crystallm_summary": "/data/users/xsw/autodlmini/model/New_model/opentry_10/metrics/mp20_val_k50_candidate_label_metrics.json",
+    "symcif_generation": "/data/users/xsw/autodlmini/runs/symcif_v4_mp20_fullgen_after_geometry_breakthrough/generations/fullgen_eval_pool.jsonl",
+    "symcif_manifest": "/data/users/xsw/autodlmini/runs/symcif_v4_mp20_fullgen_after_geometry_breakthrough/generations/fullgen_eval_pool_manifest.json",
+    "symcif_metrics": "/data/users/xsw/autodlmini/runs/symcif_v4_mp20_fullgen_after_geometry_breakthrough/metrics/fullgen_eval_pool_metrics.jsonl",
+    "targets": "/data/users/xsw/autodlmini/model/New_model/opentry_7/cache/mp_20_val_targets.jsonl"
+  },
+  "missing_crystallm_samples": 0,
+  "missing_symcif_samples_full_crystallm_fallback": 1409,
+  "partial_symcif_samples_slot_fallback": 60,
+  "policy": {
+    "contribution_boundary": "MP-20 transfer diagnostic for auxiliary hybrid route, not main method",
+    "no_mp20_official_tuning": true,
+    "no_ratio_search": true,
+    "uses_existing_match_labels_only": true
+  },
+  "quality_by_source": {
+    "C": {
+      "exact_cover_feasible_rate_known_slots": null,
+      "formula_consistency_rate": 0.0,
+      "match_slot_rate": 0.7299381349392103,
+      "matched_rms_mean": 0.050885758587124255,
+      "sg_consistency_rate": 0.0,
+      "skeleton_hit_slots": 0,
+      "skeleton_hit_to_match_conversion": null,
+      "slots": 158086,
+      "valid_rate": 0.8400554128765355
+    },
+    "S": {
+      "exact_cover_feasible_rate_known_slots": 0.7923339459175637,
+      "formula_consistency_rate": 0.7923339459175637,
+      "match_slot_rate": 0.4273212566727925,
+      "matched_rms_mean": 0.0949294835654164,
+      "sg_consistency_rate": 0.7923339459175637,
+      "skeleton_hit_slots": 4553,
+      "skeleton_hit_to_match_conversion": 0.6343070502965078,
+      "slots": 22854,
+      "valid_rate": 0.5875557889209766
+    }
+  },
+  "rescue_counts": {
+    "all": {
+      "c_and_s_overlap@1": 0,
+      "c_and_s_overlap@20": 4667,
+      "c_and_s_overlap@5": 4264,
+      "c_slot_match@1": 6580,
+      "c_slot_match@20": 7898,
+      "c_slot_match@5": 7166,
+      "s_rescue_vs_route_cslots@1": 0,
+      "s_rescue_vs_route_cslots@20": 245,
+      "s_rescue_vs_route_cslots@5": 648,
+      "s_slot_match@1": 0,
+      "s_slot_match@20": 4912,
+      "s_slot_match@5": 4912
+    },
+    "rows_ge7": {
+      "c_and_s_overlap@1": 0,
+      "c_and_s_overlap@20": 409,
+      "c_and_s_overlap@5": 282,
+      "c_slot_match@1": 425,
+      "c_slot_match@20": 793,
+      "c_slot_match@5": 542,
+      "s_rescue_vs_route_cslots@1": 0,
+      "s_rescue_vs_route_cslots@20": 116,
+      "s_rescue_vs_route_cslots@5": 243,
+      "s_slot_match@1": 0,
+      "s_slot_match@20": 525,
+      "s_slot_match@5": 525
+    }
+  },
+  "route": "C2S3C15",
+  "route_records": 180940,
+  "rows_ge7_samples": 1450,
+  "samples": 9047,
+  "sequence": [
+    "C",
+    "C",
+    "S",
+    "S",
+    "S",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C"
+  ],
+  "source_counts": {
+    "C": 158086,
+    "S": 22854
+  },
+  "split": "val",
+  "time": "2026-06-29T02:58:32+00:00"
+}

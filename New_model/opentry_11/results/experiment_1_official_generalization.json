@@ -1,0 +1,130 @@
+{
+  "mp20": {
+    "anchor": {
+      "match_at_1": 0.7167,
+      "match_at_20": 0.8781,
+      "match_at_5": 0.8308
+    },
+    "dataset": "MP-20",
+    "delta_vs_anchor_pp": {
+      "match_at_1": -1.4400641167366834,
+      "match_at_20": -0.3238182622153474,
+      "match_at_5": -1.2095600265310646
+    },
+    "failure_reasons": [
+      "no overall match metric improves by >= 1.0 pp",
+      "match@20 drops by more than 0.2 pp"
+    ],
+    "official_test": {
+      "match_at_1": 0.7022993588326332,
+      "match_at_20": 0.8748618173778465,
+      "match_at_5": 0.8187043997346893,
+      "n_ids": 9046,
+      "rmse_at_1": 0.049965208844100786,
+      "rmse_at_20": 0.04269897493502179,
+      "rmse_at_5": 0.0436229784181553
+    },
+    "protocol": "CrystaLLM Table 3 official full-test",
+    "rows_ge7_anchor": {
+      "match_at_1": 0.6237,
+      "match_at_20": 0.8261,
+      "match_at_5": 0.7635
+    },
+    "rows_ge7_delta_vs_anchor_pp": {
+      "match_at_1": -35.17,
+      "match_at_20": -27.337272727272723,
+      "match_at_5": -33.07727272727272
+    },
+    "rows_ge7_official_test": {
+      "match_at_1": 0.272,
+      "match_at_20": 0.5527272727272727,
+      "match_at_5": 0.43272727272727274
+    },
+    "success_reasons": [
+      "rows>=7 metrics computed; no >=1 pp overall metric needs a corresponding gate"
+    ],
+    "success_standard_met": false,
+    "system": "mp20_k50_hgb_mean_seed012_margin_route",
+    "test_feedback_policy": "Do not use these official aggregates to tune thresholds or select a new route."
+  },
+  "mpts52_k30": {
+    "anchor": {
+      "match_at_1": 0.2523,
+      "match_at_20": 0.4396,
+      "match_at_5": 0.3646
+    },
+    "dataset": "MPTS-52",
+    "delta_vs_anchor_pp": {
+      "match_at_1": 0.8446047430829995,
+      "match_at_20": 0.09879446640316258,
+      "match_at_5": -0.232233201581028
+    },
+    "failure_reason": "No official match metric improves over the CrystaLLM-a GT-SG anchor by >= 1.0 percentage point.",
+    "official_test": {
+      "match_at_1": 0.26074604743083,
+      "match_at_20": 0.4405879446640316,
+      "match_at_5": 0.3622776679841897,
+      "n_ids": 8096,
+      "rmse_at_1": 0.12163765872999421,
+      "rmse_at_20": 0.13171418275999497,
+      "rmse_at_5": 0.12223707759891896
+    },
+    "protocol": "CrystaLLM Table 3 official full-test",
+    "success_standard_met": false,
+    "system": "mpts52_k30_rf_seed1_bestscore_route",
+    "test_feedback_policy": "Do not use these official aggregates to tune thresholds or select a new K30 route."
+  },
+  "mpts52_k30_rows_ge7": {
+    "match_at_1": 0.23288749016522423,
+    "match_at_20": 0.41227380015735643,
+    "match_at_5": 0.33307107264621033
+  },
+  "mpts52_k50": {
+    "anchor": {
+      "match_at_1": 0.2523,
+      "match_at_20": 0.4396,
+      "match_at_5": 0.3646
+    },
+    "dataset": "MPTS-52",
+    "delta_vs_anchor_pp": {
+      "match_at_1": 0.5605138339920934,
+      "match_at_20": -0.13588932806323784,
+      "match_at_5": -0.1951778656126446
+    },
+    "failure_reasons": [
+      "no overall match metric improves by >= 1.0 pp"
+    ],
+    "official_test": {
+      "match_at_1": 0.25790513833992096,
+      "match_at_20": 0.4382411067193676,
+      "match_at_5": 0.36264822134387353,
+      "n_ids": 8096,
+      "rmse_at_1": 0.12640394613062236,
+      "rmse_at_20": 0.1328968386592335,
+      "rmse_at_5": 0.1250884901757248
+    },
+    "protocol": "CrystaLLM Table 3 official full-test",
+    "rows_ge7_anchor": {
+      "match_at_1": 0.2249,
+      "match_at_20": 0.4104,
+      "match_at_5": 0.3337
+    },
+    "rows_ge7_delta_vs_anchor_pp": {
+      "match_at_1": 0.5627143981117244,
+      "match_at_20": -0.10110674009966014,
+      "match_at_5": -0.14157094151586724
+    },
+    "rows_ge7_official_test": {
+      "match_at_1": 0.23052714398111723,
+      "match_at_20": 0.4093889325990034,
+      "match_at_5": 0.3322842905848413
+    },
+    "success_reasons": [
+      "match@20 drop constraint is satisfied",
+      "rows>=7 metrics computed; no >=1 pp overall metric needs a corresponding gate"
+    ],
+    "success_standard_met": false,
+    "system": "mpts52_k50_rf_seed1_margin_route",
+    "test_feedback_policy": "Do not use these official aggregates to tune thresholds or select a new route."
+  }
+}

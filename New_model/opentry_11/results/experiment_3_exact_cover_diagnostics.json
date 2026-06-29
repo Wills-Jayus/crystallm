@@ -1,0 +1,17 @@
+{
+  "candidate_rows": 250000,
+  "equivalent_position_proxy_consistency_rate": 0.995892,
+  "formula_consistency_rate": 0.966236,
+  "gt_sg_consistency_rate": 0.99838,
+  "multiplicity_exact_cover_rate": 0.78206,
+  "orbit_feasible_rate": 0.781168,
+  "rows7_skeleton_feasible_but_match_failed_rate": 0.9195934794568145,
+  "rows7_skeleton_hit_rate": 0.602739965095986,
+  "rows_bucket_consistency_rate": 0.962592,
+  "samples": 5000,
+  "skeleton_feasible_but_match_failed_rate": 0.6173424013900242,
+  "skeleton_hit_rate": 0.778116,
+  "skeleton_not_feasible_but_rank1_count": 1113,
+  "skeleton_not_feasible_rank1_rate": 0.2226,
+  "skeleton_not_feasible_top20_rate": 0.21971
+}
