@@ -1,0 +1,59 @@
+{
+  "dataset": "mpts_52",
+  "exp2b_existing_metrics": {
+    "match_rate": 0.2134776192818495,
+    "match_samples": 434,
+    "samples": 2033,
+    "skeleton_and_match_samples": 418,
+    "skeleton_hit_samples": 1681,
+    "skeleton_match_source_rows": {
+      "opentry13_prototype_multi_geometry": 379,
+      "symcif_v5_hydrated": 164
+    },
+    "skeleton_to_match_conversion50": 0.24866151100535397,
+    "source_hits": {
+      "both_sources": 164,
+      "first_opentry13_prototype_multi_geometry": 102,
+      "first_symcif_v5_hydrated": 332,
+      "hydrated_any": 332,
+      "hydrated_only": 168,
+      "prototype_any": 266,
+      "prototype_only": 102
+    }
+  },
+  "exp3_reevaluated_hydrated_baseline": {
+    "gained_match_samples_vs_exp2b": 0,
+    "lost_match_samples_vs_exp2b": 53,
+    "match_rate": 0.18740777176586326,
+    "match_samples": 381,
+    "samples": 2033,
+    "skeleton_and_match_samples": 369,
+    "skeleton_hit_samples": 1681,
+    "skeleton_match_source_rows": {
+      "opentry13_prototype_multi_geometry": 379,
+      "symcif_v5_hydrated_local_optimizer": 131
+    },
+    "skeleton_to_match_conversion50": 0.21951219512195122,
+    "source_hits": {
+      "both_sources": 148,
+      "first_opentry13_prototype_multi_geometry": 118,
+      "first_symcif_v5_hydrated_local_optimizer": 263,
+      "hydrated_any": 263,
+      "hydrated_only": 115,
+      "prototype_any": 266,
+      "prototype_only": 118
+    }
+  },
+  "experiment": "opentry_14_exp3_failure_source_diagnostic",
+  "next_step": "Do not proceed to Exp4/final method on this optimizer. Return to learned free-parameter/site alignment or install/use a real energy model before repeating Exp3.",
+  "optimized_rows_ge7_records": {
+    "match_records": 2,
+    "matched_samples": 2,
+    "optimized_records": 215,
+    "skeleton_hit_records": 88,
+    "valid_records": 149
+  },
+  "root_cause": "Current symmetry-safe short-distance proxy improves local packing but does not create new StructureMatcher matches; Exp2b hydrated metric reuse is less robust than prototype metrics under direct CIF re-evaluation.",
+  "scope": "rows_ge7",
+  "split": "val"
+}

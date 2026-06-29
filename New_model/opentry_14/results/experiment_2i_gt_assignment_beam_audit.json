@@ -1,0 +1,63 @@
+{
+  "artifacts": {
+    "per_proposal_gt_assignment_rank": "/data/users/xsw/autodlmini/model/New_model/opentry_14/artifacts/exp2i_gt_assignment_beam_audit/per_proposal_gt_assignment_rank.jsonl",
+    "per_sample_best_gt_assignment_rank": "/data/users/xsw/autodlmini/model/New_model/opentry_14/artifacts/exp2i_gt_assignment_beam_audit/per_sample_best_gt_assignment_rank.jsonl"
+  },
+  "assignment_rank_audit": {
+    "gt_assignment_comparable_samples": 1681,
+    "not_found_le64_rate": 0.7798929208804283,
+    "not_found_le64_samples": 1311,
+    "rank_buckets": {
+      "not_found_le64": 1311,
+      "rank1": 33,
+      "rank11_20": 78,
+      "rank21_64": 144,
+      "rank2_4": 35,
+      "rank5_10": 80
+    },
+    "rank_le10_rate": 0.08804283164782867,
+    "rank_le10_samples": 148,
+    "rank_le20_rate": 0.13444378346222485,
+    "rank_le20_samples": 226,
+    "rank_le4_rate": 0.04045211183819155,
+    "rank_le4_samples": 68,
+    "skeleton_hit_samples": 1681
+  },
+  "baseline_exp2g": {
+    "union_conversion_any": 0.26174895895300415,
+    "union_match_any": 0.20755575785161584
+  },
+  "data_scale": {
+    "per_proposal_records": 1681,
+    "per_sample_comparable_records": 1681,
+    "rows_ge7_samples": 2197,
+    "top_skeletons_audited": 10
+  },
+  "dataset": "mpts_52",
+  "decision": {
+    "next_step": "Do not blindly expand assignment; redesign skeleton/site alignment or proposer.",
+    "reason": "GT assignments are often outside rank<=10 or not found, indicating assignment enumeration/order and skeleton alignment are deeper issues.",
+    "verdict": "assignment_order_or_skeleton_alignment_problem"
+  },
+  "decision_metrics": {
+    "rank_le10_rate": 0.08804283164782867,
+    "rank_le4_rate": 0.04045211183819155
+  },
+  "experiment": "opentry_14_exp2i_gt_assignment_beam_audit",
+  "failures": {},
+  "method": {
+    "assignment_enumeration_limit": 64,
+    "not_used_for_inference": [
+      "GT-WA",
+      "GT-skeleton",
+      "match",
+      "RMSD",
+      "StructureMatcher label",
+      "official feedback"
+    ],
+    "purpose": "offline GT-WA diagnostic for exact-cover assignment beam adequacy"
+  },
+  "runtime_seconds": 10.336896181106567,
+  "split": "val",
+  "time": "2026-06-29T12:18:47+00:00"
+}

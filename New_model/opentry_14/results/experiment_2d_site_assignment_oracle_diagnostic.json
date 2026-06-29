@@ -1,0 +1,126 @@
+{
+  "candidate_source_match_records": {
+    "exp2b": {
+      "prototype_same_sg": 1,
+      "prototype_same_sg+fallback": 1,
+      "prototype_same_sg_atom_count": 91,
+      "prototype_same_skeleton": 82,
+      "prototype_source": 259,
+      "v5_a1_exact_cover_sg_formula_e08": 473,
+      "v5_a3_unique_wa_beam_e08": 7,
+      "v5_e1_geometry_distance_ranking_e08": 69
+    },
+    "selected_best": {
+      "prototype_same_sg": 1,
+      "prototype_same_sg+fallback": 1,
+      "prototype_same_sg_atom_count": 91,
+      "prototype_same_skeleton": 82,
+      "prototype_source": 259,
+      "source_lattice_params_multi_site_assignment": 938,
+      "v5_a1_exact_cover_sg_formula_e08": 473,
+      "v5_a3_unique_wa_beam_e08": 7,
+      "v5_e1_geometry_distance_ranking_e08": 69
+    },
+    "site_assignment": {
+      "source_lattice_params_multi_site_assignment": 1013
+    }
+  },
+  "exp2b_top50": {
+    "candidate_records": 47240,
+    "conversion": 0.24866151100535397,
+    "match_by_source": {
+      "prototype_same_sg": 1,
+      "prototype_same_sg+fallback": 1,
+      "prototype_same_sg_atom_count": 91,
+      "prototype_same_skeleton": 82,
+      "prototype_source": 259,
+      "v5_a1_exact_cover_sg_formula_e08": 473,
+      "v5_a3_unique_wa_beam_e08": 7,
+      "v5_e1_geometry_distance_ranking_e08": 69
+    },
+    "match_records": 983,
+    "match_samples": 434,
+    "samples": 2033,
+    "skeleton_records": 8629,
+    "skeleton_samples": 1681,
+    "skelmatch_samples": 418,
+    "valid_any_samples": 1993
+  },
+  "experiment": "opentry_14_exp2d_site_assignment_oracle_diagnostic",
+  "inputs": {
+    "exp2b": "/data/users/xsw/autodlmini/model/New_model/opentry_14/artifacts/exp2b_hydrated_prototype_safe_pool/evaluated_safe_pool_candidates.jsonl",
+    "selected_best": "/data/users/xsw/autodlmini/model/New_model/opentry_14/artifacts/exp2d_site_assignment_multi_hypothesis/selected_h10_interleave_s20_p20_candidates.jsonl",
+    "site_assignment_all": "/data/users/xsw/autodlmini/model/New_model/opentry_14/artifacts/exp2d_site_assignment_multi_hypothesis/evaluated_site_assignment_candidates.jsonl"
+  },
+  "oracle_union_exp2b_plus_all_site_assignment": {
+    "conversion50_upper_bound": 0.2593694229625223,
+    "delta_conversion_upper_vs_exp2b": 0.010707911957168331,
+    "delta_conversion_upper_vs_selected_best": 0.0022265658196651827,
+    "delta_match_upper_vs_exp2b": 0.008853910477127386,
+    "delta_match_upper_vs_selected_best": 0.0019675356615838635,
+    "match50_upper_bound": 0.22233152975897688,
+    "match_samples": 452,
+    "new_match_samples_vs_exp2b": 18,
+    "new_match_samples_vs_selected_best": 4,
+    "new_skelmatch_samples_vs_exp2b": 18,
+    "new_skelmatch_samples_vs_selected_best": 4,
+    "skeleton_samples": 1681,
+    "skelmatch_samples": 436
+  },
+  "purpose": "diagnostic only: candidate-pool oracle upper bound; match labels not used for inference",
+  "rank_of_new_site_match_within_site_assignment_all": {
+    "vs_exp2b": {
+      "max": 25,
+      "median": 7,
+      "min": 1,
+      "n": 18,
+      "p75": 19,
+      "p90": 21
+    },
+    "vs_selected_best": {
+      "max": 25,
+      "median": 22,
+      "min": 21,
+      "n": 4,
+      "p75": 22,
+      "p90": 25
+    }
+  },
+  "rows_ge7_samples": 2033,
+  "selected_best_top50": {
+    "candidate_records": 71817,
+    "conversion": 0.2571428571428571,
+    "match_by_source": {
+      "prototype_same_sg": 1,
+      "prototype_same_sg+fallback": 1,
+      "prototype_same_sg_atom_count": 91,
+      "prototype_same_skeleton": 82,
+      "prototype_source": 259,
+      "source_lattice_params_multi_site_assignment": 938,
+      "v5_a1_exact_cover_sg_formula_e08": 473,
+      "v5_a3_unique_wa_beam_e08": 7,
+      "v5_e1_geometry_distance_ranking_e08": 69
+    },
+    "match_records": 1921,
+    "match_samples": 448,
+    "samples": 2033,
+    "skeleton_records": 14257,
+    "skeleton_samples": 1680,
+    "skelmatch_samples": 432,
+    "valid_any_samples": 1993
+  },
+  "site_assignment_all": {
+    "candidate_records": 36531,
+    "conversion": 0.182034503271862,
+    "match_by_source": {
+      "source_lattice_params_multi_site_assignment": 1013
+    },
+    "match_records": 1013,
+    "match_samples": 313,
+    "samples": 2033,
+    "skeleton_records": 6714,
+    "skeleton_samples": 1681,
+    "skelmatch_samples": 306,
+    "valid_any_samples": 1961
+  }
+}

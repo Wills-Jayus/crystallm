@@ -1,0 +1,40 @@
+{
+  "base_exp2b": {
+    "conversion50": 0.24866151100535397,
+    "match50": 0.2134776192818495,
+    "match_samples": 434,
+    "skeleton_and_match_samples": 418,
+    "skeleton_hit_samples": 1681
+  },
+  "chgnet_cell_position_smoke_256": {
+    "match_records": 4,
+    "match_samples": 2,
+    "new_match_samples_vs_exp2b": 0,
+    "new_skeleton_and_match_samples_vs_exp2b": 0,
+    "records_evaluated": 247,
+    "valid_records": 229
+  },
+  "chgnet_position_full_invalid_safe_subset": {
+    "new_match_samples_vs_exp2b": 0,
+    "new_skeleton_and_match_samples_vs_exp2b": 0,
+    "optimized_match_records": 21,
+    "optimized_match_samples": 19,
+    "oracle_conversion_delta_vs_exp2b": 0.0,
+    "oracle_union_conversion50": 0.24866151100535397,
+    "oracle_union_match50": 0.2134776192818495,
+    "oracle_union_match_samples": 434,
+    "oracle_union_skeleton_and_match_samples": 418
+  },
+  "chgnet_valid_position_smoke_512": {
+    "match_records": 73,
+    "match_samples": 56,
+    "new_match_samples_vs_exp2b": 0,
+    "new_skeleton_and_match_samples_vs_exp2b": 0,
+    "records_evaluated": 512,
+    "valid_records": 505
+  },
+  "conclusion": "Even with oracle insertion of all CHGNet-optimized matches from invalid-candidate full run, cell+position smoke, and valid-candidate position smoke, no rows>=7 sample-level match/conversion gain appears over Exp2b. Local energy relaxation improves validity/collision but does not solve skeleton-to-match conversion.",
+  "experiment": "opentry_14_exp3b_chgnet_oracle_upper_bound_diagnostic",
+  "next_step": "Return to free-parameter/site alignment or skeleton proposer; do not proceed to Exp4/final method from Exp3/Exp3b optimizers.",
+  "scope": "rows_ge7"
+}

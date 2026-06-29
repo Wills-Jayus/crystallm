@@ -1,0 +1,89 @@
+{
+  "exp2b_top50": {
+    "conversion": 0.24866151100535397,
+    "match_by_source": {
+      "prototype_same_sg": 1,
+      "prototype_same_sg+fallback": 1,
+      "prototype_same_sg_atom_count": 91,
+      "prototype_same_skeleton": 82,
+      "prototype_source": 259,
+      "v5_a1_exact_cover_sg_formula_e08": 473,
+      "v5_a3_unique_wa_beam_e08": 7,
+      "v5_e1_geometry_distance_ranking_e08": 69
+    },
+    "match_records": 983,
+    "match_samples": 434,
+    "samples": 2033,
+    "skeleton_records": 8629,
+    "skeleton_samples": 1681,
+    "skelmatch_samples": 418
+  },
+  "exp2d_site_assignment_all": {
+    "conversion": 0.182034503271862,
+    "match_by_source": {
+      "source_lattice_params_multi_site_assignment": 1013
+    },
+    "match_records": 1013,
+    "match_samples": 313,
+    "samples": 2033,
+    "skeleton_records": 6714,
+    "skeleton_samples": 1681,
+    "skelmatch_samples": 306
+  },
+  "exp2e_best_top50": {
+    "conversion": 0.25521765056648776,
+    "match_by_source": {
+      "prototype_same_sg": 1,
+      "prototype_same_sg+fallback": 1,
+      "prototype_same_sg_atom_count": 64,
+      "prototype_same_skeleton": 75,
+      "prototype_source": 259,
+      "source_lattice_params_multi_site_assignment": 690,
+      "train_pair_residual_posterior": 2,
+      "v5_a1_exact_cover_sg_formula_e08": 473,
+      "v5_a3_unique_wa_beam_e08": 7,
+      "v5_e1_geometry_distance_ranking_e08": 69
+    },
+    "match_records": 1641,
+    "match_samples": 443,
+    "samples": 2033,
+    "skeleton_records": 12817,
+    "skeleton_samples": 1677,
+    "skelmatch_samples": 428
+  },
+  "exp2e_residual_all": {
+    "conversion": 0.0016313213703099511,
+    "match_by_source": {
+      "train_pair_residual_posterior": 2
+    },
+    "match_records": 2,
+    "match_samples": 2,
+    "samples": 1566,
+    "skeleton_records": 1226,
+    "skeleton_samples": 1226,
+    "skelmatch_samples": 2
+  },
+  "experiment": "opentry_14_exp2e_residual_posterior_oracle_diagnostic",
+  "inputs": {
+    "exp2b": "/data/users/xsw/autodlmini/model/New_model/opentry_14/artifacts/exp2b_hydrated_prototype_safe_pool/evaluated_safe_pool_candidates.jsonl",
+    "exp2d_site": "/data/users/xsw/autodlmini/model/New_model/opentry_14/artifacts/exp2d_site_assignment_multi_hypothesis/evaluated_site_assignment_candidates.jsonl",
+    "exp2e_best": "/data/users/xsw/autodlmini/model/New_model/opentry_14/artifacts/exp2e_train_pair_residual_posterior/selected_h10_s10_r20_p10_candidates.jsonl",
+    "exp2e_residual": "/data/users/xsw/autodlmini/model/New_model/opentry_14/artifacts/exp2e_train_pair_residual_posterior/evaluated_residual_posterior_candidates.jsonl"
+  },
+  "oracle_union_exp2b_plus_site_plus_residual": {
+    "conversion50_upper_bound": 0.2593694229625223,
+    "delta_conversion_upper_vs_exp2b": 0.010707911957168331,
+    "delta_match_upper_vs_exp2b": 0.008853910477127386,
+    "match50_upper_bound": 0.22233152975897688,
+    "match_samples": 452,
+    "new_match_samples_residual_vs_exp2b": 0,
+    "new_match_samples_residual_vs_exp2d_best": 0,
+    "new_match_samples_vs_exp2b": 18,
+    "new_skelmatch_samples_residual_vs_exp2b": 0,
+    "new_skelmatch_samples_residual_vs_exp2d_best": 0,
+    "skeleton_samples": 1681,
+    "skelmatch_samples": 436
+  },
+  "purpose": "diagnostic only; match labels not used for inference",
+  "rows_ge7_samples": 2033
+}

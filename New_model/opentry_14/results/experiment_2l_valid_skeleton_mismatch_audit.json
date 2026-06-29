@@ -1,0 +1,78 @@
+{
+  "artifacts": {
+    "audit_records": "/data/users/xsw/autodlmini/model/New_model/opentry_14/artifacts/exp2l_valid_skeleton_mismatch_audit/valid_skeleton_nomatch_audit_records.jsonl",
+    "selected_rows": "/data/users/xsw/autodlmini/model/New_model/opentry_14/artifacts/exp2l_valid_skeleton_mismatch_audit/selected_valid_skeleton_nomatch_rows.jsonl"
+  },
+  "category_counts": {
+    "different_geometry_basin": 48,
+    "large_lattice_scale_mismatch": 78,
+    "species_or_site_assignment_mismatch": 107
+  },
+  "cpu_policy": {
+    "thread_env": {
+      "MKL_NUM_THREADS": "1",
+      "NUMBA_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "workers": 96
+  },
+  "data_scale": {
+    "audited_records": 233,
+    "candidate_source_rows": 7508,
+    "candidate_source_samples": 1075,
+    "regenerated_tasks": 233,
+    "selected_rows": 233
+  },
+  "dataset": "mpts_52",
+  "decision": {
+    "next_step": "Train an assignment-aware geometry model or upgrade chemical assignment; do not spend more on local optimizer.",
+    "reason": "Many failures match anonymously under loose tolerance, so element/site assignment remains a major bottleneck.",
+    "verdict": "species_site_assignment_mismatch_substantial"
+  },
+  "experiment": "opentry_14_exp2l_valid_skeleton_mismatch_audit",
+  "lattice_error_summary": {
+    "max_axis_rel": {
+      "mean": 0.27636205680366105,
+      "median": 0.16224780934854818,
+      "p90": 0.6591507705139908,
+      "p95": 0.8331055586271582
+    },
+    "volume_rel": {
+      "mean": 0.1782867726978022,
+      "median": 0.10754402112634892,
+      "p90": 0.3783850907133827,
+      "p95": 0.45158759110259467
+    }
+  },
+  "method": {
+    "max_samples": 120,
+    "name": "offline_structurematcher_tolerance_and_anonymous_mismatch_audit",
+    "not_inference_features": [
+      "target CIF",
+      "GT skeleton hit",
+      "match",
+      "RMSD",
+      "StructureMatcher label"
+    ],
+    "per_sample": 2,
+    "selection_rule": "rows>=7 Exp2j best chemical candidates with valid=true, predicted_skeleton_hit=true, match=false; diagnostic only",
+    "source_result": "/data/users/xsw/autodlmini/model/New_model/opentry_14/results/experiment_2j_chemical_site_order_assignment.json",
+    "source_variant": "h10_s10_chem25_p5"
+  },
+  "rates": {
+    "anonymous_loose_all_rate": 0.4592274678111588,
+    "default_fit_rate": 0.0,
+    "large_lattice_scale_mismatch_rate": 0.33476394849785407,
+    "loose_all_fit_rate": 0.33476394849785407
+  },
+  "regeneration_meta": {
+    "failures": {},
+    "regenerated_tasks": 233,
+    "wanted_tasks": 233
+  },
+  "runtime_seconds": 19.315195083618164,
+  "split": "val",
+  "time": "2026-06-29T12:59:42+00:00"
+}

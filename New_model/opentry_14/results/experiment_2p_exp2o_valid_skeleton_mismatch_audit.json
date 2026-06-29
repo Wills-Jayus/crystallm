@@ -1,0 +1,83 @@
+{
+  "artifacts": {
+    "audit_records": "/data/users/xsw/autodlmini/model/New_model/opentry_14/artifacts/exp2p_exp2o_valid_skeleton_mismatch_audit/exp2o_valid_skeleton_nomatch_audit_records.jsonl",
+    "selected_rows": "/data/users/xsw/autodlmini/model/New_model/opentry_14/artifacts/exp2p_exp2o_valid_skeleton_mismatch_audit/selected_exp2o_valid_skeleton_nomatch_rows.jsonl"
+  },
+  "category_counts": {
+    "different_geometry_basin": 450,
+    "large_lattice_scale_mismatch": 753,
+    "species_or_site_assignment_mismatch": 576
+  },
+  "cpu_policy": {
+    "regen_workers": 128,
+    "thread_env": {
+      "MKL_NUM_THREADS": "1",
+      "NUMBA_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "workers": 128
+  },
+  "data_scale": {
+    "audited_records": 1779,
+    "candidate_source_rows": 10035,
+    "candidate_source_samples": 964,
+    "regenerated_tasks": 1779,
+    "selected_rows": 1779
+  },
+  "dataset": "mpts_52",
+  "decision": {
+    "next_step": "Train assignment-aware geometry model or improve pair-chem assignment generation; do not expand local optimizer.",
+    "reason": "Anonymous loose matching remains high after Exp2o, so assignment/site identity is still the main residual bottleneck.",
+    "verdict": "species_site_assignment_mismatch_remains_dominant"
+  },
+  "experiment": "opentry_14_exp2p_exp2o_valid_skeleton_mismatch_audit",
+  "lattice_error_summary": {
+    "max_axis_rel": {
+      "mean": 0.32959569995688603,
+      "median": 0.2545504735924765,
+      "p90": 0.7450426250283628,
+      "p95": 1.0335863438732167
+    },
+    "volume_rel": {
+      "mean": 0.19200738402408837,
+      "median": 0.11990631589040072,
+      "p90": 0.45359198696025516,
+      "p95": 0.6027748138521147
+    }
+  },
+  "method": {
+    "max_samples": 600,
+    "name": "offline_structurematcher_tolerance_and_anonymous_mismatch_audit_after_exp2o",
+    "not_inference_features": [
+      "target CIF",
+      "GT skeleton hit",
+      "match",
+      "RMSD",
+      "StructureMatcher label"
+    ],
+    "per_sample": 3,
+    "selection_rule": "rows>=7 Exp2o best pair-chem candidates with valid=true, predicted_skeleton_hit=true, match=false; diagnostic only"
+  },
+  "rates": {
+    "anonymous_loose_all_rate": 0.32377740303541314,
+    "default_fit_rate": 0.0,
+    "large_lattice_scale_mismatch_rate": 0.42327150084317033,
+    "loose_all_fit_rate": 0.26363125351320965
+  },
+  "regeneration_meta": {
+    "failures": {},
+    "regen_workers": 128,
+    "regenerated_tasks": 1779,
+    "row_count_lookup_records": 4727,
+    "wanted_tasks": 1779
+  },
+  "runtime_seconds": 32.11457848548889,
+  "source": {
+    "best_variant": "h10_s5_chem30_p5",
+    "result_path": "/data/users/xsw/autodlmini/model/New_model/opentry_14/results/experiment_2o_expanded_pairwise_local_chemistry_assignment.json"
+  },
+  "split": "val",
+  "time": "2026-06-29T14:57:44+00:00"
+}

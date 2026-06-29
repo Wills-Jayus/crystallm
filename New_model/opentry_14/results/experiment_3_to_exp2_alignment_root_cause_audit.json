@@ -1,0 +1,48 @@
+{
+  "candidate_counts_in_skel_no_match_samples": {
+    "collision": 3702,
+    "exact": 30593,
+    "formula": 30157,
+    "records": 30661,
+    "sg": 29107,
+    "valid": 20865
+  },
+  "experiment": "opentry_14_exp3_to_exp2_alignment_root_cause_audit",
+  "next_step": "Redo predicted-skeleton-aware free-parameter/site alignment or learned multi-hypothesis geometry posterior; do not spend more compute on local optimizer alone.",
+  "root_cause": "Most rows>=7 samples with skeleton-hit but no match already contain valid/formula/SG/exact candidates; failure is not primarily collision/local packing. It is continuous free-parameter/site/lattice alignment within valid symmetric candidates.",
+  "skel_no_match_sample_structural_any_categories": {
+    "(False, False, False, True)": 1,
+    "(False, True, False, True)": 1,
+    "(False, True, True, True)": 14,
+    "(True, True, True, True)": 1247
+  },
+  "skeleton_hit_candidate_counts_in_skel_no_match_samples": {
+    "collision": 687,
+    "exact": 6557,
+    "formula": 6469,
+    "records": 6577,
+    "sg": 6126,
+    "valid": 4537
+  },
+  "skeleton_hit_rank_stats": {
+    "max": 48,
+    "median": 9,
+    "min": 1,
+    "n": 6577,
+    "p90": 22
+  },
+  "source_counts_in_skel_no_match_samples": {
+    "opentry13_prototype_multi_geometry": 24140,
+    "sk_opentry13_prototype_multi_geometry": 5050,
+    "sk_symcif_v5_hydrated": 1527,
+    "symcif_v5_hydrated": 6521
+  },
+  "summary": {
+    "match": 434,
+    "no_skel_match": 16,
+    "samples": 2033,
+    "skel": 1681,
+    "skel_and_match": 418,
+    "skel_no_match": 1263
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "counts": {
+    "records": 52627,
+    "skhit": 22093,
+    "usable": 39591
+  },
+  "experiment": "opentry_14_exp2c_train_pair_learnability_diagnostic",
+  "interpretation": "Initial-to-target free-parameter circular deltas are broad, especially for rows>=7; row-wise regression from initial params is likely underdetermined/noisy without permutation-aware alignment or multi-hypothesis posterior.",
+  "max_lattice_rel_component": {
+    "mean": 0.22295019553163595,
+    "median": 0.07383869755742321,
+    "n": 46835,
+    "p75": 0.26794056002374306,
+    "p90": 0.5695193317368128,
+    "p95": 0.8533318022542905
+  },
+  "param_delta_all": {
+    "mean": 0.21325105135614628,
+    "median": 0.19978500000000002,
+    "n": 321056,
+    "p75": 0.357776,
+    "p90": 0.46193799999999996,
+    "p95": 0.49052399999999996
+  },
+  "param_delta_by_symbol": {
+    "x": {
+      "mean": 0.2087501322608738,
+      "median": 0.18995399999999996,
+      "n": 109721,
+      "p75": 0.3575139999999999,
+      "p90": 0.46962800000000005,
+      "p95": 0.49523399999999995
+    },
+    "y": {
+      "mean": 0.22210645616466332,
+      "median": 0.21267349999999996,
+      "n": 81719,
+      "p75": 0.36112299999999997,
+      "p90": 0.45560599999999996,
+      "p95": 0.4856369999999999
+    },
+    "z": {
+      "mean": 0.2114780489375099,
+      "median": 0.1991195,
+      "n": 129616,
+      "p75": 0.35583699999999996,
+      "p90": 0.459376,
+      "p95": 0.489047
+    }
+  },
+  "param_delta_rows_ge7": {
+    "mean": 0.2235018116988604,
+    "median": 0.2150435,
+    "n": 199942,
+    "p75": 0.36228000000000005,
+    "p90": 0.454952,
+    "p95": 0.48461299999999996
+  },
+  "param_delta_skeleton_hit": {
+    "mean": 0.20941672127976962,
+    "median": 0.19582,
+    "n": 174347,
+    "p75": 0.35552700000000004,
+    "p90": 0.46273700000000006,
+    "p95": 0.49152399999999985
+  },
+  "param_delta_skeleton_nonhit": {
+    "mean": 0.21780771758538886,
+    "median": 0.2041139999999999,
+    "n": 146709,
+    "p75": 0.36010300000000006,
+    "p90": 0.46119249999999995,
+    "p95": 0.489286
+  },
+  "rows_ge7_counts": {
+    "records": 11169,
+    "skhit": 3929,
+    "usable": 6706
+  }
+}

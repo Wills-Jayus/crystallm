@@ -1,0 +1,174 @@
+{
+  "data_scale": {
+    "num_shards": 8,
+    "pair_artifact": "/data/users/xsw/autodlmini/model/New_model/opentry_14/artifacts/exp1_predicted_skeleton_noise_pairs/shards/predicted_skeleton_noise_geometry_pairs_shard005_of_008.jsonl.gz",
+    "shard_index": 5,
+    "top_k_sources_scored": 20,
+    "total_records": 6578
+  },
+  "datasets": {
+    "mp20": {
+      "failures": {
+        "no_exact_cover_source": 242
+      },
+      "free_param_requiring_samples": 2469,
+      "free_param_target_complete_rate": 0.7782451923076923,
+      "free_param_target_complete_rate_among_requiring": 0.7991089509923046,
+      "free_param_value_recovery_rate": 0.9128712871287129,
+      "full_row_alignment_rate": 0.6559495192307693,
+      "initial_collision_rate": 0.028846153846153848,
+      "initial_exact_cover_rate": 0.9272836538461539,
+      "initial_formula_rate": 0.9206730769230769,
+      "initial_sg_rate": 0.8656850961538461,
+      "initial_valid_rate": 0.8509615384615384,
+      "nonempty_pair_rate": 0.9272836538461539,
+      "rows_ge7": {
+        "free_param_requiring_samples": 490,
+        "free_param_target_complete_rate": 0.6288848263254113,
+        "free_param_target_complete_rate_among_requiring": 0.7020408163265306,
+        "free_param_value_recovery_rate": 0.9326480665687714,
+        "full_row_alignment_rate": 0.506398537477148,
+        "initial_collision_rate": 0.029250457038391225,
+        "initial_exact_cover_rate": 0.8957952468007313,
+        "initial_formula_rate": 0.8738574040219378,
+        "initial_sg_rate": 0.8391224862888482,
+        "initial_valid_rate": 0.8336380255941499,
+        "nonempty_pair_rate": 0.8957952468007313,
+        "rows_ge7_samples": 547,
+        "samples": 547,
+        "skeleton_hit_rate": 0.3126142595978062,
+        "target_local_stats_rate": 0.8957952468007313,
+        "usable_joint_pair_rate": 0.6069469835466179
+      },
+      "rows_ge7_samples": 547,
+      "samples": 3328,
+      "skeleton_hit_rate": 0.3993389423076923,
+      "source_counts": {
+        "rows_ge7_source": 619,
+        "rows_lt7_source": 2467
+      },
+      "target_local_stats_rate": 0.9266826923076923,
+      "train_records": 3328,
+      "usable_joint_pair_rate": 0.7719350961538461
+    },
+    "mpts52": {
+      "failures": {
+        "no_exact_cover_source": 442
+      },
+      "free_param_requiring_samples": 2412,
+      "free_param_target_complete_rate": 0.7387692307692307,
+      "free_param_target_complete_rate_among_requiring": 0.8312603648424544,
+      "free_param_value_recovery_rate": 0.9357112754300602,
+      "full_row_alignment_rate": 0.6415384615384615,
+      "initial_collision_rate": 0.08,
+      "initial_exact_cover_rate": 0.864,
+      "initial_formula_rate": 0.8603076923076923,
+      "initial_sg_rate": 0.7827692307692308,
+      "initial_valid_rate": 0.7504615384615385,
+      "nonempty_pair_rate": 0.864,
+      "rows_ge7": {
+        "free_param_requiring_samples": 695,
+        "free_param_target_complete_rate": 0.6269487750556793,
+        "free_param_target_complete_rate_among_requiring": 0.8100719424460432,
+        "free_param_value_recovery_rate": 0.9611661413777578,
+        "full_row_alignment_rate": 0.5400890868596881,
+        "initial_collision_rate": 0.0957683741648107,
+        "initial_exact_cover_rate": 0.7739420935412027,
+        "initial_formula_rate": 0.7694877505567929,
+        "initial_sg_rate": 0.700445434298441,
+        "initial_valid_rate": 0.6659242761692651,
+        "nonempty_pair_rate": 0.7739420935412027,
+        "rows_ge7_samples": 898,
+        "samples": 898,
+        "skeleton_hit_rate": 0.38752783964365256,
+        "target_local_stats_rate": 0.7739420935412027,
+        "usable_joint_pair_rate": 0.6224944320712695
+      },
+      "rows_ge7_samples": 898,
+      "samples": 3250,
+      "skeleton_hit_rate": 0.44769230769230767,
+      "source_counts": {
+        "rows_ge7_source": 822,
+        "rows_lt7_source": 1986
+      },
+      "target_local_stats_rate": 0.864,
+      "train_records": 3250,
+      "usable_joint_pair_rate": 0.7356923076923076
+    }
+  },
+  "decision": {
+    "failure_category": null,
+    "next_step": "train joint lattice + free-parameter repair head",
+    "verdict": "pass"
+  },
+  "experiment": "opentry_14_exp1_predicted_skeleton_noise_geometry_pairs",
+  "gate": {
+    "minimum_standard": {
+      "overall_free_param_complete_among_requiring": 0.7,
+      "overall_free_param_value_recovery": 0.7,
+      "overall_nonempty_pair_rate": 0.8,
+      "rows_ge7_free_param_complete_among_requiring": 0.7,
+      "rows_ge7_free_param_value_recovery": 0.7,
+      "rows_ge7_nonempty_pair_rate": 0.7,
+      "target_local_stats_rate": 0.8
+    },
+    "passed": true
+  },
+  "method": {
+    "datasets": [
+      "mp20",
+      "mpts52"
+    ],
+    "not_used": [
+      "match",
+      "RMSD",
+      "StructureMatcher label",
+      "GT-WA",
+      "GT-skeleton",
+      "official feedback",
+      "RF/HGB/rerank"
+    ],
+    "proposer": "train-side exact-cover skeleton proposer using composition/formula + GT-SG + train prototypes; self-source excluded",
+    "renderer": "selected_train_prototype-style source lattice/free-params with exact-cover element remapping, rank-1 source for pair construction",
+    "split": "train",
+    "target_recovery": "train true lattice, target row free parameters when candidate row aligns by orbit_id+element, target local min-distance/volume/collision stats"
+  },
+  "overall": {
+    "free_param_requiring_samples": 4881,
+    "free_param_target_complete_rate": 0.7587412587412588,
+    "free_param_target_complete_rate_among_requiring": 0.8149969268592502,
+    "free_param_value_recovery_rate": 0.9261822891082034,
+    "full_row_alignment_rate": 0.6488294314381271,
+    "initial_collision_rate": 0.05411979325022803,
+    "initial_exact_cover_rate": 0.896017026451809,
+    "initial_formula_rate": 0.89084828215263,
+    "initial_sg_rate": 0.8247187595013682,
+    "initial_valid_rate": 0.80130738826391,
+    "nonempty_pair_rate": 0.896017026451809,
+    "rows_ge7": {
+      "free_param_requiring_samples": 1185,
+      "free_param_target_complete_rate": 0.6276816608996539,
+      "free_param_target_complete_rate_among_requiring": 0.7654008438818566,
+      "free_param_value_recovery_rate": 0.9507558160311618,
+      "full_row_alignment_rate": 0.5273356401384083,
+      "initial_collision_rate": 0.07058823529411765,
+      "initial_exact_cover_rate": 0.8200692041522492,
+      "initial_formula_rate": 0.8089965397923875,
+      "initial_sg_rate": 0.7529411764705882,
+      "initial_valid_rate": 0.7294117647058823,
+      "nonempty_pair_rate": 0.8200692041522492,
+      "rows_ge7_samples": 1445,
+      "samples": 1445,
+      "skeleton_hit_rate": 0.3591695501730104,
+      "target_local_stats_rate": 0.8200692041522492,
+      "usable_joint_pair_rate": 0.6166089965397924
+    },
+    "rows_ge7_samples": 1445,
+    "samples": 6578,
+    "skeleton_hit_rate": 0.4232289449680754,
+    "target_local_stats_rate": 0.8957129826695044,
+    "usable_joint_pair_rate": 0.7540285801155366
+  },
+  "runtime_seconds": 115.46965146064758,
+  "time": "2026-06-29T10:05:30+00:00"
+}

@@ -23,8 +23,8 @@
 
 # CrystaLLM / SymCIF 全局研究状态
 
-生成日期：2026-06-28  
-审计目录：`/data/users/xsw/autodlmini/model/std_way`  
+生成日期：2026-06-28
+审计目录：`/data/users/xsw/autodlmini/model/std_way`
 证据来源：只读取历史目录；未启动训练、未启动新模型实验、未跑新 full test。
 
 ## 1. 当前总目标
@@ -263,276 +263,276 @@ Track B 的限制：
 
 ## 1. 原始 CrystaLLM / CIF baseline 复现路线
 
-状态：watch  
-路线类型：baseline reproduction  
-paper_mainline_status：diagnostic  
-metric_rescue_status：allowed  
-是否符合论文主线：否，仅为对照。  
-是否依赖普通 ranking/rerank/fusion：否。  
-历史证据：`opentry_7/opentry_7_final_report.md` 复现 composition-only MP-20 `62.17/74.98/81.84`、MPTS-52 `18.86/28.08/35.17`。  
-最好 full-test 结果：见上。  
-相对 GT-SG baseline 差距：均显著低于当前输入条件下 GT-SG anchor。  
-是否达到 +5pp：否。  
-最终判决：保留为历史 baseline，不作为当前主比较对象。  
-禁止重复的实验形式：继续把 composition-only CrystaLLM 当成主对照。  
+状态：watch
+路线类型：baseline reproduction
+paper_mainline_status：diagnostic
+metric_rescue_status：allowed
+是否符合论文主线：否，仅为对照。
+是否依赖普通 ranking/rerank/fusion：否。
+历史证据：`opentry_7/opentry_7_final_report.md` 复现 composition-only MP-20 `62.17/74.98/81.84`、MPTS-52 `18.86/28.08/35.17`。
+最好 full-test 结果：见上。
+相对 GT-SG baseline 差距：均显著低于当前输入条件下 GT-SG anchor。
+是否达到 +5pp：否。
+最终判决：保留为历史 baseline，不作为当前主比较对象。
+禁止重复的实验形式：继续把 composition-only CrystaLLM 当成主对照。
 重新开启条件：只在论文需要补 public baseline context 时复评。
 
 ## 2. GT-SG 条件 baseline 路线
 
-状态：continue  
-路线类型：mandatory comparator  
-paper_mainline_status：diagnostic  
-metric_rescue_status：allowed  
-是否符合论文主线：作为约束符合。  
-历史证据：`opentry_7/opentry_7_final_report.md`、`opentry_8/final_report.md`、`opentry_10/final_report.md`。  
-最好 full-test 结果：MP-20 `71.67/83.08/87.81`；MPTS-52 `25.23/36.46/43.96`。  
-最终判决：后续所有 claim 必须对标该 baseline。  
+状态：continue
+路线类型：mandatory comparator
+paper_mainline_status：diagnostic
+metric_rescue_status：allowed
+是否符合论文主线：作为约束符合。
+历史证据：`opentry_7/opentry_7_final_report.md`、`opentry_8/final_report.md`、`opentry_10/final_report.md`。
+最好 full-test 结果：MP-20 `71.67/83.08/87.81`；MPTS-52 `25.23/36.46/43.96`。
+最终判决：后续所有 claim 必须对标该 baseline。
 禁止重复的实验形式：用 composition-only baseline 替代 GT-SG baseline。
 
 ## 3. SG-only / SG-conditioned generation 路线
 
-状态：watch  
-路线类型：conditioned generation  
-paper_mainline_status：mainline only if coupled to representation  
-metric_rescue_status：allowed  
-是否符合论文主线：部分符合。  
-历史证据：SymCIF 与 CrystaLLM GT-SG 对照均证明 SG 输入强影响 top1；`opentry/iterative_experiment_log.md` no-GT-SG MP-20 ablation 显示 no-GT-SG `54.28/70.77` 低于 GT-SG v5 `64.26/74.04`。  
-最好 full-test 结果：单独 SG-conditioned CrystaLLM anchor 是当前强 baseline。  
-相对 GT-SG baseline 差距：新方法未超过 anchor。  
+状态：watch
+路线类型：conditioned generation
+paper_mainline_status：mainline only if coupled to representation
+metric_rescue_status：allowed
+是否符合论文主线：部分符合。
+历史证据：SymCIF 与 CrystaLLM GT-SG 对照均证明 SG 输入强影响 top1；`opentry/iterative_experiment_log.md` no-GT-SG MP-20 ablation 显示 no-GT-SG `54.28/70.77` 低于 GT-SG v5 `64.26/74.04`。
+最好 full-test 结果：单独 SG-conditioned CrystaLLM anchor 是当前强 baseline。
+相对 GT-SG baseline 差距：新方法未超过 anchor。
 最终判决：SG 条件必须保留，但不能只做“加 SG prompt”的论文贡献。
 
 ## 4. Wyckoff skeleton / WA / SymCIF 路线
 
-状态：continue  
-路线类型：symmetry-aware representation  
-paper_mainline_status：mainline  
-metric_rescue_status：allowed  
-是否符合论文主线：是。  
-是否依赖普通 ranking/rerank/fusion：部分历史结果依赖 self-score/selection；主线不应依赖普通 fusion。  
-是否包含 structural quality scorer：部分包含 GT-free self-score。  
-是否包含 geometry repair：是，但仍不足。  
-历史证据：`symcif_experiment/reports/symcif_v4_geometry_next_step_summary.md`、`opentry_3/final_summary.md`、`opentry_4/reports/opentry_4_final_summary.md`。  
-最好 validation 结果：opentry_3 E119/E111 full val128 约 `31.25/35.16/41.41/43.75@50`。  
-最好 full-test 结果：SymCIF-v5 MPTS-52 `25.47/32.90/33.63`；opentry E04 K1 common-subset `28.08` 是局部信号。  
-相对 GT-SG baseline 差距：K5/K20 仍低；未达 +5pp。  
-失败证据：rows>=7 W/A-to-match 转化弱；E119 rows>=7 match@50 仅 `18.33%`。  
-是否 full test 有效：尚未在当前统一 official anchor 下达标。  
-局部解风险：只提升 W/A recall、但不解决 geometry。  
-最终判决：继续作为论文主线，但下一步必须绑定 geometry-aware refinement 与 rows>=7 gate。  
-禁止重复的实验形式：只扩大 skeleton beam、只换 self-score、只做 candidate tail-fill。  
+状态：continue
+路线类型：symmetry-aware representation
+paper_mainline_status：mainline
+metric_rescue_status：allowed
+是否符合论文主线：是。
+是否依赖普通 ranking/rerank/fusion：部分历史结果依赖 self-score/selection；主线不应依赖普通 fusion。
+是否包含 structural quality scorer：部分包含 GT-free self-score。
+是否包含 geometry repair：是，但仍不足。
+历史证据：`symcif_experiment/reports/symcif_v4_geometry_next_step_summary.md`、`opentry_3/final_summary.md`、`opentry_4/reports/opentry_4_final_summary.md`。
+最好 validation 结果：opentry_3 E119/E111 full val128 约 `31.25/35.16/41.41/43.75@50`。
+最好 full-test 结果：SymCIF-v5 MPTS-52 `25.47/32.90/33.63`；opentry E04 K1 common-subset `28.08` 是局部信号。
+相对 GT-SG baseline 差距：K5/K20 仍低；未达 +5pp。
+失败证据：rows>=7 W/A-to-match 转化弱；E119 rows>=7 match@50 仅 `18.33%`。
+是否 full test 有效：尚未在当前统一 official anchor 下达标。
+局部解风险：只提升 W/A recall、但不解决 geometry。
+最终判决：继续作为论文主线，但下一步必须绑定 geometry-aware refinement 与 rows>=7 gate。
+禁止重复的实验形式：只扩大 skeleton beam、只换 self-score、只做 candidate tail-fill。
 重新开启条件：新方案明确解决 W/A exact-cover + continuous geometry 转化，并预注册 full-test gate。
 
 ## 5. CrystalFormer / WyFormer 风格表示借鉴路线
 
-状态：continue  
-路线类型：representation design reference  
-paper_mainline_status：mainline  
-metric_rescue_status：allowed  
-是否符合论文主线：是。  
-历史证据：`opentry_3/final_summary.md` 使用 CrystalFormer/WyFormer 风格 `formula+GT-SG -> W/A -> CIF`，symbolic gate 明显优于早期 opentry_2 policy search。  
-最好 validation 结果：E85 neural-first merge W/A@50 `78.91%`；E119 K50 ceiling `43.75%`。  
-失败证据：geometry/free-param 转化仍不足，未 full-test freeze。  
+状态：continue
+路线类型：representation design reference
+paper_mainline_status：mainline
+metric_rescue_status：allowed
+是否符合论文主线：是。
+历史证据：`opentry_3/final_summary.md` 使用 CrystalFormer/WyFormer 风格 `formula+GT-SG -> W/A -> CIF`，symbolic gate 明显优于早期 opentry_2 policy search。
+最好 validation 结果：E85 neural-first merge W/A@50 `78.91%`；E119 K50 ceiling `43.75%`。
+失败证据：geometry/free-param 转化仍不足，未 full-test freeze。
 最终判决：继续作为表示/生成顺序理论依据，但不能只复刻概念，必须给出 full-test 指标。
 
 ## 6. Constrained decoding 路线
 
-状态：pivot  
-路线类型：exact-cover / feasibility constraint  
-paper_mainline_status：mainline or auxiliary  
-metric_rescue_status：allowed  
-历史证据：opentry_3 fixed-skeleton exact-cover DP、E45 duplicate fixed-orbit mask；opentry_2 policy search top100 W/A 只有约 12-13%，后续 canonical DP 显著提高。  
-最好 validation 结果：opentry_3 E45 W/A@50 `74.22%`，E85 `78.91%`。  
-失败证据：W/A 提升未充分转化为 match；simple geometry schedules 无效。  
+状态：pivot
+路线类型：exact-cover / feasibility constraint
+paper_mainline_status：mainline or auxiliary
+metric_rescue_status：allowed
+历史证据：opentry_3 fixed-skeleton exact-cover DP、E45 duplicate fixed-orbit mask；opentry_2 policy search top100 W/A 只有约 12-13%，后续 canonical DP 显著提高。
+最好 validation 结果：opentry_3 E45 W/A@50 `74.22%`，E85 `78.91%`。
+失败证据：W/A 提升未充分转化为 match；simple geometry schedules 无效。
 最终判决：保留 exact-cover feasibility，但下一步必须服务于 geometry/refinement，不再单独刷 W/A 指标。
 
 ## 7. SFT / low-LR / reset optimizer / checkpoint continuation 路线
 
-状态：stop  
-路线类型：pure CIF text training  
-paper_mainline_status：forbidden_as_mainline unless representation changes  
-metric_rescue_status：forbidden  
-历史证据：`opentry_7/opentry_7_final_report.md` pure model MP-20 `60.58/70.67/77.96`、MPTS-52 `17.18/24.35/31.52`，显著低于 GT-SG anchor；`opentry_2` val64 SFT smoke match 为 0。  
-最终判决：禁止继续盲目纯 CIF SFT/低 LR/checkpoint continuation。  
+状态：stop
+路线类型：pure CIF text training
+paper_mainline_status：forbidden_as_mainline unless representation changes
+metric_rescue_status：forbidden
+历史证据：`opentry_7/opentry_7_final_report.md` pure model MP-20 `60.58/70.67/77.96`、MPTS-52 `17.18/24.35/31.52`，显著低于 GT-SG anchor；`opentry_2` val64 SFT smoke match 为 0。
+最终判决：禁止继续盲目纯 CIF SFT/低 LR/checkpoint continuation。
 重新开启条件：必须换成 symmetry-aware representation 或 geometry-aware objective，并先过 validation gate。
 
 ## 8. DPO / preference / reranking-based preference 路线
 
-状态：pivot  
-路线类型：preference/ranking  
-paper_mainline_status：forbidden_as_mainline if ordinary rerank  
-metric_rescue_status：allowed_with_warning  
-历史证据：opentry_10 rerank-only HGB validation 有 `+1.220pp` K1，但 official MPTS-52 `24.938/35.931/43.960` 低于 anchor。  
+状态：pivot
+路线类型：preference/ranking
+paper_mainline_status：forbidden_as_mainline if ordinary rerank
+metric_rescue_status：allowed_with_warning
+历史证据：opentry_10 rerank-only HGB validation 有 `+1.220pp` K1，但 official MPTS-52 `24.938/35.931/43.960` 低于 anchor。
 最终判决：普通 preference/rerank 不继续；若重启，必须是 inference-safe structural hard-negative pairwise/listwise scorer，并归为 auxiliary。
 
 ## 9. Geometry head / lattice / fractional coordinate 改进路线
 
-状态：continue  
-路线类型：geometry-aware refinement  
-paper_mainline_status：mainline or auxiliary  
-metric_rescue_status：allowed  
-历史证据：`symcif_v4_geometry_next_step_summary.md` GT-WA geometry model no-over/over 达到 match@20 `70.2/70.4`；`opentry_4` rows>=7 W/A/skeleton hit geometry failures；`opentry_6` 建议继续 continuous geometry/refiner。  
-失败证据：opentry_3 deterministic one-shot geometry net E57 rows>=7 match 0；source_cluster lattice E125 退化。  
+状态：continue
+路线类型：geometry-aware refinement
+paper_mainline_status：mainline or auxiliary
+metric_rescue_status：allowed
+历史证据：`symcif_v4_geometry_next_step_summary.md` GT-WA geometry model no-over/over 达到 match@20 `70.2/70.4`；`opentry_4` rows>=7 W/A/skeleton hit geometry failures；`opentry_6` 建议继续 continuous geometry/refiner。
+失败证据：opentry_3 deterministic one-shot geometry net E57 rows>=7 match 0；source_cluster lattice E125 退化。
 最终判决：继续，但必须处理多模态 free-param/lattice/site mapping，不做单一 MSE 回归。
 
 ## 10. KNN / row-conditioned / retrieval-like geometry 路线
 
-状态：watch  
-路线类型：train-only retrieval geometry  
-paper_mainline_status：auxiliary  
-metric_rescue_status：allowed  
-历史证据：`symcif_experiment/Log_GPT/multi_experiment_analysis_report_20260610_122115.md` 显示 e07/e08 row-conditioned KNN 在 GT-WA geometry 上把 match@5 提到 `85.11/87.10`。  
-失败证据：full generation 仍受 W/A coverage 限制；MPTS-52 rows>=7 match@5 `12.60%`。  
+状态：watch
+路线类型：train-only retrieval geometry
+paper_mainline_status：auxiliary
+metric_rescue_status：allowed
+历史证据：`symcif_experiment/Log_GPT/multi_experiment_analysis_report_20260610_122115.md` 显示 e07/e08 row-conditioned KNN 在 GT-WA geometry 上把 match@5 提到 `85.11/87.10`。
+失败证据：full generation 仍受 W/A coverage 限制；MPTS-52 rows>=7 match@5 `12.60%`。
 最终判决：可作为 geometry proposal/control，不可单独作为论文核心。
 
 ## 11. Ordinary ranking / rerank / candidate fusion 路线
 
-状态：stop  
-路线类型：post-hoc candidate selection  
-paper_mainline_status：forbidden_as_mainline  
-metric_rescue_status：allowed_with_warning  
-历史证据：`opentry_2` K50 RF rankers、`opentry` E24 SymCIF+CrystaLLM hybrid、`opentry_10` rerank/K30/K50 official。  
-最好 full-test 结果：opentry_10 K30 `26.075/36.228/44.059`，未过 +1pp；E24 hybrid K20 `26.02/39.28/45.06` 但是 candidate fusion。  
-是否达到 +5pp：否。  
-最终判决：不能作为论文主线；仅可保留为 diagnostic/ablation/metric rescue。  
+状态：stop
+路线类型：post-hoc candidate selection
+paper_mainline_status：forbidden_as_mainline
+metric_rescue_status：allowed_with_warning
+历史证据：`opentry_2` K50 RF rankers、`opentry` E24 SymCIF+CrystaLLM hybrid、`opentry_10` rerank/K30/K50 official。
+最好 full-test 结果：opentry_10 K30 `26.075/36.228/44.059`，未过 +1pp；E24 hybrid K20 `26.02/39.28/45.06` 但是 candidate fusion。
+是否达到 +5pp：否。
+最终判决：不能作为论文主线；仅可保留为 diagnostic/ablation/metric rescue。
 禁止重复的实验形式：继续调 RF/HGB seed、threshold、anchor_keep 后声称方法突破。
 
 ## 12. Coverage repair 路线
 
-状态：stop  
-路线类型：coverage repair  
-paper_mainline_status：forbidden_as_mainline  
-metric_rescue_status：forbidden  
-历史证据：`opentry_8/final_report.md` MP-20 strategy_fusion 等于 anchor，MPTS-52 只因补齐 1 个样本使 match@20 `43.96 -> 43.97`。  
+状态：stop
+路线类型：coverage repair
+paper_mainline_status：forbidden_as_mainline
+metric_rescue_status：forbidden
+历史证据：`opentry_8/final_report.md` MP-20 strategy_fusion 等于 anchor，MPTS-52 只因补齐 1 个样本使 match@20 `43.96 -> 43.97`。
 最终判决：不得继续包装成 improvement。
 
 ## 13. Oracle / upper bound / GT-WA / GT-skeleton 诊断路线
 
-状态：watch  
-路线类型：upper bound diagnostic  
-paper_mainline_status：diagnostic  
-metric_rescue_status：forbidden as real method  
-历史证据：`symcif_v4` WA upper-bound `82.4%`；`opentry_9` GT-WA geometry diagnostic；`opentry_4` W/A/skeleton hit match-fail。  
+状态：watch
+路线类型：upper bound diagnostic
+paper_mainline_status：diagnostic
+metric_rescue_status：forbidden as real method
+历史证据：`symcif_v4` WA upper-bound `82.4%`；`opentry_9` GT-WA geometry diagnostic；`opentry_4` W/A/skeleton hit match-fail。
 最终判决：允许作为瓶颈定位和上限分析，禁止当真实方法贡献。
 
 ## 14. 数据格式重构 / causal order / tokenization 路线
 
-状态：continue  
-路线类型：representation/tokenization  
-paper_mainline_status：mainline  
-metric_rescue_status：allowed  
-历史证据：`symcif_experiment/reports/*conversion_report*.json`、`opentry_3/final_summary.md`、`opentry_5/reports/canonical_representation_report.md`。  
-失败证据：仅重构格式不足以 full-test 超过 GT-SG baseline。  
+状态：continue
+路线类型：representation/tokenization
+paper_mainline_status：mainline
+metric_rescue_status：allowed
+历史证据：`symcif_experiment/reports/*conversion_report*.json`、`opentry_3/final_summary.md`、`opentry_5/reports/canonical_representation_report.md`。
+失败证据：仅重构格式不足以 full-test 超过 GT-SG baseline。
 最终判决：继续作为方法地基，必须与 exact-cover 和 geometry 模块结合。
 
 ## 15. 小样本 fold 验证路线
 
-状态：watch  
-路线类型：screening only  
-paper_mainline_status：diagnostic  
-metric_rescue_status：allowed for prescreen  
-历史证据：opentry_3 val128、opentry_5 grouped folds、opentry_10 validation OOF。  
-失败证据：opentry_10 MPTS-52 rerank-only validation K1 `+1.220pp`，official 反而 `-0.292pp`。  
+状态：watch
+路线类型：screening only
+paper_mainline_status：diagnostic
+metric_rescue_status：allowed for prescreen
+历史证据：opentry_3 val128、opentry_5 grouped folds、opentry_10 validation OOF。
+失败证据：opentry_10 MPTS-52 rerank-only validation K1 `+1.220pp`，official 反而 `-0.292pp`。
 最终判决：小样本/fold 只能筛选，不能写成成功。
 
 ## 16. Full test 验证路线
 
-状态：continue  
-路线类型：evaluation protocol  
-paper_mainline_status：diagnostic  
-metric_rescue_status：allowed  
-历史证据：opentry_7/8/10 official full-test reports。  
+状态：continue
+路线类型：evaluation protocol
+paper_mainline_status：diagnostic
+metric_rescue_status：allowed
+历史证据：opentry_7/8/10 official full-test reports。
 最终判决：所有成功 claim 必须以 frozen official full-test 为准。
 
 ## 17. MPTS-52 K30/K50 position-aware structural quality policy 路线
 
-状态：watch  
-路线类型：metric rescue / hybrid policy  
-paper_mainline_status：auxiliary  
-metric_rescue_status：allowed_with_warning  
-是否依赖普通 ranking/rerank/fusion：当前版本是。  
-是否包含 structural quality scorer：当前为 shallow scorer，不足。  
-最好 full-test 结果：K30 RF `26.075/36.228/44.059`，delta `+0.845/-0.232/+0.099`。  
-是否达到 +5pp：否。  
-最终判决：不能继续普通 RF/HGB route；可转为 inference-safe structural quality scorer + slot policy。  
+状态：watch
+路线类型：metric rescue / hybrid policy
+paper_mainline_status：auxiliary
+metric_rescue_status：allowed_with_warning
+是否依赖普通 ranking/rerank/fusion：当前版本是。
+是否包含 structural quality scorer：当前为 shallow scorer，不足。
+最好 full-test 结果：K30 RF `26.075/36.228/44.059`，delta `+0.845/-0.232/+0.099`。
+是否达到 +5pp：否。
+最终判决：不能继续普通 RF/HGB route；可转为 inference-safe structural quality scorer + slot policy。
 重新开启条件：新增公式/SG/Wyckoff exact-cover、collision、local environment、bond valence、energy proxy 等结构特征；预注册 validation->official gate；不能用 opentry_10 official 结果回调。
 
 ## 18. rows>=7 专用 gate / complex structure 路线
 
-状态：continue  
-路线类型：complex-structure gate  
-paper_mainline_status：auxiliary or mainline analysis  
-metric_rescue_status：allowed  
-历史证据：opentry_4 rows>=7 W/A/skeleton-hit failures；opentry_10 MP-20 rows>=7 collapse；SymCIF MPTS-52 rows>=7 match@5 12.60%。  
+状态：continue
+路线类型：complex-structure gate
+paper_mainline_status：auxiliary or mainline analysis
+metric_rescue_status：allowed
+历史证据：opentry_4 rows>=7 W/A/skeleton-hit failures；opentry_10 MP-20 rows>=7 collapse；SymCIF MPTS-52 rows>=7 match@5 12.60%。
 最终判决：必须单独处理。不能再把 rows>=7 混入总体样本后只看 aggregate。
 
 ## 19. Structural quality scorer 路线
 
-状态：continue  
-路线类型：inference-safe quality scorer  
-paper_mainline_status：auxiliary  
-metric_rescue_status：allowed  
-历史证据：opentry_10 ToGPTPro 诊断当前 shallow scorer 缺少 formula consistency、SG consistency、Wyckoff exact-cover、collision/local geometry、bond valence/energy proxy。  
-最终判决：这是最合理的 metric rescue/hybrid component，但 claim 必须收缩为辅助模块。  
+状态：continue
+路线类型：inference-safe quality scorer
+paper_mainline_status：auxiliary
+metric_rescue_status：allowed
+历史证据：opentry_10 ToGPTPro 诊断当前 shallow scorer 缺少 formula consistency、SG consistency、Wyckoff exact-cover、collision/local geometry、bond valence/energy proxy。
+最终判决：这是最合理的 metric rescue/hybrid component，但 claim 必须收缩为辅助模块。
 重新开启条件：只依赖 prompt 与 candidate CIF；hard-negative pairwise/listwise；rows>=7 单独 gate。
 
 ## 20. Symmetry-preserving geometry repair 路线
 
-状态：continue  
-路线类型：geometry-aware refinement  
-paper_mainline_status：mainline or auxiliary  
-metric_rescue_status：allowed  
-历史证据：symcif_v4 GT-WA geometry model、opentry_4 pairfield generator、opentry_6 refiner。  
-失败证据：direct proposal ordering weak，source-free/random priors 和 post-render coordinate surgery 被 opentry_4 禁止为主线。  
+状态：continue
+路线类型：geometry-aware refinement
+paper_mainline_status：mainline or auxiliary
+metric_rescue_status：allowed
+历史证据：symcif_v4 GT-WA geometry model、opentry_4 pairfield generator、opentry_6 refiner。
+失败证据：direct proposal ordering weak，source-free/random priors 和 post-render coordinate surgery 被 opentry_4 禁止为主线。
 最终判决：继续，但必须 preserve symmetry/Wyckoff constraints，不做无约束后处理。
 
 ## 21. Pure model / invariant sequence / Mat2Seq-like / SG-aware sequence model 路线
 
-状态：pivot  
-路线类型：new sequence architecture  
-paper_mainline_status：mainline if symmetry-aware  
-metric_rescue_status：allowed  
-历史证据：pure CIF model failed；SymCIF/WA structured representation有必要性。  
+状态：pivot
+路线类型：new sequence architecture
+paper_mainline_status：mainline if symmetry-aware
+metric_rescue_status：allowed
+历史证据：pure CIF model failed；SymCIF/WA structured representation有必要性。
 最终判决：如果是普通 CIF GPT，stop；如果是 invariant / SG-aware / Wyckoff-causal sequence model，可作为新主线候选，但必须先过 validation gate 并对标 GT-SG baseline。
 
 ## 22. Track A MPTS-52 本轮产物路线
 
-状态：stop  
-路线类型：track audit / missing-artifact review  
-paper_mainline_status：no evidence  
-metric_rescue_status：not allowed  
-是否符合论文主线：无法判断；本轮没有可读 artifact。  
-是否依赖普通 ranking/rerank/fusion：无法判断；无 manifest。  
-是否包含 structural quality scorer：无证据。  
-是否包含 geometry repair：无证据。  
-历史证据：`model/std_way/track_a_mpts52` 当前有 `track_a_validation_oof.py`、`RUN_VALIDATION_OOF.sh` 和 `logs/validation_oof.log`；脚本包含 validation-only structural scorer、5-fold OOF、rows>=7 gate 和 `STOP/WATCH/ALLOW_OFFICIAL_FREEZE` decision 逻辑。但 `outputs/` 为空，日志只显示 feature extraction 进度到 100000 candidates，未生成 `validation_oof_results.json`、`DECISION.md`、README、metrics、validation 报告或 freeze 文件。  
-最好 validation 结果：NA。  
-最好 full-test 结果：NA。  
-相对 GT-SG baseline 差距：NA。  
-是否达到 +5pp：否；没有任何可审计指标。  
-是否 full test 有效：否；未运行也未冻结。  
-局部解风险：若在没有 artifact 的情况下继续，会形成不可复现、不可审计的路线。  
-最终判决：本轮 `STOP`。不得 `ALLOW_OFFICIAL_FREEZE`；也不能记为 `WATCH`，因为脚本尚未完成且没有正向指标。  
+状态：stop
+路线类型：track audit / missing-artifact review
+paper_mainline_status：no evidence
+metric_rescue_status：not allowed
+是否符合论文主线：无法判断；本轮没有可读 artifact。
+是否依赖普通 ranking/rerank/fusion：无法判断；无 manifest。
+是否包含 structural quality scorer：无证据。
+是否包含 geometry repair：无证据。
+历史证据：`model/std_way/track_a_mpts52` 当前有 `track_a_validation_oof.py`、`RUN_VALIDATION_OOF.sh` 和 `logs/validation_oof.log`；脚本包含 validation-only structural scorer、5-fold OOF、rows>=7 gate 和 `STOP/WATCH/ALLOW_OFFICIAL_FREEZE` decision 逻辑。但 `outputs/` 为空，日志只显示 feature extraction 进度到 100000 candidates，未生成 `validation_oof_results.json`、`DECISION.md`、README、metrics、validation 报告或 freeze 文件。
+最好 validation 结果：NA。
+最好 full-test 结果：NA。
+相对 GT-SG baseline 差距：NA。
+是否达到 +5pp：否；没有任何可审计指标。
+是否 full test 有效：否；未运行也未冻结。
+局部解风险：若在没有 artifact 的情况下继续，会形成不可复现、不可审计的路线。
+最终判决：本轮 `STOP`。不得 `ALLOW_OFFICIAL_FREEZE`；也不能记为 `WATCH`，因为脚本尚未完成且没有正向指标。
 
 ## 23. Track B Hybrid Mainline Prototype 路线
 
-状态：continue as architecture / stop as metric evidence  
-路线类型：hybrid mainline prototype / system architecture smoke  
-paper_mainline_status：architecture_allowed_no_metric_claim  
-metric_rescue_status：not_evaluated  
-是否符合论文主线：是，作为系统骨架符合；作为结果 claim 不符合。  
-是否依赖普通 ranking/rerank/fusion：否；当前只实现候选 adapter、union/dedup、hard constraints、scorer/repair/eval 接口 smoke。  
-是否包含 structural quality scorer：包含接口和未训练 heuristic smoke stub；不能当训练后 scorer 或 ordinary rerank 结果。  
-是否包含 geometry repair：包含 symmetry-preserving repair 接口；当前是 no-op stub，未修复 geometry。  
-历史证据：`model/std_way/track_b_hybrid/README.md`、`SYSTEM_ARCHITECTURE.md`、`MODULE_BOUNDARY.md`、`CLAIM_MAPPING.md`、`PROVENANCE_SCHEMA.md`、`artifacts/prototype_manifest.json`、`artifacts/smoke_summary.json`。  
-最好 validation 结果：NA；smoke summary 只有 toy `sample_count=2`、`input_candidate_count=3`、`unique_candidate_count=2`、`hard_filter_pass_count=1`、`repaired_count=0`。  
-最好 full-test 结果：NA。  
-相对 GT-SG baseline 差距：NA。  
-是否达到 +5pp：否；没有 match@k。  
-是否 full test 有效：否；未运行、未冻结、未接 official evaluator。  
-局部解风险：若把 smoke、candidate union、scorer stub 或 no-op repair 包装成方法收益，会退化为 fusion/rerank/local engineering claim。  
-最终判决：Track B 可继续作为 paper-mainline architecture scaffold；不得作为指标证据，不得启动 full benchmark，不得生成 official freeze。  
-重新开启条件：补生产级 SymCIF/Wyckoff parser、exact-cover search、hard-negative structural scorer 数据集、真实 symmetry-preserving geometry repair、StructureMatcher validation adapter、rows>=7 gate、frozen manifest 和 stop condition。  
-禁止重复的实验形式：只跑 smoke 后宣称路线成功；只做 candidate fusion/dedup/scorer stub；没有 validation gate 就启动 full benchmark。  
+状态：continue as architecture / stop as metric evidence
+路线类型：hybrid mainline prototype / system architecture smoke
+paper_mainline_status：architecture_allowed_no_metric_claim
+metric_rescue_status：not_evaluated
+是否符合论文主线：是，作为系统骨架符合；作为结果 claim 不符合。
+是否依赖普通 ranking/rerank/fusion：否；当前只实现候选 adapter、union/dedup、hard constraints、scorer/repair/eval 接口 smoke。
+是否包含 structural quality scorer：包含接口和未训练 heuristic smoke stub；不能当训练后 scorer 或 ordinary rerank 结果。
+是否包含 geometry repair：包含 symmetry-preserving repair 接口；当前是 no-op stub，未修复 geometry。
+历史证据：`model/std_way/track_b_hybrid/README.md`、`SYSTEM_ARCHITECTURE.md`、`MODULE_BOUNDARY.md`、`CLAIM_MAPPING.md`、`PROVENANCE_SCHEMA.md`、`artifacts/prototype_manifest.json`、`artifacts/smoke_summary.json`。
+最好 validation 结果：NA；smoke summary 只有 toy `sample_count=2`、`input_candidate_count=3`、`unique_candidate_count=2`、`hard_filter_pass_count=1`、`repaired_count=0`。
+最好 full-test 结果：NA。
+相对 GT-SG baseline 差距：NA。
+是否达到 +5pp：否；没有 match@k。
+是否 full test 有效：否；未运行、未冻结、未接 official evaluator。
+局部解风险：若把 smoke、candidate union、scorer stub 或 no-op repair 包装成方法收益，会退化为 fusion/rerank/local engineering claim。
+最终判决：Track B 可继续作为 paper-mainline architecture scaffold；不得作为指标证据，不得启动 full benchmark，不得生成 official freeze。
+重新开启条件：补生产级 SymCIF/Wyckoff parser、exact-cover search、hard-negative structural scorer 数据集、真实 symmetry-preserving geometry repair、StructureMatcher validation adapter、rows>=7 gate、frozen manifest 和 stop condition。
+禁止重复的实验形式：只跑 smoke 后宣称路线成功；只做 candidate fusion/dedup/scorer stub；没有 validation gate 就启动 full benchmark。
 重新开启条件：必须先完整生成 `track_a_mpts52` 的最小可审计包，包括 manifest、候选来源、validation-only 指标、rows>=7 子集、claim boundary、`DECISION.md`、freeze gate 和失败停止条件。
 
 
@@ -546,269 +546,269 @@ metric_rescue_status：not_evaluated
 
 ## crystallm_mp20_gt_sg_anchor_op7
 
-位置：`/data/users/xsw/autodlmini/model/New_model/opentry_7`  
-目标：建立 MP-20 GT-SG CrystaLLM 主比较 anchor。  
-方法：CrystaLLM-a，输入 composition + GT-SG，K20。  
-数据集：MP-20 official test。  
-是否 full test：是。  
-是否使用 GT-SG：是。  
-是否使用 GT-WA / oracle signal：否。  
-是否使用普通 ranking / fusion：否。  
-是否使用 structural quality scorer：否。  
-是否使用 position-aware policy：否。  
-是否使用 geometry repair：否。  
-paper_mainline_status：diagnostic。  
-metric_rescue_status：allowed。  
-关键指标：`71.67 / 83.08 / 87.81`，RMSE `0.0509 / 0.0449 / 0.0431`。  
-相对 GT-SG baseline 是否达标：自身为 baseline。  
-是否达到 +5pp / 至少两个指标目标：否。  
-结论：当前 MP-20 主比较对象。  
-是否继续：continue as baseline。  
-原因：所有新路线必须对标该 anchor。  
+位置：`/data/users/xsw/autodlmini/model/New_model/opentry_7`
+目标：建立 MP-20 GT-SG CrystaLLM 主比较 anchor。
+方法：CrystaLLM-a，输入 composition + GT-SG，K20。
+数据集：MP-20 official test。
+是否 full test：是。
+是否使用 GT-SG：是。
+是否使用 GT-WA / oracle signal：否。
+是否使用普通 ranking / fusion：否。
+是否使用 structural quality scorer：否。
+是否使用 position-aware policy：否。
+是否使用 geometry repair：否。
+paper_mainline_status：diagnostic。
+metric_rescue_status：allowed。
+关键指标：`71.67 / 83.08 / 87.81`，RMSE `0.0509 / 0.0449 / 0.0431`。
+相对 GT-SG baseline 是否达标：自身为 baseline。
+是否达到 +5pp / 至少两个指标目标：否。
+结论：当前 MP-20 主比较对象。
+是否继续：continue as baseline。
+原因：所有新路线必须对标该 anchor。
 证据路径：`opentry_7/opentry_7_final_report.md`，`opentry_10/final_report.md`。
 
 ## crystallm_mpts52_gt_sg_anchor_op7
 
-位置：`/data/users/xsw/autodlmini/model/New_model/opentry_7`  
-目标：建立 MPTS-52 GT-SG CrystaLLM 主比较 anchor。  
-方法：CrystaLLM-a，输入 composition + GT-SG，K20。  
-数据集：MPTS-52 official test。  
-是否 full test：是。  
-是否使用 GT-SG：是。  
-是否使用 GT-WA / oracle signal：否。  
-是否使用普通 ranking / fusion：否。  
-paper_mainline_status：diagnostic。  
-metric_rescue_status：allowed。  
-关键指标：`25.23 / 36.46 / 43.96`，RMSE `0.1211 / 0.1257 / 0.1334`。  
-结论：当前 MPTS-52 主比较对象。  
+位置：`/data/users/xsw/autodlmini/model/New_model/opentry_7`
+目标：建立 MPTS-52 GT-SG CrystaLLM 主比较 anchor。
+方法：CrystaLLM-a，输入 composition + GT-SG，K20。
+数据集：MPTS-52 official test。
+是否 full test：是。
+是否使用 GT-SG：是。
+是否使用 GT-WA / oracle signal：否。
+是否使用普通 ranking / fusion：否。
+paper_mainline_status：diagnostic。
+metric_rescue_status：allowed。
+关键指标：`25.23 / 36.46 / 43.96`，RMSE `0.1211 / 0.1257 / 0.1334`。
+结论：当前 MPTS-52 主比较对象。
 证据路径：`opentry_7/opentry_7_final_report.md`，`opentry_10/final_report.md`。
 
 ## symcif_v5_mp20_full_test
 
-位置：`symcif_experiment`  
-目标：SymCIF-v5 在 MP-20 GT-SG full test 上验证。  
-方法：exact-cover SG/formula + e08 geometry。  
-是否 full test：历史 full test；样本口径与 opentry_7/10 anchor 不完全一致。  
-是否使用 GT-SG：是。  
-是否使用普通 ranking / fusion：否。  
-是否使用 geometry repair：是。  
-关键指标：`64.26 / 73.45 / 74.04`，RMSE `0.0576 / 0.0468 / 0.0464`。  
-相对 GT-SG baseline：低于当前 MP-20 anchor `-7.41 / -9.63 / -13.77 pp`。  
-是否达到 +5pp：否。  
-结论：支持 SymCIF 主线诊断，但不是成功结果。  
-是否继续：pivot。  
-原因：需要解决 W/A coverage 与 complex geometry。  
+位置：`symcif_experiment`
+目标：SymCIF-v5 在 MP-20 GT-SG full test 上验证。
+方法：exact-cover SG/formula + e08 geometry。
+是否 full test：历史 full test；样本口径与 opentry_7/10 anchor 不完全一致。
+是否使用 GT-SG：是。
+是否使用普通 ranking / fusion：否。
+是否使用 geometry repair：是。
+关键指标：`64.26 / 73.45 / 74.04`，RMSE `0.0576 / 0.0468 / 0.0464`。
+相对 GT-SG baseline：低于当前 MP-20 anchor `-7.41 / -9.63 / -13.77 pp`。
+是否达到 +5pp：否。
+结论：支持 SymCIF 主线诊断，但不是成功结果。
+是否继续：pivot。
+原因：需要解决 W/A coverage 与 complex geometry。
 证据路径：`symcif_experiment/Log_GPT/multi_experiment_analysis_report_20260610_122115.md`。
 
 ## symcif_v5_mpts52_full_test
 
-位置：`symcif_experiment`  
-目标：SymCIF-v5 在 MPTS-52 GT-SG full test 上验证。  
-关键指标：`25.47 / 32.90 / 33.63`，RMSE `0.1178 / 0.1132 / 0.1129`。  
-相对当前 GT-SG baseline：`+0.24 / -3.56 / -10.33 pp`。  
-是否达到 +5pp：否。  
-结论：K1 接近，但 K5/K20 和 rows>=7 明显不足。  
-是否继续：pivot。  
+位置：`symcif_experiment`
+目标：SymCIF-v5 在 MPTS-52 GT-SG full test 上验证。
+关键指标：`25.47 / 32.90 / 33.63`，RMSE `0.1178 / 0.1132 / 0.1129`。
+相对当前 GT-SG baseline：`+0.24 / -3.56 / -10.33 pp`。
+是否达到 +5pp：否。
+结论：K1 接近，但 K5/K20 和 rows>=7 明显不足。
+是否继续：pivot。
 证据路径：`symcif_experiment/Log_GPT/multi_experiment_analysis_report_20260610_122115.md`。
 
 ## opentry_e04_mpts52_e1
 
-位置：`opentry`  
-目标：MPTS-52 上用 `v5_e1_geometry_distance_ranking_e08` 超过旧 CrystaLLM GT-SG K1。  
-是否 full test：历史 full test/common-subset caveat。  
-是否使用普通 ranking / fusion：是，geometry-distance ranking。  
-关键指标：`28.08 / 34.39 / 35.53`。  
-相对旧 common-subset CrystaLLM：K1 超过；K5/K20 未超过。  
-是否达到 +5pp / 至少两个指标目标：否。  
-结论：局部 K1 信号，不是最终路线成功。  
-是否继续：watch。  
+位置：`opentry`
+目标：MPTS-52 上用 `v5_e1_geometry_distance_ranking_e08` 超过旧 CrystaLLM GT-SG K1。
+是否 full test：历史 full test/common-subset caveat。
+是否使用普通 ranking / fusion：是，geometry-distance ranking。
+关键指标：`28.08 / 34.39 / 35.53`。
+相对旧 common-subset CrystaLLM：K1 超过；K5/K20 未超过。
+是否达到 +5pp / 至少两个指标目标：否。
+结论：局部 K1 信号，不是最终路线成功。
+是否继续：watch。
 证据路径：`opentry/iterative_experiment_log.md` E04-E06。
 
 ## opentry_e13_cached_ensemble
 
-位置：`opentry`  
-目标：缓存候选 ensemble 提升 MPTS-52 K5/K20。  
-是否使用普通 ranking / fusion：是。  
-关键指标：`28.08 / 34.53 / 36.64`。  
-相对 GT-SG baseline：K5/K20 仍失败。  
-结论：互补性存在但不足；不能作为主线。  
-是否继续：watch/stop as mainline。  
+位置：`opentry`
+目标：缓存候选 ensemble 提升 MPTS-52 K5/K20。
+是否使用普通 ranking / fusion：是。
+关键指标：`28.08 / 34.53 / 36.64`。
+相对 GT-SG baseline：K5/K20 仍失败。
+结论：互补性存在但不足；不能作为主线。
+是否继续：watch/stop as mainline。
 证据路径：`opentry/iterative_experiment_log.md` E13-E16。
 
 ## opentry_e24_symcif_crystallm_hybrid
 
-位置：`opentry`  
-目标：固定顺序 SymCIF + CrystaLLM GT-SG candidate hybrid。  
-是否 full test：历史 same-evaluator test。  
-是否使用普通 ranking / fusion：是，候选融合。  
-关键指标：E24 `26.02 / 39.28 / 45.06`；同 evaluator CrystaLLM-only Ref20 `25.08 / 34.66 / 41.63`。  
-是否达到 +5pp：否；且不是独立方法。  
-结论：真实 hybrid 工程收益，但 forbidden_as_mainline。  
-是否继续：stop as paper mainline；可作 ablation/diagnostic。  
+位置：`opentry`
+目标：固定顺序 SymCIF + CrystaLLM GT-SG candidate hybrid。
+是否 full test：历史 same-evaluator test。
+是否使用普通 ranking / fusion：是，候选融合。
+关键指标：E24 `26.02 / 39.28 / 45.06`；同 evaluator CrystaLLM-only Ref20 `25.08 / 34.66 / 41.63`。
+是否达到 +5pp：否；且不是独立方法。
+结论：真实 hybrid 工程收益，但 forbidden_as_mainline。
+是否继续：stop as paper mainline；可作 ablation/diagnostic。
 证据路径：`opentry/iterative_experiment_log.md` E23-E25、Paper-audit analysis。
 
 ## opentry2_e55_k50_ranker
 
-位置：`opentry_2`  
-目标：MPTS-52 K50 pool 上 RF ranker。  
-是否 full test：历史 full candidate pool；ranker/fusion provenance caveat。  
-是否使用普通 ranking / fusion：是。  
-关键指标：E55 `32.04 / 39.19 / 45.12`。  
-结论：高数值但普通 ranker；后续 opentry_10 official 冻结路线未复现最终成功。  
-是否继续：stop as mainline。  
+位置：`opentry_2`
+目标：MPTS-52 K50 pool 上 RF ranker。
+是否 full test：历史 full candidate pool；ranker/fusion provenance caveat。
+是否使用普通 ranking / fusion：是。
+关键指标：E55 `32.04 / 39.19 / 45.12`。
+结论：高数值但普通 ranker；后续 opentry_10 official 冻结路线未复现最终成功。
+是否继续：stop as mainline。
 证据路径：`opentry_2/reports/e55_apply_e52_ranker_to_e34_full_k50_pool/run_summary.json`。
 
 ## opentry3_e119_validation_symcif
 
-位置：`opentry_3`  
-目标：CrystalFormer/WyFormer 风格 symbolic W/A + row-aligned geometry。  
-是否 full test：否，validation val128。  
-关键指标：E119 `31.25 / 35.16 / 41.41 / 43.75@50`。  
-rows>=7：match@50 仅 `18.33%`。  
-结论：symbolic route 有价值，但 geometry 转化不足；不可 full-test success。  
-是否继续：pivot/continue under gate。  
+位置：`opentry_3`
+目标：CrystalFormer/WyFormer 风格 symbolic W/A + row-aligned geometry。
+是否 full test：否，validation val128。
+关键指标：E119 `31.25 / 35.16 / 41.41 / 43.75@50`。
+rows>=7：match@50 仅 `18.33%`。
+结论：symbolic route 有价值，但 geometry 转化不足；不可 full-test success。
+是否继续：pivot/continue under gate。
 证据路径：`opentry_3/final_summary.md`。
 
 ## opentry4_e718_full_test
 
-位置：`opentry_4`  
-目标：E718 frozen/audited full-test result 与 geometry energy/pairfield 诊断。  
-是否 full test：是，导入已有 one-time full MPTS-52 test，未 rerun。  
-关键指标：`27.68 / 35.85 / 39.68`，match@50 `42.15`，RMSE@20 `0.1240`。  
-rows>=7：match@20 `17.48%`。  
-结论：未达 +5pp；rows>=7 geometry/free-param/site-mapping 是瓶颈。  
-是否继续：pivot to geometry/refinement。  
+位置：`opentry_4`
+目标：E718 frozen/audited full-test result 与 geometry energy/pairfield 诊断。
+是否 full test：是，导入已有 one-time full MPTS-52 test，未 rerun。
+关键指标：`27.68 / 35.85 / 39.68`，match@50 `42.15`，RMSE@20 `0.1240`。
+rows>=7：match@20 `17.48%`。
+结论：未达 +5pp；rows>=7 geometry/free-param/site-mapping 是瓶颈。
+是否继续：pivot to geometry/refinement。
 证据路径：`opentry_4/reports/opentry_4_final_summary.md`。
 
 ## opentry5_e8034_e8036_folds
 
-位置：`opentry_5`  
-目标：MiniCFJoint / full-CIF fixed-order folds。  
-是否 full test：否，小 fold/grouped fold。  
-关键指标：E8034/E8036 fold 指标可到 `34.38 / 48.44 / 51.56`，但 rows>=7 match@20 仍为 0。  
-结论：aggregate fold positive 不等于 full-test success；rows>=7 未解。  
-是否继续：pivot。  
+位置：`opentry_5`
+目标：MiniCFJoint / full-CIF fixed-order folds。
+是否 full test：否，小 fold/grouped fold。
+关键指标：E8034/E8036 fold 指标可到 `34.38 / 48.44 / 51.56`，但 rows>=7 match@20 仍为 0。
+结论：aggregate fold positive 不等于 full-test success；rows>=7 未解。
+是否继续：pivot。
 证据路径：`opentry_5/reports/opentry_5_final_summary.md`。
 
 ## opentry6_geometry_refiner
 
-位置：`opentry_6`  
-目标：CrystalFormer-style geometry/refiner 诊断。  
-是否 full test：否。  
-结论：下一轮应继续 continuous geometry/refiner，而不是回到 selector/ranker；若 GT-W/A 下 rows>=7 仍失败，则 geometry 是主瓶颈。  
-是否继续：continue under gate。  
+位置：`opentry_6`
+目标：CrystalFormer-style geometry/refiner 诊断。
+是否 full test：否。
+结论：下一轮应继续 continuous geometry/refiner，而不是回到 selector/ranker；若 GT-W/A 下 rows>=7 仍失败，则 geometry 是主瓶颈。
+是否继续：continue under gate。
 证据路径：`opentry_6/opentry_6_final_summary.md`。
 
 ## opentry7_pure_model
 
-位置：`opentry_7`  
-目标：严格 composition + GT-SG pure model line。  
-是否 full test：是。  
-关键指标：MP-20 `60.58 / 70.67 / 77.96`；MPTS-52 `17.18 / 24.35 / 31.52`。  
-结论：显著低于 GT-SG anchor；pure CIF GPT/checkpoint 线应停止盲训。  
-是否继续：stop。  
+位置：`opentry_7`
+目标：严格 composition + GT-SG pure model line。
+是否 full test：是。
+关键指标：MP-20 `60.58 / 70.67 / 77.96`；MPTS-52 `17.18 / 24.35 / 31.52`。
+结论：显著低于 GT-SG anchor；pure CIF GPT/checkpoint 线应停止盲训。
+是否继续：stop。
 证据路径：`opentry_7/opentry_7_final_report.md`。
 
 ## opentry8_coverage_repair
 
-位置：`opentry_8`  
-目标：coverage-repaired strategy/fusion。  
-是否 full test：是。  
-关键指标：MP-20 与 GT-SG anchor 完全相同；MPTS-52 match@20 从 `43.96` 到 `43.97`。  
-结论：coverage repair，不是 W/A、geometry 或 ranking 突破。  
-是否继续：stop。  
+位置：`opentry_8`
+目标：coverage-repaired strategy/fusion。
+是否 full test：是。
+关键指标：MP-20 与 GT-SG anchor 完全相同；MPTS-52 match@20 从 `43.96` 到 `43.97`。
+结论：coverage repair，不是 W/A、geometry 或 ranking 突破。
+是否继续：stop。
 证据路径：`opentry_8/final_report.md`。
 
 ## opentry9_audit
 
-位置：`opentry_9`  
-目标：strategy/fusion feasibility audit。  
-是否 full test：否。  
-结论：缺 CrystaLLM-a GT-SG validation K20 bank，未训练 selector，未冻结策略，未跑新 official test；纯结构线仍是 WA + geometry 瓶颈。  
-是否继续：watch as audit evidence。  
+位置：`opentry_9`
+目标：strategy/fusion feasibility audit。
+是否 full test：否。
+结论：缺 CrystaLLM-a GT-SG validation K20 bank，未训练 selector，未冻结策略，未跑新 official test；纯结构线仍是 WA + geometry 瓶颈。
+是否继续：watch as audit evidence。
 证据路径：`opentry_9/final_report.md`。
 
 ## opentry10_mpts52_k30_rf_seed1
 
-位置：`opentry_10`  
-目标：MPTS-52 K30 RF best-score route official frozen evaluation。  
-是否 full test：是。  
-是否使用普通 ranking / fusion：是；浅层 scorer + route policy。  
-关键指标：`26.075 / 36.228 / 44.059`，RMSE `0.121638 / 0.122237 / 0.131714`。  
-相对 GT-SG baseline：`+0.845 / -0.232 / +0.099 pp`。  
-是否达到 +5pp / 至少两个指标目标：否。  
-结论：当前 closest official line，但只是近程信号。  
-是否继续：watch；只能作为 metric rescue/hybrid component。  
+位置：`opentry_10`
+目标：MPTS-52 K30 RF best-score route official frozen evaluation。
+是否 full test：是。
+是否使用普通 ranking / fusion：是；浅层 scorer + route policy。
+关键指标：`26.075 / 36.228 / 44.059`，RMSE `0.121638 / 0.122237 / 0.131714`。
+相对 GT-SG baseline：`+0.845 / -0.232 / +0.099 pp`。
+是否达到 +5pp / 至少两个指标目标：否。
+结论：当前 closest official line，但只是近程信号。
+是否继续：watch；只能作为 metric rescue/hybrid component。
 证据路径：`opentry_10/metrics/official_test/mpts52_k30_rf_seed1_bestscore_route_summary.json`。
 
 ## opentry10_mpts52_k50_rf_seed1
 
-位置：`opentry_10`  
-目标：MPTS-52 K50 RF margin route official frozen evaluation。  
-关键指标：`25.791 / 36.265 / 43.824`。  
-相对 GT-SG baseline：`+0.561 / -0.195 / -0.136 pp`。  
-rows>=7：`23.053 / 33.228 / 40.939`。  
-结论：弱于 K30；无成功。  
-是否继续：watch only if rebuilt as structural scorer。  
+位置：`opentry_10`
+目标：MPTS-52 K50 RF margin route official frozen evaluation。
+关键指标：`25.791 / 36.265 / 43.824`。
+相对 GT-SG baseline：`+0.561 / -0.195 / -0.136 pp`。
+rows>=7：`23.053 / 33.228 / 40.939`。
+结论：弱于 K30；无成功。
+是否继续：watch only if rebuilt as structural scorer。
 证据路径：`opentry_10/metrics/official_test/mpts52_k50_rf_seed1_margin_route_summary.json`。
 
 ## opentry10_mp20_k50_hgb
 
-位置：`opentry_10`  
-目标：MP-20 K50 HGB ensemble margin route official frozen evaluation。  
-关键指标：`70.230 / 81.870 / 87.486`。  
-相对 GT-SG baseline：`-1.440 / -1.210 / -0.324 pp`。  
-rows>=7：`27.200 / 43.273 / 55.273`，大幅低于 anchor。  
-结论：失败，MP-20 K50 shallow route 不应继续 as-is。  
-是否继续：stop。  
+位置：`opentry_10`
+目标：MP-20 K50 HGB ensemble margin route official frozen evaluation。
+关键指标：`70.230 / 81.870 / 87.486`。
+相对 GT-SG baseline：`-1.440 / -1.210 / -0.324 pp`。
+rows>=7：`27.200 / 43.273 / 55.273`，大幅低于 anchor。
+结论：失败，MP-20 K50 shallow route 不应继续 as-is。
+是否继续：stop。
 证据路径：`opentry_10/metrics/official_test/mp20_k50_hgb_mean_seed012_margin_route_summary.json`。
 
 ## track_a_mpts52_latest_audit
 
-位置：`/data/users/xsw/autodlmini/model/std_way/track_a_mpts52`  
-目标：读取 Track A MPTS-52 最新产物并更新全局审计结论。  
-方法：目录级审计；读取脚本与日志，不启动实验。  
-数据集：MPTS-52 validation intended；脚本指向 opentry_10 MPTS-52 validation K100/K50 labels，但本轮没有完成输出指标。  
-是否 full test：否。  
-是否使用 GT-SG：NA。  
-是否使用 GT-WA / oracle signal：否。  
-是否使用普通 ranking / fusion：无证据。  
-是否使用 structural quality scorer：无证据。  
-是否使用 position-aware policy：无证据。  
-是否使用 geometry repair：无证据。  
-paper_mainline_status：no evidence。  
-metric_rescue_status：not allowed。  
-关键指标：NA。  
-相对 GT-SG baseline 是否达标：否；无指标。  
-是否达到 +5pp / 至少两个指标目标：否。  
-本轮路线判决：`STOP`。  
-结论：脚本与部分进度日志存在，但 `outputs/` 为空，没有 validation OOF 结果、`DECISION.md` 或报告；不能进入 official freeze，也不能作为 WATCH 信号。  
-是否继续：stop until auditable artifacts exist。  
-原因：缺 manifest、metrics、validation 输出、rows>=7 报告、`DECISION.md` 和 freeze gate。  
+位置：`/data/users/xsw/autodlmini/model/std_way/track_a_mpts52`
+目标：读取 Track A MPTS-52 最新产物并更新全局审计结论。
+方法：目录级审计；读取脚本与日志，不启动实验。
+数据集：MPTS-52 validation intended；脚本指向 opentry_10 MPTS-52 validation K100/K50 labels，但本轮没有完成输出指标。
+是否 full test：否。
+是否使用 GT-SG：NA。
+是否使用 GT-WA / oracle signal：否。
+是否使用普通 ranking / fusion：无证据。
+是否使用 structural quality scorer：无证据。
+是否使用 position-aware policy：无证据。
+是否使用 geometry repair：无证据。
+paper_mainline_status：no evidence。
+metric_rescue_status：not allowed。
+关键指标：NA。
+相对 GT-SG baseline 是否达标：否；无指标。
+是否达到 +5pp / 至少两个指标目标：否。
+本轮路线判决：`STOP`。
+结论：脚本与部分进度日志存在，但 `outputs/` 为空，没有 validation OOF 结果、`DECISION.md` 或报告；不能进入 official freeze，也不能作为 WATCH 信号。
+是否继续：stop until auditable artifacts exist。
+原因：缺 manifest、metrics、validation 输出、rows>=7 报告、`DECISION.md` 和 freeze gate。
 证据路径：`model/std_way/track_a_mpts52/track_a_validation_oof.py`、`model/std_way/track_a_mpts52/RUN_VALIDATION_OOF.sh`、`model/std_way/track_a_mpts52/logs/validation_oof.log`；`outputs/` 当前无结果文件。
 
 ## track_b_hybrid_mainline_prototype
 
-位置：`/data/users/xsw/autodlmini/model/std_way/track_b_hybrid`  
-目标：建立 hybrid paper-mainline 可执行原型，明确 SymCIF/Wyckoff/exact-cover/geometry repair 与 auxiliary scorer/provenance/evaluation 的边界。  
-方法：adapter -> union/dedup -> provenance registry -> hard constraint filter -> structural scorer interface -> symmetry-preserving repair interface -> smoke evaluation。  
-数据集：toy smoke only。  
-是否 full test：否。  
-是否使用 GT-SG：toy metadata 中使用 prompt SG。  
-是否使用 GT-WA / oracle signal：否。  
-是否使用普通 ranking / fusion：否；有 candidate union/dedup，但没有 ranking/fusion 指标 claim。  
-是否使用 structural quality scorer：有接口和 untrained heuristic smoke stub。  
-是否使用 position-aware policy：否。  
-是否使用 geometry repair：有接口，但当前是 no-op stub。  
-paper_mainline_status：architecture_allowed_no_metric_claim。  
-metric_rescue_status：not_evaluated。  
-关键指标：NA；`smoke_summary.json` 为 `sample_count=2`、`input_candidate_count=3`、`unique_candidate_count=2`、`hard_filter_pass_count=1`、`hard_filter_fail_count=1`、`repaired_count=0`。  
-相对 GT-SG baseline 是否达标：否；无 match@k。  
-是否达到 +5pp / 至少两个指标目标：否。  
-本轮路线判决：`continue as architecture / STOP as metric evidence`。  
-结论：Track B 可作为下一轮主线真实实验的系统骨架，但不能作为 validation 或 official result。  
-是否继续：continue only for parser/scorer/repair/evaluator implementation under gate。  
-原因：scorer 未训练、repair 未实现、exact-cover 为 basic sanity、evaluation 不产出 StructureMatcher 指标。  
+位置：`/data/users/xsw/autodlmini/model/std_way/track_b_hybrid`
+目标：建立 hybrid paper-mainline 可执行原型，明确 SymCIF/Wyckoff/exact-cover/geometry repair 与 auxiliary scorer/provenance/evaluation 的边界。
+方法：adapter -> union/dedup -> provenance registry -> hard constraint filter -> structural scorer interface -> symmetry-preserving repair interface -> smoke evaluation。
+数据集：toy smoke only。
+是否 full test：否。
+是否使用 GT-SG：toy metadata 中使用 prompt SG。
+是否使用 GT-WA / oracle signal：否。
+是否使用普通 ranking / fusion：否；有 candidate union/dedup，但没有 ranking/fusion 指标 claim。
+是否使用 structural quality scorer：有接口和 untrained heuristic smoke stub。
+是否使用 position-aware policy：否。
+是否使用 geometry repair：有接口，但当前是 no-op stub。
+paper_mainline_status：architecture_allowed_no_metric_claim。
+metric_rescue_status：not_evaluated。
+关键指标：NA；`smoke_summary.json` 为 `sample_count=2`、`input_candidate_count=3`、`unique_candidate_count=2`、`hard_filter_pass_count=1`、`hard_filter_fail_count=1`、`repaired_count=0`。
+相对 GT-SG baseline 是否达标：否；无 match@k。
+是否达到 +5pp / 至少两个指标目标：否。
+本轮路线判决：`continue as architecture / STOP as metric evidence`。
+结论：Track B 可作为下一轮主线真实实验的系统骨架，但不能作为 validation 或 official result。
+是否继续：continue only for parser/scorer/repair/evaluator implementation under gate。
+原因：scorer 未训练、repair 未实现、exact-cover 为 basic sanity、evaluation 不产出 StructureMatcher 指标。
 证据路径：`track_b_hybrid/README.md`、`SYSTEM_ARCHITECTURE.md`、`MODULE_BOUNDARY.md`、`CLAIM_MAPPING.md`、`PROVENANCE_SCHEMA.md`、`artifacts/prototype_manifest.json`、`artifacts/smoke_summary.json`。
 
 
@@ -822,304 +822,304 @@ metric_rescue_status：not_evaluated。
 
 ## 1. 原始 CrystaLLM baseline，输入不含 SG
 
-baseline_name：published CrystaLLM-a composition-only  
-dataset：MP-20  
-input_condition：composition-only  
-match@1：55.85  
-match@5：NA  
-match@20：75.14  
-rmse：0.0437 / NA / 0.0395  
-is_full_test：yes, historical published row copied in opentry_7  
-uses_sg：no  
-uses_gt_wa_or_oracle：no  
-uses_ranking_or_fusion：no  
-source_file：`/data/users/xsw/autodlmini/model/New_model/opentry_7/opentry_7_final_report.md`  
-可信度：medium，公开/历史上下文  
-是否可作为主比较对象：否  
-是否达到用户 +5pp 目标：否  
+baseline_name：published CrystaLLM-a composition-only
+dataset：MP-20
+input_condition：composition-only
+match@1：55.85
+match@5：NA
+match@20：75.14
+rmse：0.0437 / NA / 0.0395
+is_full_test：yes, historical published row copied in opentry_7
+uses_sg：no
+uses_gt_wa_or_oracle：no
+uses_ranking_or_fusion：no
+source_file：`/data/users/xsw/autodlmini/model/New_model/opentry_7/opentry_7_final_report.md`
+可信度：medium，公开/历史上下文
+是否可作为主比较对象：否
+是否达到用户 +5pp 目标：否
 备注：当前任务输入含 GT-SG，不能用该 baseline 作为主比较对象。
 
-baseline_name：reproduced CrystaLLM-a composition-only  
-dataset：MP-20  
-input_condition：composition-only  
-match@1：62.17  
-match@5：74.98  
-match@20：81.84  
-rmse：0.0442 / 0.0403 / 0.0402  
-is_full_test：yes  
-uses_sg：no  
-source_file：`opentry_7/opentry_7_final_report.md`  
-可信度：strong for local reproduction  
-是否可作为主比较对象：否  
+baseline_name：reproduced CrystaLLM-a composition-only
+dataset：MP-20
+input_condition：composition-only
+match@1：62.17
+match@5：74.98
+match@20：81.84
+rmse：0.0442 / 0.0403 / 0.0402
+is_full_test：yes
+uses_sg：no
+source_file：`opentry_7/opentry_7_final_report.md`
+可信度：strong for local reproduction
+是否可作为主比较对象：否
 备注：只能作为历史 context。
 
-baseline_name：reproduced CrystaLLM-a composition-only  
-dataset：MPTS-52  
-input_condition：composition-only  
-match@1：18.86  
-match@5：28.08  
-match@20：35.17  
-rmse：0.1056 / 0.1058 / 0.1174  
-is_full_test：yes  
-uses_sg：no  
-source_file：`opentry_7/opentry_7_final_report.md`  
-可信度：strong  
+baseline_name：reproduced CrystaLLM-a composition-only
+dataset：MPTS-52
+input_condition：composition-only
+match@1：18.86
+match@5：28.08
+match@20：35.17
+rmse：0.1056 / 0.1058 / 0.1174
+is_full_test：yes
+uses_sg：no
+source_file：`opentry_7/opentry_7_final_report.md`
+可信度：strong
 是否可作为主比较对象：否
 
 ## 2. GT-SG 条件下 CrystaLLM baseline
 
-baseline_name：CrystaLLM-a GT-SG MP-20  
-dataset：MP-20  
-input_condition：composition + GT-SG  
-match@1：71.67  
-match@5：83.08  
-match@20：87.81  
-rmse：0.0509 / 0.0449 / 0.0431  
-is_full_test：yes, CrystaLLM Table 3 official full-test K20 protocol  
-uses_sg：yes  
-uses_gt_wa_or_oracle：no  
-uses_ranking_or_fusion：no  
-source_file：`opentry_7/opentry_7_final_report.md`; cross-checked in `opentry_8/final_report.md` and `opentry_10/final_report.md`  
-可信度：strong  
-是否可作为主比较对象：是  
-是否达到用户 +5pp 目标：baseline itself, no  
+baseline_name：CrystaLLM-a GT-SG MP-20
+dataset：MP-20
+input_condition：composition + GT-SG
+match@1：71.67
+match@5：83.08
+match@20：87.81
+rmse：0.0509 / 0.0449 / 0.0431
+is_full_test：yes, CrystaLLM Table 3 official full-test K20 protocol
+uses_sg：yes
+uses_gt_wa_or_oracle：no
+uses_ranking_or_fusion：no
+source_file：`opentry_7/opentry_7_final_report.md`; cross-checked in `opentry_8/final_report.md` and `opentry_10/final_report.md`
+可信度：strong
+是否可作为主比较对象：是
+是否达到用户 +5pp 目标：baseline itself, no
 备注：MP-20 后续目标为 `76.67 / 88.08 / 92.81`。
 
-baseline_name：CrystaLLM-a GT-SG MPTS-52  
-dataset：MPTS-52  
-input_condition：composition + GT-SG  
-match@1：25.23  
-match@5：36.46  
-match@20：43.96  
-rmse：0.1211 / 0.1257 / 0.1334  
-is_full_test：yes, CrystaLLM Table 3 official full-test K20 protocol  
-uses_sg：yes  
-uses_gt_wa_or_oracle：no  
-uses_ranking_or_fusion：no  
-source_file：`opentry_7/opentry_7_final_report.md`; cross-checked in `opentry_8/final_report.md` and `opentry_10/final_report.md`  
-可信度：strong  
-是否可作为主比较对象：是  
-是否达到用户 +5pp 目标：baseline itself, no  
+baseline_name：CrystaLLM-a GT-SG MPTS-52
+dataset：MPTS-52
+input_condition：composition + GT-SG
+match@1：25.23
+match@5：36.46
+match@20：43.96
+rmse：0.1211 / 0.1257 / 0.1334
+is_full_test：yes, CrystaLLM Table 3 official full-test K20 protocol
+uses_sg：yes
+uses_gt_wa_or_oracle：no
+uses_ranking_or_fusion：no
+source_file：`opentry_7/opentry_7_final_report.md`; cross-checked in `opentry_8/final_report.md` and `opentry_10/final_report.md`
+可信度：strong
+是否可作为主比较对象：是
+是否达到用户 +5pp 目标：baseline itself, no
 备注：MPTS-52 后续目标为 `30.23 / 41.46 / 48.96`。
 
 ## 3. SymCIF / 当前仓库历史 baseline
 
-baseline_name：SymCIF-v5 GT-SG MP-20  
-dataset：MP-20  
-input_condition：composition + GT-SG  
-match@1：64.26  
-match@5：73.45  
-match@20：74.04  
-rmse：0.0576 / 0.0468 / 0.0464  
-is_full_test：yes, historical structured test protocol  
-uses_sg：yes  
-uses_gt_wa_or_oracle：no  
-uses_ranking_or_fusion：no ordinary fusion; uses structured generation/geometric proposal  
-source_file：`symcif_experiment/Log_GPT/multi_experiment_analysis_report_20260610_122115.md`  
-可信度：medium，口径与 opentry_7/10 anchor 不完全一致  
-是否可作为主比较对象：否；可作为历史 method baseline  
+baseline_name：SymCIF-v5 GT-SG MP-20
+dataset：MP-20
+input_condition：composition + GT-SG
+match@1：64.26
+match@5：73.45
+match@20：74.04
+rmse：0.0576 / 0.0468 / 0.0464
+is_full_test：yes, historical structured test protocol
+uses_sg：yes
+uses_gt_wa_or_oracle：no
+uses_ranking_or_fusion：no ordinary fusion; uses structured generation/geometric proposal
+source_file：`symcif_experiment/Log_GPT/multi_experiment_analysis_report_20260610_122115.md`
+可信度：medium，口径与 opentry_7/10 anchor 不完全一致
+是否可作为主比较对象：否；可作为历史 method baseline
 是否达到用户 +5pp 目标：否
 
-baseline_name：SymCIF-v5 GT-SG MPTS-52  
-dataset：MPTS-52  
-input_condition：composition + GT-SG  
-match@1：25.47  
-match@5：32.90  
-match@20：33.63  
-rmse：0.1178 / 0.1132 / 0.1129  
-is_full_test：yes, historical structured test protocol  
-uses_sg：yes  
-uses_gt_wa_or_oracle：no  
-source_file：`symcif_experiment/Log_GPT/multi_experiment_analysis_report_20260610_122115.md`  
-可信度：medium  
-是否可作为主比较对象：否  
+baseline_name：SymCIF-v5 GT-SG MPTS-52
+dataset：MPTS-52
+input_condition：composition + GT-SG
+match@1：25.47
+match@5：32.90
+match@20：33.63
+rmse：0.1178 / 0.1132 / 0.1129
+is_full_test：yes, historical structured test protocol
+uses_sg：yes
+uses_gt_wa_or_oracle：no
+source_file：`symcif_experiment/Log_GPT/multi_experiment_analysis_report_20260610_122115.md`
+可信度：medium
+是否可作为主比较对象：否
 是否达到用户 +5pp 目标：否
 
 ## 4. opentry_10 K30/K50 official frozen results
 
-baseline_name：mpts52_k30_rf_seed1_bestscore_route  
-dataset：MPTS-52  
-input_condition：composition + GT-SG + CrystaLLM K30 candidate route  
-match@1：26.075  
-match@5：36.228  
-match@20：44.059  
-rmse：0.121638 / 0.122237 / 0.131714  
-is_full_test：yes  
-uses_sg：yes  
-uses_gt_wa_or_oracle：no  
-uses_ranking_or_fusion：yes, RF route  
-source_file：`opentry_10/metrics/official_test/mpts52_k30_rf_seed1_bestscore_route_summary.json`  
-可信度：strong official result  
-是否可作为主比较对象：否；这是方法结果，不是 baseline  
-是否达到用户 +5pp 目标：否  
+baseline_name：mpts52_k30_rf_seed1_bestscore_route
+dataset：MPTS-52
+input_condition：composition + GT-SG + CrystaLLM K30 candidate route
+match@1：26.075
+match@5：36.228
+match@20：44.059
+rmse：0.121638 / 0.122237 / 0.131714
+is_full_test：yes
+uses_sg：yes
+uses_gt_wa_or_oracle：no
+uses_ranking_or_fusion：yes, RF route
+source_file：`opentry_10/metrics/official_test/mpts52_k30_rf_seed1_bestscore_route_summary.json`
+可信度：strong official result
+是否可作为主比较对象：否；这是方法结果，不是 baseline
+是否达到用户 +5pp 目标：否
 备注：closest official near signal；不能称成功。
 
-baseline_name：mpts52_k50_rf_seed1_margin_route  
-dataset：MPTS-52  
-input_condition：composition + GT-SG + K50 route  
-match@1：25.791  
-match@5：36.265  
-match@20：43.824  
-rmse：0.126404 / 0.125088 / 0.132897  
-is_full_test：yes  
-uses_sg：yes  
-uses_ranking_or_fusion：yes  
-source_file：`opentry_10/metrics/official_test/mpts52_k50_rf_seed1_margin_route_summary.json`  
-可信度：strong  
-是否可作为主比较对象：否  
+baseline_name：mpts52_k50_rf_seed1_margin_route
+dataset：MPTS-52
+input_condition：composition + GT-SG + K50 route
+match@1：25.791
+match@5：36.265
+match@20：43.824
+rmse：0.126404 / 0.125088 / 0.132897
+is_full_test：yes
+uses_sg：yes
+uses_ranking_or_fusion：yes
+source_file：`opentry_10/metrics/official_test/mpts52_k50_rf_seed1_margin_route_summary.json`
+可信度：strong
+是否可作为主比较对象：否
 是否达到用户 +5pp 目标：否
 
-baseline_name：mp20_k50_hgb_mean_seed012_margin_route  
-dataset：MP-20  
-input_condition：composition + GT-SG + K50 route  
-match@1：70.230  
-match@5：81.870  
-match@20：87.486  
-rmse：0.049965 / 0.043623 / 0.042699  
-is_full_test：yes  
-uses_sg：yes  
-uses_ranking_or_fusion：yes  
-source_file：`opentry_10/metrics/official_test/mp20_k50_hgb_mean_seed012_margin_route_summary.json`  
-可信度：strong  
-是否可作为主比较对象：否  
-是否达到用户 +5pp 目标：否  
+baseline_name：mp20_k50_hgb_mean_seed012_margin_route
+dataset：MP-20
+input_condition：composition + GT-SG + K50 route
+match@1：70.230
+match@5：81.870
+match@20：87.486
+rmse：0.049965 / 0.043623 / 0.042699
+is_full_test：yes
+uses_sg：yes
+uses_ranking_or_fusion：yes
+source_file：`opentry_10/metrics/official_test/mp20_k50_hgb_mean_seed012_margin_route_summary.json`
+可信度：strong
+是否可作为主比较对象：否
+是否达到用户 +5pp 目标：否
 备注：MP-20 official failed and rows>=7 collapsed.
 
 ## 5. Oracle / GT-WA / GT-skeleton upper bounds
 
-baseline_name：SymCIF-v4 WA upper-bound  
-dataset：small/evaluator-specific v4 set  
-input_condition：GT-like WA upper-bound diagnostic  
-match@1：52.4  
-match@5：75.2  
-match@20：82.4  
-rmse：RMSE@20 0.0157  
-is_full_test：no, diagnostic  
-uses_sg：yes  
-uses_gt_wa_or_oracle：yes  
-uses_ranking_or_fusion：diagnostic upper-bound  
-source_file：`symcif_experiment/reports/next_step_decision_summary.md`  
-可信度：strong as diagnostic, invalid as method  
-是否可作为主比较对象：否  
+baseline_name：SymCIF-v4 WA upper-bound
+dataset：small/evaluator-specific v4 set
+input_condition：GT-like WA upper-bound diagnostic
+match@1：52.4
+match@5：75.2
+match@20：82.4
+rmse：RMSE@20 0.0157
+is_full_test：no, diagnostic
+uses_sg：yes
+uses_gt_wa_or_oracle：yes
+uses_ranking_or_fusion：diagnostic upper-bound
+source_file：`symcif_experiment/reports/next_step_decision_summary.md`
+可信度：strong as diagnostic, invalid as method
+是否可作为主比较对象：否
 是否达到用户 +5pp 目标：不适用
 
-baseline_name：GT-WA + geometry model over/no-over  
-dataset：small/evaluator-specific v4 set  
-input_condition：GT-WA + learned geometry  
-match@1：54.2  
-match@5：65.8  
-match@20：70.2/70.4  
-rmse：0.0835/0.0833 @20  
-is_full_test：no, diagnostic  
-uses_gt_wa_or_oracle：yes  
-source_file：`symcif_experiment/reports/symcif_v4_geometry_next_step_summary.md`  
-可信度：strong diagnostic  
-是否可作为主比较对象：否  
+baseline_name：GT-WA + geometry model over/no-over
+dataset：small/evaluator-specific v4 set
+input_condition：GT-WA + learned geometry
+match@1：54.2
+match@5：65.8
+match@20：70.2/70.4
+rmse：0.0835/0.0833 @20
+is_full_test：no, diagnostic
+uses_gt_wa_or_oracle：yes
+source_file：`symcif_experiment/reports/symcif_v4_geometry_next_step_summary.md`
+可信度：strong diagnostic
+是否可作为主比较对象：否
 备注：证明 geometry model 有价值，但不能作为 deployable result。
 
 ## 6. Ranking/fusion 后处理结果
 
-baseline_name：opentry E24 SymCIF + CrystaLLM hybrid  
-dataset：MPTS-52  
-input_condition：composition + GT-SG, fixed hybrid of SymCIF and CrystaLLM candidates  
-match@1：26.02  
-match@5：39.28  
-match@20：45.06  
-rmse：0.1022 / 0.1069 / 0.1099  
-is_full_test：historical same-evaluator full test  
-uses_sg：yes  
-uses_gt_wa_or_oracle：no  
-uses_ranking_or_fusion：yes, candidate fusion  
-source_file：`opentry/iterative_experiment_log.md` E23-E25  
-可信度：medium  
-是否可作为主比较对象：否  
-是否达到用户 +5pp 目标：否  
+baseline_name：opentry E24 SymCIF + CrystaLLM hybrid
+dataset：MPTS-52
+input_condition：composition + GT-SG, fixed hybrid of SymCIF and CrystaLLM candidates
+match@1：26.02
+match@5：39.28
+match@20：45.06
+rmse：0.1022 / 0.1069 / 0.1099
+is_full_test：historical same-evaluator full test
+uses_sg：yes
+uses_gt_wa_or_oracle：no
+uses_ranking_or_fusion：yes, candidate fusion
+source_file：`opentry/iterative_experiment_log.md` E23-E25
+可信度：medium
+是否可作为主比较对象：否
+是否达到用户 +5pp 目标：否
 备注：可作 ablation/engineering finding，不能作为论文主方法。
 
-baseline_name：opentry_2 E55 RF K50 ranker  
-dataset：MPTS-52  
-input_condition：composition + GT-SG candidate pool  
-match@1：32.04  
-match@5：39.19  
-match@20：45.12  
-rmse：0.1146 / 0.1173 / 0.1306  
-is_full_test：historical candidate-pool evaluation  
-uses_ranking_or_fusion：yes  
-source_file：`opentry_2/reports/e55_apply_e52_ranker_to_e34_full_k50_pool/run_summary.json`  
-可信度：medium; old provenance and ordinary ranker caveat  
-是否可作为主比较对象：否  
+baseline_name：opentry_2 E55 RF K50 ranker
+dataset：MPTS-52
+input_condition：composition + GT-SG candidate pool
+match@1：32.04
+match@5：39.19
+match@20：45.12
+rmse：0.1146 / 0.1173 / 0.1306
+is_full_test：historical candidate-pool evaluation
+uses_ranking_or_fusion：yes
+source_file：`opentry_2/reports/e55_apply_e52_ranker_to_e34_full_k50_pool/run_summary.json`
+可信度：medium; old provenance and ordinary ranker caveat
+是否可作为主比较对象：否
 是否达到用户 +5pp 目标：否; also forbidden_as_mainline
 
 ## 7. Coverage repair 结果
 
-baseline_name：opentry_8 strategy_fusion MP-20  
-dataset：MP-20  
-input_condition：GT-SG anchor + fallback-only coverage repair  
-match@1：71.67  
-match@5：83.08  
-match@20：87.81  
-rmse：0.0509 / 0.0449 / 0.0431  
-is_full_test：yes  
-uses_ranking_or_fusion：yes, fallback-only  
-source_file：`opentry_8/final_report.md`  
-可信度：strong  
-是否可作为主比较对象：否  
-是否达到用户 +5pp 目标：否  
+baseline_name：opentry_8 strategy_fusion MP-20
+dataset：MP-20
+input_condition：GT-SG anchor + fallback-only coverage repair
+match@1：71.67
+match@5：83.08
+match@20：87.81
+rmse：0.0509 / 0.0449 / 0.0431
+is_full_test：yes
+uses_ranking_or_fusion：yes, fallback-only
+source_file：`opentry_8/final_report.md`
+可信度：strong
+是否可作为主比较对象：否
+是否达到用户 +5pp 目标：否
 备注：identical to GT-SG anchor; no method gain.
 
-baseline_name：opentry_8 strategy_fusion MPTS-52  
-dataset：MPTS-52  
-input_condition：GT-SG anchor + coverage repair  
-match@1：25.23  
-match@5：36.46  
-match@20：43.97  
-rmse：0.1211 / 0.1257 / 0.1334  
-is_full_test：yes  
-uses_ranking_or_fusion：yes  
-source_file：`opentry_8/final_report.md`  
-可信度：strong  
-是否可作为主比较对象：否  
-是否达到用户 +5pp 目标：否  
+baseline_name：opentry_8 strategy_fusion MPTS-52
+dataset：MPTS-52
+input_condition：GT-SG anchor + coverage repair
+match@1：25.23
+match@5：36.46
+match@20：43.97
+rmse：0.1211 / 0.1257 / 0.1334
+is_full_test：yes
+uses_ranking_or_fusion：yes
+source_file：`opentry_8/final_report.md`
+可信度：strong
+是否可作为主比较对象：否
+是否达到用户 +5pp 目标：否
 备注：one missing sample repaired; not method breakthrough.
 
 ## 8. Track A MPTS-52 本轮审计
 
-baseline_name：track_a_mpts52_latest_audit  
-dataset：MPTS-52 intended  
-input_condition：NA  
-match@1：NA  
-match@5：NA  
-match@20：NA  
-rmse：NA  
-is_full_test：no  
-uses_sg：NA  
-uses_gt_wa_or_oracle：no evidence  
-uses_ranking_or_fusion：no evidence  
-source_file：`model/std_way/track_a_mpts52`  
-可信度：strong as incomplete-run audit; no metric evidence  
-是否可作为主比较对象：否  
-是否达到用户 +5pp 目标：否  
-本轮路线判决：`STOP`  
+baseline_name：track_a_mpts52_latest_audit
+dataset：MPTS-52 intended
+input_condition：NA
+match@1：NA
+match@5：NA
+match@20：NA
+rmse：NA
+is_full_test：no
+uses_sg：NA
+uses_gt_wa_or_oracle：no evidence
+uses_ranking_or_fusion：no evidence
+source_file：`model/std_way/track_a_mpts52`
+可信度：strong as incomplete-run audit; no metric evidence
+是否可作为主比较对象：否
+是否达到用户 +5pp 目标：否
+本轮路线判决：`STOP`
 备注：该目录当前只有 `track_a_validation_oof.py`、`RUN_VALIDATION_OOF.sh` 和部分 feature extraction 进度日志；`outputs/` 为空，没有 manifest、metrics、validation 输出、rows>=7 报告、`DECISION.md` 或 freeze 声明。因此本轮 Track A 不新增 baseline、不改变 MPTS-52 GT-SG anchor、不允许 official freeze。
 
 ## 9. Track B Hybrid 原型审计
 
-baseline_name：track_b_hybrid_mainline_prototype  
-dataset：toy smoke only  
-input_condition：composition + GT-SG style toy candidates  
-match@1：NA  
-match@5：NA  
-match@20：NA  
-rmse：NA  
-is_full_test：no  
-uses_sg：yes in toy prompt/candidate metadata  
-uses_gt_wa_or_oracle：no evidence; smoke only  
-uses_ranking_or_fusion：candidate union/dedup exists, but no ranking/fusion metric claim  
-source_file：`model/std_way/track_b_hybrid/artifacts/prototype_manifest.json`; `model/std_way/track_b_hybrid/artifacts/smoke_summary.json`  
-可信度：strong as architecture smoke; invalid as benchmark/baseline  
-是否可作为主比较对象：否  
-是否达到用户 +5pp 目标：否  
-本轮路线判决：`continue as architecture / STOP as metric evidence`  
+baseline_name：track_b_hybrid_mainline_prototype
+dataset：toy smoke only
+input_condition：composition + GT-SG style toy candidates
+match@1：NA
+match@5：NA
+match@20：NA
+rmse：NA
+is_full_test：no
+uses_sg：yes in toy prompt/candidate metadata
+uses_gt_wa_or_oracle：no evidence; smoke only
+uses_ranking_or_fusion：candidate union/dedup exists, but no ranking/fusion metric claim
+source_file：`model/std_way/track_b_hybrid/artifacts/prototype_manifest.json`; `model/std_way/track_b_hybrid/artifacts/smoke_summary.json`
+可信度：strong as architecture smoke; invalid as benchmark/baseline
+是否可作为主比较对象：否
+是否达到用户 +5pp 目标：否
+本轮路线判决：`continue as architecture / STOP as metric evidence`
 备注：Track B 只建立 hybrid mainline prototype。smoke summary 为 `sample_count=2`、`input_candidate_count=3`、`unique_candidate_count=2`、`hard_filter_pass_count=1`、`repaired_count=0`，且明确声明没有 full benchmark、没有 route-success claim、没有 match@k conclusion。因此本条不改变 GT-SG baseline，不新增 best result，不允许 official freeze。
 
 
@@ -1378,7 +1378,7 @@ Track B 补充审计：`model/std_way/track_b_hybrid` 已建立 hybrid mainline 
 
 ## 与 +5pp 目标差距
 
-MPTS-52 K30 距目标 `30.23 / 41.46 / 48.96` 仍差 `-4.155 / -5.232 / -4.901 pp`。  
+MPTS-52 K30 距目标 `30.23 / 41.46 / 48.96` 仍差 `-4.155 / -5.232 / -4.901 pp`。
 MP-20 K50 HGB 距目标 `76.67 / 88.08 / 92.81` 仍差 `-6.440 / -6.210 / -5.324 pp`。
 
 ## 已验证失败路线
@@ -2655,7 +2655,7 @@ rows>=7 关键点：实验 6 显示 CrystaLLM K50 rows>=7 top50=18.431%，SymCIF
 <!-- OPENTRY13_EXP3_ROWS7_SKELETON_PROPOSER -->
 ## opentry_13 实验 3：rows>=7-specialized skeleton proposer validation gate
 
-结果文件：`model/New_model/opentry_13/results/experiment_3_rows_ge7_skeleton_proposer_validation_gate.json`  
+结果文件：`model/New_model/opentry_13/results/experiment_3_rows_ge7_skeleton_proposer_validation_gate.json`
 候选文件：`model/New_model/opentry_13/artifacts/exp3_rows7_skeleton_proposer/proposals.jsonl`
 
 - 为什么做：停止把普通 rerank/scorer 当主方法，直接检查 train-derived rows>=7 skeleton proposer 是否让候选池中出现更多可 match 的 skeleton/结构。
@@ -2674,7 +2674,7 @@ rows>=7 关键点：实验 6 显示 CrystaLLM K50 rows>=7 top50=18.431%，SymCIF
 <!-- OPENTRY13_EXP4_PREDICTED_SKELETON_GEOMETRY_REPAIR -->
 ## opentry_13 实验 4：predicted-skeleton learned geometry repair validation
 
-结果文件：`model/New_model/opentry_13/results/experiment_4_predicted_skeleton_geometry_repair.json`  
+结果文件：`model/New_model/opentry_13/results/experiment_4_predicted_skeleton_geometry_repair.json`
 候选评估：`model/New_model/opentry_13/artifacts/exp4_predicted_skeleton_geometry_repair/evaluated_repair_candidates.jsonl`
 
 - 为什么做：GT-WA learned geometry repair 很强，但不能作为 inference 主结果。本实验把 repair 绑定到 exp3 的 predicted exact-cover skeleton，在固定 composition + GT-SG 条件下检查 lattice/free parameters/site mapping/local geometry 是否能把 skeleton-hit 转成 StructureMatcher match。
@@ -2808,3 +2808,592 @@ rows>=7 关键点：实验 6 显示 CrystaLLM K50 rows>=7 top50=18.431%，SymCIF
 - 和历史实验关系：修正旧 exp5 的低-anchor C2S3C15 口径；exp2 说明 renderer/site mapping 可过结构 gate，exp3 先审计旧 artifact、再补充 train-noisy-skeleton lattice repair pilot但仍失败，exp4 说明 multi-geometry 仍不能把 rows>=7 skeleton-hit 转成足够 match。
 - 最终判决：`allowed_main_result_claim=False`。失败段落不是“geometry 是瓶颈”这个泛结论，而是：renderer 结构 gate 已过；train-noisy-skeleton lattice repair pilot 的 structure/repair gate 失败；旧 repair 的 formula/SG/valid 和 conversion 失败；multi-geometry 的 rows>=7 top50 coverage 与 skeleton-to-match conversion 仍低于验收线。
 - 下一步：不要跑 official，也不要继续调 C2S3C15/scorer/threshold。下一轮若继续主线，应训练 full lattice + free-parameter + collision/local optimization repair，然后重新过 validation gate。
+
+<!-- OPENTRY14_EXP0_FRONTEND_BASELINE_FREEZE -->
+## opentry_14 实验 0：冻结前端和基线口径
+
+结果文件：`model/New_model/opentry_14/results/experiment_0_frontend_and_baseline_freeze.json`
+
+- 为什么做：本轮目标是解决 predicted skeleton 已命中后无法转成 StructureMatcher match 的 skeleton-to-match conversion 问题。实验 0 先固定主 baseline 和前端，防止继续混用 pure CrystaLLM GT-SG、低 baseline、C2S3C15 auxiliary hybrid、ordinary scorer 或 official feedback。
+- 核心假设：如果 opentry_13 exp2 的 selected train-prototype renderer/site mapping 仍能保持 rows>=7 的 valid/formula/SG/exact-cover，则后续不应再大改前端，而应进入 predicted-skeleton-noise geometry pair alignment 和 joint repair。
+- 数据规模：MPTS-52 validation proposals `4727` samples，rows>=7 `2197` samples，candidate records `36268`，topK `20`。主 anchor 固定为 CrystaLLM-a GT-SG：MP-20 official match@1/5/20 = `71.667% / 83.075% / 87.807%`；MPTS-52 official match@1/5/20 = `25.235% / 36.462% / 43.960%`。
+- baseline：MP-20/MPTS-52 主 baseline 只使用 CrystaLLM-a GT-SG anchor；`17.181 / 24.345 / 31.522` pure CrystaLLM GT-SG low baseline 不允许作为主成功对照。
+- 方法变化：固定 opentry_13 exp2 selected train-prototype renderer/site mapping。只使用 inference-safe structural checks 选择第一个 legal/formula/SG/exact-cover/site-count/no-collision CIF；不使用 match、RMSD、StructureMatcher label、GT-WA、GT-skeleton、RF/HGB/rerank 或 official feedback。
+- 结果 overall：selected train-prototype valid `97.007%`，formula `99.660%`，SG `98.436%`，exact-cover `100.000%`；fallback_rate `2.993%`。
+- 结果 rows>=7：valid `96.458%`，formula `99.410%`，SG `98.475%`，exact-cover `100.000%`。满足 prompt 要求的 valid >=约 `96%`、formula >=约 `99%`、SG >=约 `98%`、exact-cover `100%`。
+- 可信度：高。实验 0 直接读取 opentry_13 exp2 机器 JSON 和 opentry_7 official anchor JSON，不重跑 StructureMatcher、不训练、不调阈值；它是前端结构 gate，不是 match claim。
+- 和历史实验关系：opentry_13 exp3 显示 rows>=7 skeleton-hit@50 `76.513%`，但 hydrated match@50 `15.112%`、proposal-to-match conversion@50 `19.750%`；opentry_13 exp4 multi-geometry rows>=7 match@50 `13.084%`、conversion@50 `15.407%`；lattice-only repair gate 已失败。因此实验 0 通过后，主线应转向 joint geometry repair 的数据对齐，而不是继续改 renderer 或 rerank。
+- 最终判决：`pass`。selected train-prototype front-end 可冻结，允许进入实验 1 predicted-skeleton-noise geometry training pair alignment。
+- 下一步：执行实验 1，在 MP-20/MPTS-52 train split 上构造 noisy predicted skeleton + initial geometry -> target geometry 训练对，并审计 lattice、row-level free-parameter、local geometry/collision target 是否可恢复；若 alignment gate 不过，不允许训练实验 2。
+
+<!-- OPENTRY14_EXP1_PREDICTED_SKELETON_NOISE_GEOMETRY_PAIRS -->
+## opentry_14 实验 1：predicted-skeleton-noise 完整几何训练对
+
+结果文件：`model/New_model/opentry_14/results/experiment_1_predicted_skeleton_noise_geometry_pairs_sharded.json`
+训练对 artifact：`model/New_model/opentry_14/artifacts/exp1_predicted_skeleton_noise_pairs/predicted_skeleton_noise_geometry_pairs_merged_sharded.jsonl.gz`
+
+- 为什么做：opentry_13 已证明 selected renderer/site mapping 可过结构 gate，但 rows>=7 skeleton-to-match conversion 仍低；lattice-only repair 和 heuristic multi-geometry 都失败。实验 1 的目的不是追求 match，而是确认 joint repair 训练时能看到和推理期相似的 predicted-skeleton noise，并且能恢复 lattice、row-level free-parameter 和 local geometry/collision target。
+- 核心假设：如果 train-side noisy predicted skeleton + selected_train_prototype 初始几何能覆盖大部分 MP-20/MPTS-52 train 样本，并且 rows>=7 中大部分含 free parameter 的样本能恢复可训练 target，则允许进入实验 2 joint lattice + free-parameter repair；否则必须先修 data alignment。
+- 数据规模：MP-20 train `26629` samples，rows>=7 `4306`；MPTS-52 train `25998` samples，rows>=7 `6863`；合计 `52627` train records，rows>=7 `11169`。使用 8 shard 并行构造，单个 Python shard 约 100% CPU，低于用户给定的单进程/单核 `200%` 上限。
+- baseline：实验 1 不评估 match，不对标 low baseline；主 baseline 仍冻结为 CrystaLLM-a GT-SG anchor。它只检查是否允许训练 repair head。
+- 方法变化：在 train split 上用 composition/formula + GT-SG + train prototypes 构造 exact-cover predicted skeleton source，排除 self-source；用 selected_train_prototype-style source lattice/free params 渲染 initial geometry；从 train true structure 中恢复 target lattice、row-level free params、target min-pair-distance、volume/atom、collision/local stats。第一版严格 `orbit_id + element` alignment 未过 rows>=7 free-param gate；修正后保留 exact alignment，同时允许 `orbit_id` element-mismatch fallback，并在 artifact 中标记 alignment kind。
+- 结果 overall：nonempty pair rate `88.994%`，initial valid `80.415%`，initial formula `88.320%`，initial SG `82.175%`，initial exact-cover `88.994%`，initial collision `4.353%`；samples requiring free params `38569`，free-param target complete among requiring `81.794%`，free-param value recovery `92.657%`，usable joint pair rate `75.229%`。
+- 结果 rows>=7：nonempty pair rate `80.097%`，initial valid `71.358%`，initial formula `78.216%`，initial SG `73.865%`，initial exact-cover `80.097%`，initial collision `5.775%`；samples requiring free params `8946`，free-param target complete among requiring `76.492%`，free-param value recovery `94.869%`，usable joint pair rate `60.041%`。
+- 分数据集：MP-20 rows>=7 nonempty pair `87.436%`、free-param complete among requiring `71.766%`、value recovery `92.905%`；MPTS-52 rows>=7 nonempty pair `75.492%`、free-param complete among requiring `79.927%`、value recovery `96.007%`。
+- 可信度：中等偏高。覆盖两个 train split，真实 render/parse/SG/collision/local stats；不使用 match、RMSD、StructureMatcher label、GT-WA、GT-skeleton、official feedback、RF/HGB/rerank。限制是 predicted source 仍是 train-prototype proposer，rows>=7 usable joint pair 只有 `60.041%`，element-mismatch target 是 noisy alignment 而非严格 WA oracle。
+- 和历史实验关系：opentry_13 lattice repair pilot 虽有 `7774` train noisy pairs，但只学习 lattice；本实验扩展到 MP-20+MPTS-52 全 train，显式恢复 row-level free-parameter 和 local geometry/collision target，为实验 2 的 joint repair 提供最低可用训练对。它也解释了为什么不能再做 lattice-only repair。
+- gate 判定：passed=True。最低 data-alignment gate 为 overall nonempty >= `80%`、rows>=7 nonempty >= `70%`、target-local-stats >= `80%`、overall/rows>=7 free-param complete among requiring >= `70%`、free-param value recovery >= `70%`；修正后全部通过。
+- 最终判决：`pass`。允许进入实验 2，但必须把 rows>=7 usable joint pair 只有 `60.041%` 作为可信度限制，不得把本实验写成 match 成功。
+- 下一步：训练 predicted-skeleton-aware joint geometry repair head，输出必须至少包含 lattice 更新和 row-level free-parameter 更新；若 rows>=7 validation conversion@50 不能达到最低约 `22.3%` 或结构安全下降，不允许进入实验 3/full validation/official。
+
+<!-- OPENTRY14_EXP2_JOINT_GEOMETRY_REPAIR -->
+## opentry_14 实验 2：predicted-skeleton-aware joint geometry repair head
+
+结果文件：`model/New_model/opentry_14/results/experiment_2_joint_geometry_repair.json`
+模型 artifact：`model/New_model/opentry_14/artifacts/exp2_joint_geometry_repair/joint_repair_heads.pt`
+候选评估：`model/New_model/opentry_14/artifacts/exp2_joint_geometry_repair/evaluated_joint_repair_candidates.jsonl`
+
+- 为什么做：实验 1 证明 train-side predicted-skeleton-noise geometry pairs 可用，但 opentry_13 的 lattice-only repair 和 heuristic multi-geometry 已失败。实验 2 直接训练 joint lattice + row-level free-parameter repair head，检查它能否把 rows>=7 predicted skeleton hit 转成 StructureMatcher match。
+- 核心假设：如果主要瓶颈是 lattice/free-parameter joint repair，那么在固定 selected train-prototype 前端和 exp3 predicted skeleton proposals 后，joint head 应至少把 rows>=7 skeleton-to-match conversion@50 从历史约 `15%~20%` 推到最低线 `22.3%`，并让 rows>=7 match@50 接近 CrystaLLM K50 validation baseline `18.431%`。
+- 数据规模：训练读取实验 1 pair artifact，共 `52627` records，usable joint pairs `39591`；lattice training samples `39591`，row-param samples `270498`。validation 使用 MPTS-52 val predicted skeleton proposals：`4411` samples，rows>=7 `2033`，candidate records `18134`，topK `50`，StructureMatcher workers `8`。运行环境为 `crystallm_env`，线程变量限制为 OMP/MKL/OPENBLAS/NUMEXPR/NUMBA=1；单个 Python/worker 进程约 100% CPU，低于用户给定 `200%` 上限。
+- baseline：最低 gate 使用 rows>=7 CrystaLLM K50 validation top50 `18.431%`，历史 predicted-skeleton hydrated rows>=7 match@50 `15.112%`，opentry_13 multi-geometry rows>=7 match@50 `13.084%`。official true anchor 仍只作为主比较口径，不参与 validation 调参。
+- 方法变化：训练两个 PyTorch MLP：lattice head 从 composition/SG/skeleton/initial geometry/self-check features 预测 6 个 lattice raw values，row-param head 从全局特征、row index、param name 和 initial value 预测 row-level free parameter。推理时用 alpha=`0.35` blend source 与 prediction，重新渲染 CIF 并用 StructureMatcher 评估；未使用 match、RMSD、StructureMatcher label、GT-WA、GT-skeleton、official feedback、RF/HGB/rerank。
+- 训练结果：lattice head best val loss `0.292309`，param head best val loss `0.960734`。这说明模型完成训练，但 param head 的泛化误差仍高，不能单独作为 geometry 修复成功证据。
+- 结果 overall：match@1/5/20/50 = `10.814% / 17.094% / 17.298% / 17.298%`；RMSE@1/5/20/50 = `0.229557 / 0.200425 / 0.200769 / 0.200769`；valid_any@50 `92.859%`，formula consistency `99.956%`，SG consistency `96.802%`，exact-cover retained `100.000%`，collision `22.957%`，skeleton-hit@50 `86.692%`，skeleton-to-match conversion@50 `19.665%`。
+- 结果 rows>=7：match@1/5/20/50 = `0.246% / 0.394% / 0.394% / 0.394%`；RMSE@1/5/20/50 = `0.289484 / 0.241265 / 0.241265 / 0.241265`；valid_any@50 `90.507%`，formula consistency `99.968%`，SG consistency `96.817%`，exact-cover retained `100.000%`，collision `26.075%`，skeleton-hit@50 `82.686%`，skeleton-to-match conversion@50 `0.416%`。
+- 可信度：中等偏高。它是真实 train-noisy-skeleton joint repair、真实 render/parse/SG-check/StructureMatcher validation，且没有使用禁用推理特征或 official feedback；限制是每个 skeleton 只输出 1 个 repaired geometry，alpha/模型规模仍是轻量 pilot，row-param target 含 element-mismatch noisy alignment，rows>=7 usable training coverage 只有 `60.041%`。
+- 和历史实验关系：相比 opentry_13 lattice-only pilot，实验 2 保住了 formula/SG/exact-cover，但 rows>=7 match 更差；相比 opentry_13 multi-geometry，skeleton-hit@50 相近但 conversion 从 `15.407%` 掉到 `0.416%`。这说明当前 joint MLP 没有学到 rows>=7 的可 match geometry posterior，失败点不是前端 exact-cover，而是 free-parameter/site/local geometry 修复没有对准 StructureMatcher 可接受区域。
+- gate 判定：`minimum_passed=False`，`target_passed=False`，`passed=False`。最低线要求 rows>=7 conversion@50 >= `22.3%`、rows>=7 match@50 接近 `18.431%`、formula >= `95%`、SG >= `90%`、exact-cover >= `95%`；本实验结构线通过，但 conversion@50 只有 `0.416%`、match@50 只有 `0.394%`，核心 repair gate 失败。
+- 最终判决：`fail_validation_gate`。归因类别为“repair 保持 exact-cover/formula/SG，但不提升 match，且 rows>=7 conversion 崩溃”；不能进入实验 3、full validation 或 official。
+- 下一步：停止本轮后续 gate。下一轮若继续该路线，应先重做 rows>=7 的 free-parameter/site mapping alignment 与 local geometry target，加入 learned posterior/multi-hypothesis 或 symmetry-aware local residual，但必须重新从 validation gate 开始；不要扩大 official、不要调 C2S3C15/scorer/threshold。
+
+
+<!-- OPENTRY14_EXP2B_SAFE_POOL_AFTER_FAILURE_ANALYSIS -->
+## opentry_14 实验 2b：failure-analysis guided safe geometry pool
+
+结果文件：`model/New_model/opentry_14/results/experiment_2b_safe_pool_after_failure_analysis.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp2b_hydrated_prototype_safe_pool/evaluated_safe_pool_candidates.jsonl`
+
+- 为什么做：实验 2 的 joint MLP 在 rows>=7 上 match@50 只有 `0.394%`、conversion@50 只有 `0.416%`。失败分析显示它把已有可 match 的 hydrated/source-prototype geometry 替换成单一 repaired geometry，导致 rows>=7 只剩 `8` 个 matched samples；因此本实验不再让 MLP 覆盖安全候选，而是构造固定配额的 safe geometry pool。
+- 核心假设：如果根因是破坏性单一 repair 覆盖，而不是 skeleton coverage 不足，那么保留原 SymCIF v5 hydrated geometry，再补入 prototype multi-geometry，应该在不使用 match/RMSD 排序的情况下恢复并超过实验 2 最低 gate。
+- 数据规模：validation samples `4411`，rows>=7 `2033`；candidate records `94544`；topK `50`；固定配额为 hydrated top `10` + prototype top `40`。
+- baseline：实验 2 最低 gate 使用 rows>=7 CrystaLLM K50 validation top50 `18.431%`，允许近线下限为 `17.931%`；历史 opentry_13 hydrated rows>=7 match@50 `15.112%`，multi-geometry rows>=7 match@50 `13.084%`。
+- 方法变化：排名规则固定为每个样本先取 rows>=7 proposer 映射到的 SymCIF v5 hydrated candidates top10，再取 opentry_13 prototype multi-geometry top40；候选内部顺序只使用 proposer rank、generation score 和原 structural rank，不使用 match、RMSD、StructureMatcher label、GT-WA、GT-skeleton、official feedback、RF/HGB/rerank。
+- 结果 overall：match@1/5/20/50 = `27.998% / 40.014% / 44.276% / 44.389%`；formula `98.333%`，SG `94.862%`，exact-cover `99.712%`。
+- 结果 rows>=7：match@1/5/20/50 = `11.461% / 17.019% / 21.299% / 21.348%`；RMSE@50 `0.09165643819972137`；skeleton-hit@50 `82.686%`；skeleton-to-match conversion@50 `24.866%`；valid_any@50 `98.032%`；formula `97.680%`，SG `94.744%`，exact-cover `99.682%`。
+- 可信度：中等偏高。所有 counted candidates 都有已有 validation metrics 或 opentry_13 StructureMatcher evaluation；本实验只做固定配额组合并重新汇总，不用 match/RMSD 参与排序。限制是 hydrated metrics 是复用既有 SymCIF v5 validation evaluation，不是重新跑 StructureMatcher；该方法是 validation safe-pool gate，不是 official claim。
+- 和历史实验关系：opentry_13 exp3 hydrated rows>=7 top50 已有 `15.112%`，opentry_13 exp4 prototype multi-geometry top50 为 `13.084%`，二者互补；opentry_14 exp2 joint MLP 破坏 rows>=7 geometry。本实验把历史两类 inference-safe geometry pool 合并，先恢复最低 conversion gate。
+- gate 判定：minimum_passed=`True`，target_passed=`True`；rows>=7 match@50 delta vs near CrystaLLM K50 lower bound `+3.416pp`；conversion@50 delta vs 22.3% `+2.566pp`。
+- 最终判决：`pass_minimum_gate`。Safe pool passes the experiment-2 minimum validation gate; target gate is recorded separately.
+- 下一步：Allowed to test experiment 3 local optimizer on this fixed safe pool; do not claim official success before full validation.
+
+
+<!-- OPENTRY14_EXP3_SYMMETRY_LOCAL_OPTIMIZER -->
+## opentry_14 实验 3：symmetry-preserving local optimizer 诊断
+
+结果文件：`model/New_model/opentry_14/results/experiment_3_symmetry_local_optimizer.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp3_symmetry_local_optimizer/`
+
+- 为什么做：实验 2b 已把 rows>=7 conversion@50 恢复到 `24.866%`，但 prompt 要求继续检查 symmetry-preserving local optimizer 是否能修复 collision/short-distance/local packing，并至少再提升 conversion `+2pp`。
+- 核心假设：如果 skeleton-to-match 的剩余瓶颈主要是局部短距/packing，那么在不破坏 formula、SG、exact-cover 的前提下，对 hydrated CIF 做轨道级 repulsion 优化应降低 collision/close-pair，并把更多 predicted-skeleton-hit candidate 转成 StructureMatcher match。
+- 数据规模：safe-pool candidates `94544`，hydrated optimization inputs `23600`，optimizer accepted `260`；StructureMatcher workers `64`；topK `50`。
+- baseline：实验 2b best rows>=7 match@50 `21.348%`，conversion@50 `24.866%`；Exp3 通过线要求 conversion@50 >= `26.866%`，且 collision/local packing 改善，SG/exact-cover 不恶化。
+- 方法变化：只对 SymCIF v5 hydrated CIF 做局部优化；用 spglib/pymatgen 等价原子分组，在同一空间群操作下移动整个 Wyckoff orbit 的代表点并重新展开，候选若 formula/site count/SG/exact-cover 不满足或 local proxy 未改善则回退。prototype 候选不改。排序/选择不使用 match、RMSD、StructureMatcher label、GT-WA、GT-skeleton 或 official feedback。
+- 结果 best variant `replace_hydrated_local_optimizer`：rows>=7 match@1/5/20/50 = `9.395% / 13.773% / 18.692% / 18.741%`；conversion@50 `21.951%`；collision `13.419%`；SG `93.948%`；exact-cover `99.682%`。
+- 局部优化诊断：accepted optimized candidates `260`；optimized evaluation match candidates `4`；optimized-vs-original hard collision mean delta `-1.7`；close-pair mean delta `-3.3653846153846154`；min-distance mean delta `0.20180837948394473`。
+- 复核诊断：实验 2b rows>=7 safe pool 在复用 SymCIF hydrated metrics 时 match samples 为 `434`、conversion@50 `24.866%`；本实验重新解析 hydrated CIF 后，同一 baseline 只有 `381` 个 match samples、conversion@50 `21.951%`，丢失 `53` 个 hydrated match、没有新增 match。source 贡献显示实验 2b 中 hydrated_any `332`、prototype_any `266`、both `164`、hydrated_only `168`、prototype_only `102`，说明 prototype 贡献稳定，而 hydrated 复用指标是可信度弱点。
+- 可信度：中等。该实验真实解析 CIF、重做 SG/formula/site-count/StructureMatcher 检查，并用 64-worker 评估；限制是当前环境没有 CHGNet/MatGL/MACE，local proxy 是短距/close-pair repulsion，不是学习到的材料势能，且只覆盖 hydrated CIF，prototype 候选没有可逆局部优化。另一个限制是实验 2b 的 hydrated 部分复用既有 SymCIF metrics，重评估后 rows>=7 conversion 低于 22.3% 最低线。
+- 和历史实验关系：继承实验 2b safe pool，不进入 official；它直接测试“local geometry/collision 是否是剩余主要瓶颈”。若 conversion 不升，即支持失败归因“local geometry/collision 无法通过当前 proxy 修复”。
+- gate 判定：passed=`False`；conversion delta vs Exp2b `-2.915pp`；collision improved=`True`；SG not worse=`True`；exact-cover not worse=`True`。
+- 最终判决：`fail_diagnostic_only`。Local optimizer did not produce the required +2pp rows>=7 conversion lift over experiment 2b; any packing improvement remains diagnostic only.
+- 下一步：Do not enter final method with this optimizer; root cause is local geometry/collision not fixable by the current symmetry-safe short-distance proxy. Next try must improve learned free-parameter/site alignment or a real energy model before repeating Exp3.
+
+
+<!-- OPENTRY14_EXP3B_CHGNET_LOCAL_OPTIMIZER -->
+## opentry_14 实验 3b：CHGNet symmetry-checked local optimizer
+
+结果文件：`model/New_model/opentry_14/results/experiment_3b_chgnet_local_optimizer.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp3b_chgnet_local_optimizer/`
+
+- 为什么做：实验 3 的 orbit repulsion proxy 只改善短距，rows>=7 conversion@50 反而下降；失败归因是当前局部 proxy 没有材料势能。实验 3b 安装并调用 CHGNet 预训练势能，在 GPU 上做短步位置优化，并用 SG/formula/site/exact 回退。
+- 核心假设：如果实验 3 失败是因为 repulsion proxy 太弱，那么对 rows>=7 hydrated 中 formula/SG/exact 可用但 valid=false 的候选做 CHGNet 短步 relaxation，应能把一部分局部不合理几何转成 StructureMatcher match，同时不破坏 SG/exact-cover。
+- 数据规模：待优化 candidates `8490`，CHGNet accepted `4752`，evaluated optimized `4752`；GPU devices `['0', '1']`，CHGNet workers `8`，StructureMatcher workers `64`。
+- baseline：实验 2b rows>=7 match@50 `21.348%`，conversion@50 `24.866%`；Exp3 gate 需要 conversion@50 >= `26.866%`，collision/local packing 改善，SG/exact-cover 不恶化。
+- 方法变化：选择规则只用 inference-safe 结构状态：`rows>=7`、hydrated、formula_ok、space_group_ok、exact_cover_retained、valid=false；不使用 match、RMSD、StructureMatcher label、GT-WA、GT-skeleton、official feedback。CHGNet 只优化原子位置，不 relax cell；优化后若 SG/formula/site count/exact/local proxy 不满足即回退。
+- 结果 best variant `append_chgnet_after_hydrated`：rows>=7 match@1/5/20/50 = `11.412% / 16.724% / 21.299% / 21.348%`；conversion@50 `24.866%`；collision `13.262%`；SG `95.250%`；exact-cover `99.710%`。
+- CHGNet 诊断：optimized match records `21`，optimized valid records `4497`，mean min-distance delta `0.09053467610330115`，mean hard-collision delta `-0.02988215488215488`，mean close-pair delta `-1.3125`。
+- oracle 上限诊断：即使把所有 CHGNet optimized match oracle 插入 top50，rows>=7 新增 match samples 也是 `0`，新增 skeleton-and-match samples 也是 `0`，union conversion@50 仍为 `24.866%`。额外 cell+position 256-candidate smoke 只有 `4` 条 match record、`0` 个新增 match sample；valid hydrated 512-candidate smoke 有 `73` 条 match record，但也有 `0` 个新增 match sample。说明扩大 CHGNet local optimizer 不会补足 +2pp gate。
+- 可信度：中等。CHGNet 是真实预训练势能并使用 GPU，优化结果重新通过 StructureMatcher/SG/formula/site/exact 检查；限制是只优化 rows>=7 hydrated invalid candidates，未覆盖 prototype CIF，且未训练 predicted-skeleton-aware posterior。unchanged candidates 沿用实验 2b 已有 validation metrics，因此与实验 3 的 direct re-eval 口径不同。
+- 和历史实验关系：这是实验 3 失败后的修复尝试，专门检验“真实材料势能是否能替代短距 proxy”。若仍不过 +2pp conversion gate，则说明当前瓶颈更偏 free-parameter/site alignment 或 skeleton proposal，而不是局部能量微调。
+- gate 判定：passed=`False`；conversion delta vs Exp2b `+0.000pp`；match@50 delta vs Exp2b `+0.000pp`；collision/local improved=`True`；SG not worse=`True`；exact-cover not worse=`True`。
+- 最终判决：`fail_diagnostic_only`。CHGNet local optimizer did not produce the required +2pp rows>=7 conversion lift over experiment 2b under inference-safe selection.
+- 下一步：Do not enter Exp4/final method from this optimizer; return to free-parameter/site alignment or skeleton proposer improvement.
+
+<!-- OPENTRY14_EXP3C_ALIGNMENT_ROOT_CAUSE_AUDIT -->
+## opentry_14 实验 3c：local-optimizer 失败后的 alignment 根因审计
+
+结果文件：`model/New_model/opentry_14/results/experiment_3_to_exp2_alignment_root_cause_audit.json`
+
+- 为什么做：实验 3 和 3b 都能改善 collision/local packing，但无法提高 rows>=7 conversion@50。需要判断失败是否仍然来自 local geometry，还是已经转移到 valid symmetric candidate 内部的 free-parameter/site/lattice alignment。
+- 核心假设：如果未 match 的 skeleton-hit 样本大多没有 valid/formula/SG/exact 候选，则继续 local optimizer 可能合理；如果它们已经有大量 valid symmetric candidates，则 local optimizer 不是主瓶颈。
+- 数据规模：Exp2b rows>=7 samples `2033`，skeleton-hit samples `1681`，match samples `434`，skeleton-hit 但无 match samples `1263`。
+- baseline：实验 2b rows>=7 match@50 `21.348%`、conversion@50 `24.866%`；实验 3b CHGNet oracle 新增 match samples 为 `0`。
+- 方法变化：只读 Exp2b safe-pool validation JSONL，按 sample-level `skeleton_hit` 与 `match` 分类；统计未 match 的 skeleton-hit 样本里是否已有 valid/formula/SG/exact 候选，以及 skeleton-hit candidate 自身的结构状态。不使用这些统计做推理排序或 official 调参。
+- 结果：`1263` 个 skeleton-hit/no-match 样本中，`1247` 个已经至少有一个 valid/formula/SG/exact 候选；这些样本内所有候选 `30661` 条，其中 valid `20865`、formula `30157`、SG `29107`、exact `30593`。skeleton-hit candidate 共 `6577` 条，其中 valid `4537`、formula `6469`、SG `6126`、exact `6557`，median rank `9`。
+- 可信度：中等偏高。它是现有 validation artifact 的全量 rows>=7 审计，不训练、不重跑 matcher、不用 official；限制是沿用实验 2b 部分复用 hydrated metrics 的口径。
+- 和历史实验关系：解释了 opentry_13 multi-geometry、opentry_14 Exp3 orbit proxy、Exp3b CHGNet 都不能提高 conversion 的共同原因：大量候选已经结构合法，但连续参数/site/lattice 没有对齐到 StructureMatcher 可接受 basin。
+- 最终判决：local optimizer 路线作为 Exp3 主修复失败。归因类别为“repair/local optimizer 保持 exact-cover/formula/SG，但不提升 match”；下一步不是扩大 optimizer，而是重做 predicted-skeleton-aware free-parameter/site alignment 或 learned multi-hypothesis geometry posterior。
+- 下一步：回到 Exp2/Exp4 之间的 geometry posterior 问题，先做 learned free-parameter/site alignment 修复；在没有新的 geometry posterior 之前，不进入 official，也不把 Exp3/3b 写入最终方法。
+
+
+<!-- OPENTRY14_EXP2D_SITE_ASSIGNMENT_MULTI_HYPOTHESIS -->
+## opentry_14 实验 2d：site-assignment multi-hypothesis repair
+
+结果文件：`model/New_model/opentry_14/results/experiment_2d_site_assignment_multi_hypothesis.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp2d_site_assignment_multi_hypothesis/`
+
+- 为什么做：Exp3/3b 证明 local optimizer 不能新增 sample-level match；Exp3c 显示大量 skeleton-hit/no-match 样本已经 valid/formula/SG/exact，根因更像元素到 Wyckoff row 的 site assignment 与 free-parameter alignment 错误。本实验先修 site assignment。
+- 核心假设：同一个 predicted skeleton 的 multiplicity/orbit 可以有多个 exact-cover 元素分配；当前 source-preferred 单 assignment 可能把元素放到错误 row。枚举少量 inference-safe exact-cover assignment 并用 train source lattice/free params 渲染，可能新增 rows>=7 match/conversion。
+- 数据规模：rows>=7 validation samples `2197`；site-assignment generated candidates `36531`；evaluated candidates `36531`；top skeletons `10`；assignments/proposal `4`；StructureMatcher workers `64`。
+- baseline：Exp2b rows>=7 match@50 `21.348%`，conversion@50 `24.866%`，collision `14.981%`。
+- 方法变化：对每个 predicted skeleton source rows 枚举最多 `4` 个 exact-cover element assignment，按保留 source 元素的原子数排序；每个 assignment 使用 source lattice 和 flexible source row params 渲染。选择和排序不使用 match、RMSD、StructureMatcher label、GT-WA、GT-skeleton 或 official feedback。
+- 结果 best variant `h10_interleave_s20_p20`：rows>=7 match@1/5/20/50 = `11.412% / 17.511% / 20.954% / 22.036%`；conversion@50 `25.714%`；valid `79.122%`；formula `98.896%`；SG `97.448%`；exact-cover `99.791%`；collision `7.816%`。
+- 可信度：中等。该实验真实 render/parse/SG/StructureMatcher，且不使用禁用推理特征；限制是几何仍来自 train source prototype/free params，不是 learned posterior，site assignment 枚举属于修复 alignment 的 proof-of-concept，不是最终 Exp4 critic。
+- 和历史实验关系：它直接响应 Exp3c 的根因审计。若提升 conversion，说明下一步应把 site assignment/free-parameter posterior 学起来；若不提升，则需要升级 skeleton proposer 或更强 geometry posterior。
+- gate 判定：minimum_passed=`True`；target_passed=`False`；match@50 delta vs Exp2b `+0.689pp`；conversion delta vs Exp2b `+0.848pp`。
+- 最终判决：`pass_minimum_gate`。Site-assignment multi-hypothesis passes the Exp2 minimum repair gate.
+- 下一步：Use this as alignment-positive candidate and retest local optimizer/Exp3 gate.
+
+
+<!-- OPENTRY14_EXP2E_TRAIN_PAIR_RESIDUAL_POSTERIOR -->
+## opentry_14 实验 2e：train-pair residual posterior multi-hypothesis
+
+结果文件：`model/New_model/opentry_14/results/experiment_2e_train_pair_residual_posterior.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp2e_train_pair_residual_posterior/`
+
+- 为什么做：Exp2d 的 site-assignment 枚举有正信号，但 oracle upper bound 只有 rows>=7 match@50 `22.233%`、conversion `25.937%`，说明仅扩大 assignment 配额不足。Exp2e 改为使用 Exp1 train noisy-pair 中真实 target-initial lattice/free-parameter 残差，生成 learned empirical posterior 多假设。
+- 核心假设：如果 skeleton-hit/no-match 的核心瓶颈是连续 lattice/free-parameter basin 没对齐，则把同 SG/row-count train pair 残差迁移到 validation predicted skeleton/site assignment 上，应新增 match 样本并提高 rows>=7 conversion。
+- 数据规模：train residual templates `6628`，residual buckets `303`；validation rows>=7 samples `2197`；generated posterior candidates `2842`；evaluated posterior candidates `2842`；StructureMatcher workers `96`。
+- baseline：Exp2b rows>=7 match@50 `21.348%`、conversion `24.866%`；Exp2d best rows>=7 match@50 `22.036%`、conversion `25.714%`。
+- 方法变化：对 validation predicted skeleton 的 exact-cover site assignment 先用 source geometry 初始化，再从 Exp1 train pairs 中按 SG、row count、composition 距离和 skeleton key 选残差模板；对 lattice 施加 length ratio/angle delta，对 row-level free parameters 施加 circular residual，生成多尺度 residual hypotheses。critic 只用 formula/SG/exact/valid/collision/volume/reference score/proposal rank 等 structural score；不使用 match、RMSD、StructureMatcher label、GT-WA、GT-skeleton、official feedback、RF/HGB。
+- 结果 best variant `h10_s10_r20_p10`：rows>=7 match@1/5/20/50 = `11.412% / 16.773% / 21.594% / 21.790%`；conversion@50 `25.522%`；valid `75.814%`；formula `98.866%`；SG `97.897%`；exact-cover `99.693%`；collision `5.683%`。
+- oracle 诊断：`model/New_model/opentry_14/results/experiment_2e_residual_posterior_oracle_diagnostic.json` 显示 residual-only 只有 `2` 个 match samples、conversion `0.163%`；相对 Exp2b 和 Exp2d best 都新增 `0` 个 sample-level match/skelmatch。Exp2b + site-assignment + residual 的 union upper bound 仍为 rows>=7 match@50 `22.233%`、conversion `25.937%`，与 Exp2d site-assignment oracle 相同。
+- 可信度：中等。训练残差只来自 train split noisy-skeleton pairs，validation 推理不使用禁用标签；所有候选真实 render/parse/SG/StructureMatcher。限制是 residual 迁移仍按 row index 对齐，未学习 permutation-aware posterior，且 residual 模板筛选是非参数近邻而非端到端概率模型。
+- 和历史实验关系：它是 Exp2 joint MLP 失败后的另一路 learned posterior 修复，承接 Exp3c 的 alignment 根因审计和 Exp2d 的 assignment 正信号；若仍无法过 target gate，说明单靠 train-pair residual/posterior 也不足，可能需要升级 skeleton proposer 或显式 permutation-aware alignment。
+- gate 判定：minimum_passed=`True`；target_passed=`False`；match@50 delta vs Exp2b `+0.443pp`；conversion delta vs Exp2b `+0.656pp`；match@50 delta vs Exp2d `-0.246pp`；conversion delta vs Exp2d `-0.193pp`。
+- 最终判决：`pass_minimum_gate_but_no_residual_candidate_headroom`。Train-pair residual posterior remains above the Exp2 minimum gate only because the safe pool/site-assignment candidates remain present; residual candidates themselves add no new sample-level matches.
+- 下一步：不要继续扩大 residual beam。下一步只能是显式 permutation-aware site/free-parameter alignment、升级 skeleton proposer，或停止该 repair 路线；不能进入 official。
+
+
+<!-- OPENTRY14_CURRENT_BOUNDARY_AND_NEXT_DECISION -->
+## opentry_14 当前边界判定
+
+- 为什么做：Exp3/3b local optimizer 未过 +2pp conversion gate，Exp2d/2e 是为修复 alignment 根因而做的补充尝试；现在需要明确是否允许继续 Exp4/Exp5/official。
+- 核心假设复核：如果剩余瓶颈可由 local optimizer、少量 site assignment 或 train-pair residual posterior 修复，rows>=7 conversion@50 应从 Exp2b `24.866%` 至少推到 Exp3 线 `26.866%`，或 Exp2 target 线 `28%`。
+- 数据规模：已覆盖 Exp0 front-end freeze、Exp1 train noisy-pair construction、Exp2 joint MLP、Exp2b safe pool、Exp3 orbit repulsion、Exp3b CHGNet、Exp3c root-cause audit、Exp2d site assignment、Exp2e residual posterior；主要 validation rows>=7 口径为 `2033` samples，候选规模从 `18134` 到 `119121` records。
+- baseline：主 baseline 仍为 CrystaLLM-a GT-SG anchor；validation repair gate 以 Exp2b rows>=7 match@50 `21.348%`、conversion `24.866%` 作为当前最佳安全池起点，不使用 low baseline、official feedback 或 forbidden scorer。
+- 方法变化总结：local optimizer 改善 collision 但不新增 sample-level match；site assignment 有小幅真实信号但 oracle upper bound 只有 match@50 `22.233%`、conversion `25.937%`；train-pair residual posterior residual-only 只有 `2` 个 match samples，并且相对 Exp2b/Exp2d 新增 `0` 个 sample-level match。
+- 结果：当前可复现最佳 rows>=7 validation 仍是 Exp2d best `h10_interleave_s20_p20`，match@1/5/20/50 = `11.412% / 17.511% / 20.954% / 22.036%`，conversion@50 `25.714%`。它高于 Exp2b `+0.689pp` match@50、`+0.848pp` conversion，但低于 Exp3 +2pp gate 和 Exp2 target line。
+- 可信度：中等偏高。所有补充实验均在 validation 上真实 render/parse/SG/StructureMatcher，未使用 match/RMSD/StructureMatcher label、GT-WA、GT-skeleton、official feedback、RF/HGB/rerank 作为推理特征；限制是 hydrated safe-pool 部分沿用既有 SymCIF v5 metrics，且 permutation-aware free-parameter posterior 尚未实现。
+- 和历史实验关系：opentry_13 已证明 renderer/site mapping 结构 gate 可靠但 conversion 低；opentry_14 进一步证明单一 joint MLP 会破坏 match basin，local optimizer/CHGNet 不能新增样本，site assignment 只能带来很小增益，train-pair residual posterior 没有候选层面余量。
+- 最终判决：`do_not_enter_exp4_exp5_or_official`。当前路线没有通过 Exp3 gate，也没有形成可作为 Exp4 前置的 learned posterior/critic 增益；不得进入 full validation gate 或 frozen official test。
+- 下一步：若继续研究，优先做显式 permutation-aware site/free-parameter alignment（例如对同 Wyckoff row 的元素/参数进行多对多匹配和 posterior 学习），或升级 predicted skeleton proposer；否则应停止当前 repair 路线。禁止继续扩大 residual/site-assignment beam、C/S 比例、普通 scorer 或 official 调参。
+
+
+<!-- OPENTRY14_EXP2F_PERMUTATION_AWARE_ALIGNMENT -->
+## opentry_14 实验 2f：permutation-aware row/free-parameter alignment
+
+结果文件：`model/New_model/opentry_14/results/experiment_2f_permutation_aware_alignment.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp2f_permutation_aware_alignment/`
+
+- 为什么做：Exp2d 证明 site assignment 有小幅正信号，但 oracle 上限不足；Exp2e residual posterior 新增 `0` 个 sample-level match。剩余可检验根因是同一 Wyckoff/orbit 内 row-level free parameters 可能跟错元素/row，固定 row-index 会把正确站位几何放到错误元素上。
+- 核心假设：如果 skeleton-hit/no-match 的关键错误是相同 orbit 内参数块与元素分配错位，则在 exact-cover assignment 后，在相同 orbit/参数模式内做 element-following、element-sorted、reverse/swap 参数块排列，应新增 sample-level match，并提升 rows>=7 conversion。
+- 数据规模：rows>=7 validation samples `2197`；generated permutation candidates `47180`；evaluated candidates `47180`；skipped atom-count samples `157`；workers `96`。
+- baseline：Exp2b rows>=7 match@50 `21.348%`、conversion `24.866%`；Exp2d best rows>=7 match@50 `22.036%`、conversion `25.714%`。
+- 方法变化：对每个 predicted skeleton 的 exact-cover assignment，先恢复 source lattice/free params，然后只在相同 orbit_id、multiplicity 和 free-param key signature 的 row 之间排列参数块；生成 identity、source-element-following、element-sorted、reverse、pair-swap 等 deterministic hypotheses。critic 只用 legal/formula/SG/site/exact/collision/volume/reference/proposal structural score；不使用 match、RMSD、StructureMatcher label、GT-WA、GT-skeleton、official feedback、RF/HGB。
+- 结果 best variant `h10_s5_perm30_p5`：rows>=7 match@1/5/20/50 = `11.412% / 16.773% / 20.020% / 21.840%`；conversion@50 `25.740%`；valid `81.436%`；formula `99.404%`；SG `97.337%`；exact-cover `99.800%`；collision `6.439%`。
+- oracle 诊断：permutation-only match samples `248`，相对 Exp2b 新增 match/skelmatch samples `10` / `10`，相对 Exp2d best 新增 `5` / `5`；union upper bound match@50 `22.282%`、conversion `25.996%`。
+- 可信度：中等。它是真实 render/parse/SG/StructureMatcher evaluation，推理不使用禁用标签；限制是 permutation 仍是 deterministic local enumeration，不是训练得到的 posterior，且为避免 StructureMatcher 长尾默认不对超大 atom-count 样本生成 permutation candidates。
+- 和历史实验关系：承接 Exp3c 的 alignment 根因审计、Exp2d 的 assignment 正信号和 Exp2e residual 无余量结论；如果仍无新增 oracle match，则 rows>=7 conversion 的剩余瓶颈更可能在 predicted skeleton proposer 本身或更复杂的 permutation-aware posterior。
+- gate 判定：minimum_passed=`True`；target_passed=`False`；match@50 delta vs Exp2b `+0.492pp`；conversion delta vs Exp2b `+0.874pp`；match@50 delta vs Exp2d `-0.197pp`；conversion delta vs Exp2d `+0.026pp`。
+- 最终判决：`pass_minimum_gate_but_insufficient_permutation_headroom`。Permutation-aware alignment remains above the Exp2 minimum gate only because the existing safe-pool/site-assignment candidates remain present; deterministic permutations do not reach the Exp2 target or Exp3 +2pp conversion gate.
+- 下一步：不要继续盲目扩大 deterministic permutation beam；union upper bound 只有 match@50 `22.282%`、conversion `25.996%`。下一步只能是训练真正的 permutation-aware geometry posterior、升级 predicted skeleton proposer，或停止当前 repair 路线；不能进入 official。
+
+
+<!-- OPENTRY14_CURRENT_BOUNDARY_AFTER_EXP2F -->
+## opentry_14 当前边界判定（Exp2f 后）
+
+- 为什么做：Exp2f 是对上一版边界判定中“显式 permutation-aware site/free-parameter alignment”的补充验证；现在需要用最新 oracle headroom 重新判定是否允许进入 Exp4/Exp5/official。
+- 核心假设复核：如果 rows>=7 剩余瓶颈主要是同 orbit row/free-param permutation 错位，则 Exp2f 应把 Exp2b conversion@50 `24.866%` 至少推到 Exp3 线 `26.866%`，理想上接近 Exp2 target `28%`。
+- 数据规模：Exp0/1/2/2b/2d/2e/2f 已覆盖 front-end freeze、train noisy-pair、joint MLP、safe pool、site assignment、train-pair residual posterior、permutation-aware alignment；Exp2f 额外生成并评估 `47180` 个 permutation candidates，跳过超大 atom-count 样本 `157` 个。
+- baseline：CrystaLLM-a GT-SG anchor 仍是唯一主 baseline。Exp2b rows>=7 match@50 `21.348%`、conversion `24.866%` 是 repair 起点；Exp2d best match@50 `22.036%`、conversion `25.714%` 是当前 match 最优验证结果。
+- 方法变化总结：local optimizer/CHGNet 改善 collision 但不新增样本；site assignment 有小幅正信号；train-pair residual posterior 新增 `0` 个 sample-level match；Exp2f deterministic permutation 只比 Exp2d best 多 `5` 个 oracle match samples，union upper bound 仍只有 match@50 `22.282%`、conversion `25.996%`。
+- 结果：按 match@50 看，当前可复现最佳仍是 Exp2d `h10_interleave_s20_p20`，rows>=7 match@50 `22.036%`、conversion `25.714%`；按 conversion 看，Exp2f best `h10_s5_perm30_p5` 为 `25.740%`，只比 Exp2d 高 `0.026pp` 且 match@50 低 `0.197pp`。两者都低于 Exp3 +2pp gate 和 Exp2 target line。
+- 可信度：中等偏高。补充实验均为 validation 上真实 render/parse/SG/StructureMatcher evaluation，未使用 match/RMSD/StructureMatcher label、GT-WA、GT-skeleton、official feedback、RF/HGB/rerank 作为推理特征；主要限制是 deterministic enumeration 不是训练出的 posterior，且 Exp2f 为控制长尾未对超大 atom-count 样本生成 permutation candidates。
+- 和历史实验关系：Exp2f 关闭了 Exp3c 后最直接的 row/free-param permutation 假设；它与 Exp2d/2e oracle 一起说明当前 repair 路线的候选层面余量不足，opentry_13/opentry_14 的剩余问题更可能在 predicted skeleton proposer 或真正学习式 geometry posterior。
+- 最终判决：`do_not_enter_exp4_exp5_or_official_after_exp2f`。当前路线没有通过 Exp3 gate，也没有形成可作为 Exp4 前置的 learned posterior/critic 增益；不得进入 full validation gate 或 frozen official test。
+- 下一步：停止 blind beam expansion（site/residual/permutation/C-S ratio/ordinary scorer）。若继续研究，只做实质性新路线：训练 permutation-aware geometry posterior、改 predicted skeleton proposer，或重新定义可验证的前置假设后再跑 validation。
+
+
+<!-- OPENTRY14_EXP2G_CANDIDATE_HEADROOM_AUDIT -->
+## opentry_14 实验 2g：candidate headroom 与 ranking 根因审计
+
+结果文件：`model/New_model/opentry_14/results/experiment_2g_candidate_headroom_audit.json`
+诊断 artifact：`model/New_model/opentry_14/artifacts/exp2g_candidate_headroom_audit/`
+
+- 为什么做：Exp2d/2e/2f 都只带来小幅或零新增 sample-level match，需要确认失败根因是候选池本身没有足够正确几何，还是已有正确候选被 rank/top50 选择压掉。该实验只做 oracle/headroom 审计，不作为 scorer 或主方法。
+- 核心假设：如果现有 Exp2b+2d+2e+2f 候选池内已经有足够 match，只是排序不好，则 all-candidate oracle 应显著超过 Exp3 线 `26.866%` conversion 或 Exp2 target `28%`；如果 all-candidate oracle 仍低，则继续扩大同类 beam 或普通 critic 没有通过 gate 的余量。
+- 数据规模：rows>=7 validation universe `2197` samples；审计候选 `133793` records；覆盖样本 `2033`；读取来源包括 Exp2b safe pool、Exp2d site assignment、Exp2e residual posterior、Exp2f permutation alignment。
+- baseline：当前 match@50 最优仍是 Exp2d `exp2d_h10_interleave_s20_p20`，rows>=7 match@50 `22.036%`、conversion `25.714%`；当前 conversion 数值最高为 Exp2f `exp2f_h10_s5_perm30_p5`，conversion `25.740%`、match@50 `21.840%`。Exp3 gate 需要 conversion `26.866%`。
+- 方法变化：按 sample_id 合并既有 validation 候选，不生成新 CIF，不训练模型，不改变 rank；统计 fixed-denominator match/skeleton coverage、all-candidate oracle、first-match rank、source unique contribution 和 skeleton-hit/no-match failure buckets。推理侧不使用 match/RMSD/StructureMatcher label；match 只作为离线审计标签。
+- 结果：union all-candidate oracle rows>=7 match fixed-denominator `20.756%`，skeleton coverage `76.513%`，skeleton-to-match conversion `26.175%`。first skeleton-match rank 中位数 `1`，`>50` 的样本数 `0`。
+- source 贡献：unique match samples vs other sources 分别为 Exp2b `133`、Exp2d `12`、Exp2e `0`、Exp2f `4`。Exp2e/2f 的新增很小，说明 residual/permutation 候选族余量不足。
+- 失败桶：no-candidate `164`；candidate but no skeleton-hit `352`；skeleton-hit/no-match `1241`，其中已有 valid+formula+SG+exact candidate 的 `1228`。这支持“结构合法但几何 basin/骨架候选不对”的根因，而不是前端结构 gate 崩坏。
+- 可信度：中等偏高。它直接读取已真实评估的 validation artifacts，固定 rows>=7 universe，未改写历史目录；限制是 oracle 使用 validation match 标签进行诊断，不能作为推理排序规则，也不能证明某个 inference-safe critic 能达到 oracle。
+- 和历史实验关系：解释 Exp3/3b local optimizer、Exp2e residual posterior、Exp2f deterministic permutation 都不能过 gate 的共同原因：候选池 all-candidate oracle 本身仍低于 Exp3 所需 conversion，排序不是主瓶颈。
+- gate 判定：target_headroom_passed=`False`；exp3_headroom_passed=`False`；oracle conversion delta vs Exp3 line `-0.691pp`；oracle conversion delta vs Exp2 target `-1.825pp`。
+- 最终判决：`fail_candidate_headroom_insufficient`。Union all-candidate oracle is still below the Exp3 conversion line and Exp2 target, so the main bottleneck is candidate generation/geometry basin rather than top50 ranking.
+- 下一步：不要进入 Exp4/Exp5/official，也不要继续普通 scorer/rerank。下一步需要新候选来源：训练真正的 geometry posterior，或升级 predicted skeleton proposer 以产生新的 correct geometry basin；若只沿用现有候选池，oracle 也不够过 gate。
+
+
+<!-- OPENTRY14_EXP2H_TRAIN_PARAM_PRIOR_POSTERIOR_SMOKE -->
+## opentry_14 实验 2h smoke：train conditional free-parameter prior posterior
+
+结果文件：`model/New_model/opentry_14/results/experiment_2h_train_param_prior_geometry_posterior_smoke80b.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp2h_train_param_prior_geometry_posterior/`
+
+- 为什么做：Exp2g 证明现有候选池 oracle headroom 不足，ranking 不是主瓶颈；因此尝试一个新的 train-only geometry posterior，而不是扩大 residual/site/permutation beam。
+- 核心假设：如果 skeleton-hit/no-match 的错误来自 row-level free parameters 落错 basin，那么按 `(SG, orbit, element)` / `(SG, orbit)` 从 train true structures 学到的参数先验，给 predicted skeleton 生成多样化参数块，应产生 Exp2b/Exp2d 没有的新 match。
+- 数据规模：smoke rows>=7 samples `80`；生成 candidates `3078`，评估后 structural top50 candidates `2902`；train param bank 覆盖 train records `25998`、train WA rows `146596`、usable param rows `146596`；workers `32`，单 worker 线程环境为 1。
+- baseline：Exp2b rows>=7 match@50 `21.348%`、conversion `24.866%`；Exp2d best match@50 `22.036%`、conversion `25.714%`；Exp2g union oracle conversion `26.175%` 仍低于 Exp3 line `26.866%`。
+- 方法变化：对 exact-cover assignment 后的 predicted skeleton row，不再只复制 source row params；从 train 参数库取 exact-top1/top2/top3 并在同元素同 orbit 重复 row 内做多样化抽样，避免重复坐标导致 invalid CIF。lattice 用 source、SG+atom-count median、SG median。排序只用 structural score，不使用 match/RMSD/StructureMatcher label、GT-WA、GT-skeleton 或 official feedback。
+- 结果：prior-only rows>=7 smoke match@1/5/20/50 = `4.225% / 5.634% / 8.451% / 8.451%`；conversion@50 `12.245%`；valid `68.470%`；formula `92.350%`；SG `83.942%`；exact-cover `100.000%`；collision `23.880%`。best mixed variant 仍主要由 safe-pool/site candidates 支撑，rows>=7 match@50 `21.790%`、conversion `26.205%`，但这是全 safe-pool + 80-sample smoke posterior 的混合统计，不能当 full gate。
+- oracle 诊断：prior-only match samples `6`、skelmatch `6`；相对 Exp2b 新增 match/skelmatch `0` / `0`，相对 Exp2d best 新增 `0` / `0`；union upper bound 仍为 match@50 `22.036%`、conversion `25.699%`（smoke 口径）。
+- 可信度：中等。它真实 render/parse/SG/StructureMatcher，且 posterior 只用 train split；限制是只跑 80-sample smoke，且 row-wise independent prior 破坏了跨 row/元素几何相关性，formula/SG/collision 明显弱于 safe-pool。
+- 和历史实验关系：这是 Exp2e residual posterior、Exp2f deterministic permutation 之后的另一个候选生成尝试。结果显示 train row-wise prior 只重现已有可解样本，不能补足 Exp2g 中缺少的新 geometry basin。
+- 最终判决：`diagnostic_smoke_fail_no_new_headroom`。不值得扩大为 full validation；新增 sample-level match 为 0，且结构安全指标弱。
+- 下一步：停止 row-wise independent parameter-prior 路线。下一步做 GT-WA/assignment 离线审计，判断 remaining failure 是否来自 element assignment beam 不足，还是 predicted skeleton/geometry joint basin 本身错误；不进入 Exp4/5/official。
+
+
+<!-- OPENTRY14_EXP2I_GT_ASSIGNMENT_BEAM_AUDIT -->
+## opentry_14 实验 2i：GT-WA assignment beam 离线审计
+
+结果文件：`model/New_model/opentry_14/results/experiment_2i_gt_assignment_beam_audit.json`
+诊断 artifact：`model/New_model/opentry_14/artifacts/exp2i_gt_assignment_beam_audit/`
+
+- 为什么做：Exp2h row-wise train 参数先验没有新增 sample-level match；Exp2g 显示 ranking 不是主瓶颈。需要判断 site-assignment beam 是否遗漏真实 element-to-row assignment，避免盲目扩大 exact-cover assignment。
+- 核心假设：如果 Exp2d 的 assignment_limit=4 太窄，那么在 predicted skeleton 命中的样本中，GT-WA element assignment 应大量出现在 rank>4 或 not-found；如果 GT assignment 多数 rank<=4，则继续扩大 assignment beam 不会带来主要增益。
+- 数据规模：rows>=7 validation samples `2197`；top skeleton proposals audited `10`；skeleton-hit samples `1681`；GT assignment comparable samples `1681`。
+- baseline：Exp2d 使用 top skeletons `10`、assignment_limit `4`，best rows>=7 match@50 `22.036%`、conversion `25.714%`；Exp2g union all-candidate conversion `26.175%` 仍低于 Exp3 line `26.866%`。
+- 方法变化：只做离线审计。对每个 rows>=7 validation sample 的 top10 predicted skeleton proposals，若 proposal skeleton key 等于 validation canonical skeleton key，则把 true WA rows 按 orbit/multiplicity 对齐到 predicted rows，计算 GT element assignment 在 deterministic exact-cover enumeration 前 64 个中的 rank。GT-WA 只作为诊断标签，不能作为推理特征。
+- 结果：GT assignment rank buckets = `{'not_found_le64': 1311, 'rank21_64': 144, 'rank1': 33, 'rank2_4': 35, 'rank11_20': 78, 'rank5_10': 80}`；rank<=4 coverage `4.045%`；rank<=10 coverage `8.804%`；not-found<=64 rate `77.989%`。
+- 可信度：中等偏高。它直接比较 validation true WA 与 predicted skeleton exact-cover assignment space，不跑 StructureMatcher，不训练，不改候选；限制是只在 skeleton key 已命中的样本上可比，且 GT-WA 不能用于推理选择。
+- 和历史实验关系：承接 Exp2d 的 small site-assignment gain、Exp2f 的 small permutation gain、Exp2g 的 candidate-headroom failure。它回答“继续扩大 assignment 是否有必要”这个具体分支。
+- 最终判决：`assignment_order_or_skeleton_alignment_problem`。GT assignments are often outside rank<=10 or not found, indicating assignment enumeration/order and skeleton alignment are deeper issues.
+- 下一步：Do not blindly expand assignment; redesign skeleton/site alignment or proposer.
+
+
+<!-- OPENTRY14_CURRENT_BOUNDARY_AFTER_EXP2I -->
+## opentry_14 当前边界判定（Exp2i 后）
+
+- 为什么做：Exp2g/2h/2i 连续检查了候选 headroom、新 train 参数 posterior、GT assignment beam；需要更新 Exp2f 后的边界，避免把下一步误判成简单扩大 beam。
+- 核心假设复核：若剩余瓶颈只是 ranking、row-wise train param prior 或 assignment_limit=4 太小，则 Exp2g oracle、Exp2h smoke 或 Exp2i rank<=10 应显示足够余量；实际三者都没有给出可过 Exp3/Exp2 的证据。
+- 数据规模：Exp2g 合并 `133793` 条已评估候选；Exp2h smoke 评估 `2902` 条 train-param-prior candidates；Exp2i 审计 rows>=7 skeleton-hit samples `1681`。
+- baseline：当前 validation match@50 最优仍是 Exp2d `22.036%`、conversion `25.714%`；当前 conversion 数值最高仍是 Exp2f/Exp2h mixed 附近 `25.7%` 到 `26.2%`，低于 Exp3 line `26.866%` 和 Exp2 target `28%`。
+- 方法变化总结：Exp2g 证明 all-candidate oracle conversion `26.175%` 仍不够；Exp2h row-wise train param prior 没有新增 sample-level match，且结构安全弱；Exp2i 显示 GT assignment rank<=10 只有 `8.804%`、not-found<=64 为 `77.989%`，说明简单扩大 exact-cover assignment 不是解决路径。
+- 最终判决：`do_not_enter_exp4_exp5_or_official_after_exp2i`。当前 repair 路线仍未通过 Exp2 target 或 Exp3 +2pp gate，且已排除 ranking、local optimizer、CHGNet、residual posterior、deterministic permutation、row-wise param prior 和简单 assignment-beam 扩张。
+- 下一步：若继续，只能重做 skeleton/site alignment 或 predicted skeleton proposer：需要一个能联合预测 row order、element assignment、correlated free parameters 的模型/搜索，而不是再扩大 site/residual/permutation beam、普通 scorer、C/S ratio 或 official 调参。
+
+
+<!-- OPENTRY14_EXP2J_CHEMICAL_SITE_ORDER_ASSIGNMENT -->
+## opentry_14 实验 2j：chemical/site-order assignment posterior
+
+结果文件：`model/New_model/opentry_14/results/experiment_2j_chemical_site_order_assignment.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp2j_chemical_site_order_assignment/`
+
+- 为什么做：Exp2i 显示 GT element assignment 大量不在 deterministic rank<=64，说明 source-preserved assignment order 与真实 site/element order 不一致；但 GT-WA 不能用于推理。本实验用 train split 的元素-轨道统计和化学相似度，构造 inference-safe site-order assignment posterior。
+- 核心假设：如果 assignment order 是主要瓶颈，则按 source row 元素的化学相似度、train `(SG, orbit)->element` 先验、train `(orbit)->element` 先验生成 exact-cover assignments，应产生 Exp2b/Exp2d 没有的新 match samples，并提高 rows>=7 conversion。
+- 数据规模：rows>=7 validation samples `2197`；train prior rows `146596`；generated chemical assignments `66672`；evaluated candidates `61202`；workers `96`。
+- baseline：Exp2b rows>=7 match@50 `21.348%`、conversion `24.866%`；Exp2d best match@50 `22.036%`、conversion `25.714%`；Exp2i rank<=10 coverage `8.804%`。
+- 方法变化：替代 deterministic source-preserved exact-cover order；对每个 row/element 打分，特征只含元素周期表相似度、train split 的 SG/orbit/element 频率和 source-row 元素相似度。assignment beam 完成 exact-cover 后，用 source lattice/free params 渲染，并用 structural score 排序；不使用 match/RMSD/StructureMatcher label、GT-WA、GT-skeleton 或 official feedback。
+- 结果 best variant `h10_s10_chem25_p5`：rows>=7 match@1/5/20/50 = `11.412% / 16.773% / 21.397% / 23.119%`；conversion@50 `27.463%`；valid `84.300%`；formula `99.412%`；SG `98.497%`；exact-cover `99.808%`；collision `4.246%`。
+- oracle 诊断：chemical-only match samples `307`；相对 Exp2b 新增 match/skelmatch `36` / `31`；相对 Exp2d best 新增 `29` / `24`；union upper bound match@50 `23.463%`、conversion `27.127%`。
+- 可信度：中等。所有候选真实 render/parse/SG/StructureMatcher；assignment posterior 只用 train split 和元素表，validation match 只用于离线评估。限制是它仍复制 source geometry/free params，未学习 correlated geometry posterior。
+- 和历史实验关系：这是 Exp2d site assignment 的非 GT、非普通 scorer 替代排序，直接回应 Exp2i 的 assignment-order root cause。
+- gate 判定：minimum_passed=`True`；target_passed=`False`；exp3_line_passed=`True`；conversion delta vs Exp2b `+2.597pp`；conversion delta vs Exp3 line `+0.597pp`。
+- 最终判决：`pass_exp3_line_but_not_exp2_target`。Chemical/site-order assignment clears the Exp3 +2pp conversion line but not the Exp2 target.
+- 下一步：Retest Exp3 local optimizer as the next gated step; do not enter Exp4/5/official yet.
+
+<!-- OPENTRY14_EXP3J_CHGNET_AFTER_EXP2J -->
+## opentry_14 实验 3j：CHGNet local optimizer after Exp2j
+
+结果文件：`model/New_model/opentry_14/results/experiment_3j_chgnet_after_exp2j.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp3j_chgnet_after_exp2j/`
+
+- 为什么做：Exp2j chemical/site-order assignment 已把 rows>=7 conversion 从 Exp2b `24.866%` 提到 `27.463%`，超过 Exp3 +2pp 入口线；prompt 要求在 learned/constructed repair 后测试 symmetry-preserving local optimizer 是否还能再提高 conversion 并改善 local packing。
+- 核心假设：如果 Exp2j 剩余失败主要是局部 collision/packing，则对 Exp2j best 中 formula/SG/exact 保持但 valid=false 的 chemical candidates 做 CHGNet position-only relaxation，应在不破坏 SG/exact-cover 的情况下再提升 conversion@50 至少 `+2pp`。
+- 数据规模：Exp2j best rows>=7 candidate records `78125`；selected CHGNet tasks `1611`；regenerated CIF tasks `1611`；accepted optimized `567`；evaluated optimized `567`；GPU devices `['0', '1']`；workers `32`。
+- baseline：Exp2j best `h10_s10_chem25_p5` rows>=7 match@50 `23.119%`、conversion `27.463%`、collision `4.246%`。Exp3j pass line requires conversion `29.463%`。
+- 方法变化：只优化 inference-safe 选择的 Exp2j chemical candidates：rows>=7、chemical_site_order_source_geometry、formula_ok、space_group_ok、exact_cover_retained、valid=false。CHGNet 不 relax cell；优化后必须保持 formula/site count/SG，并改善 local proxy，否则回退。排序和选择不使用 match/RMSD/StructureMatcher label、GT-WA、GT-skeleton 或 official feedback。
+- 结果 best variant `interleave_chgnet_after_chemical_invalid`：rows>=7 match@1/5/20/50 = `11.412% / 16.773% / 21.397% / 23.119%`；conversion@50 `27.469%`；collision `4.811%`；SG `98.507%`；exact-cover `99.809%`。
+- CHGNet 诊断：optimized valid records `48`；optimized match records `0`；mean min-distance delta `0.05754749499820345`；mean hard-collision delta `-0.7301587301587301`；mean close-pair delta `-1.379188712522046`。
+- 可信度：中等。CHGNet 是真实预训练势能，优化后重新 eval StructureMatcher/SG/formula/site/exact；限制是只覆盖 Exp2j chemical invalid candidates，不覆盖 safe-pool hydrated/prototype 的原始 CIF。
+- 和历史实验关系：这是 Exp3/3b 在 Exp2j 新 repair 基线后的复测，直接判断 local optimizer 是否能在新的 assignment posterior 上产生追加收益。
+- gate 判定：passed=`False`；conversion delta vs Exp2j `+0.006pp`；match@50 delta vs Exp2j `+0.000pp`；collision/local improved=`False`；SG not worse=`True`；exact-cover not worse=`True`。
+- 最终判决：`fail_diagnostic_only`。CHGNet local optimizer after Exp2j does not meet the +2pp conversion gate, even if local packing changes.
+- 下一步：Do not enter Exp4/5/official from this optimizer; the remaining bottleneck is not fixed by local relaxation.
+
+<!-- OPENTRY14_EXP3K_BROAD_CHGNET_CHEMICAL_RELAX -->
+## opentry_14 实验 3k：Broad CHGNet relax on Exp2j chemical candidates
+
+结果文件：`model/New_model/opentry_14/results/experiment_3k_broad_chgnet_chemical_relax.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp3k_broad_chgnet_chemical_relax/`
+
+- 为什么做：Exp3j 只优化 Exp2j 中 valid=false 的 chemical collision candidates，能改善局部 proxy 但没有新增 match。3k 检查另一种可能：已经 valid 的 high-rank chemical candidates 是否只是局部能量/位置未收敛，短步 CHGNet 是否能把它们转成 match。
+- 核心假设：如果 conversion bottleneck 是局部 basin 而不是 skeleton/site assignment，那么按 inference-safe rank/per-sample top-N 选择 chemical candidates 后，保留原候选并 append CHGNet 优化版本，应在不损失原 match 的情况下新增 rows>=7 match。
+- 数据规模：base rows>=7 candidate records `78125`；eligible selected rows `7803`；regenerated `7803`；accepted `3999`；evaluated optimized `3999`；max_rank `20`；per_sample `5`；CHGNet workers `32`。
+- baseline：Exp2j best `h10_s10_chem25_p5` rows>=7 match@50 `23.119%`、conversion `27.463%`、collision `4.246%`。Exp3 pass line requires conversion `29.463%`。
+- 方法变化：选择只使用 rank、formula_ok、space_group_ok、exact_cover_retained、row_count 和 chemical geometry source；不使用 match/RMSD/StructureMatcher label、GT-WA、GT-skeleton 或 official feedback。优化后必须保持 formula/site count/SG 并改善 local proxy；append variant 保留原始 Exp2j 排序。
+- 结果 best variant `append_valid_chgnet_after_selected`：rows>=7 match@1/5/20/50 = `11.412% / 16.773% / 21.299% / 23.119%`；conversion@50 `27.463%`；collision `4.042%`；valid `85.053%`；SG `98.569%`；exact-cover `99.817%`。
+- CHGNet 诊断：tasks `7803`；successful `7791`；accepted `3999`；optimized valid records `3938`；optimized match records `173`；mean min-distance delta `0.08666971341473814`；mean hard-collision delta `-0.008002000500125032`；mean close-pair delta `-0.5833958489622406`。
+- 可信度：中等。选择规则是推理安全的，优化后重新评估 StructureMatcher/SG/formula/site/exact；限制是只测试 Exp2j chemical candidates 的 rank/per-sample top-N，不覆盖所有 39k eligible candidates。
+- 和历史实验关系：这是 Exp3j 失败后的补充局部优化审计，直接检验“valid chemical candidate 只需局部松弛”的假设。
+- gate 判定：passed=`False`；conversion delta vs Exp2j `+0.000pp`；match@50 delta vs Exp2j `+0.000pp`；collision/local improved=`True`；SG not worse=`True`；exact-cover not worse=`True`。
+- 最终判决：`fail_local_optimizer_not_conversion_limited`。Broad CHGNet relaxation does not deliver the required +2pp conversion lift, so local energy/packing is not the main remaining bottleneck.
+- 下一步：Do not enter Exp4/5/official from local optimizer; return to skeleton/site/free-parameter alignment rather than expanding CHGNet.
+
+
+<!-- OPENTRY14_EXP2K_CORRELATED_DONOR_GEOMETRY_POSTERIOR -->
+## opentry_14 实验 2k：correlated donor geometry posterior
+
+结果文件：`model/New_model/opentry_14/results/experiment_2k_correlated_donor_geometry_posterior_smoke120.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp2k_correlated_donor_geometry_posterior/`
+
+- 为什么做：Exp2h 的 row-wise train free-parameter prior 失败，Exp3j/3k 的 CHGNet local optimizer 也只改善 collision/valid、不提升 match；剩余假设是跨 row 的 lattice/free-parameter 相关性被破坏，单 row 参数或局部优化无法换到正确 basin。
+- 核心假设：如果同一个 train donor 的 lattice 与所有 matched row free parameters 构成可迁移的 correlated geometry bundle，那么在 Exp2j chemical assignment 后按 train donor bundle 整体迁移，应比 source geometry 或 row-wise prior 产生新的 rows>=7 sample-level match。
+- 数据规模：rows>=7 validation samples `120`；generated donor candidates `2208`；evaluated donor candidates `2208`；train donor records `25998`；workers `64`。
+- baseline：Exp2j best `h10_s10_chem25_p5` rows>=7 match@50 `23.119%`、conversion `27.463%`、collision `4.246%`。
+- 方法变化：保留 Exp2j chemical/site-order posterior；每个 assigned skeleton 不再复制 source geometry，也不逐 row 独立采样，而是按 train split 的 same_skeleton / same_SG+atom_count / same_SG donor score 选择完整 donor，迁移 donor lattice 与 all-row free params。推理排序只用 legal/formula/SG/exact/collision/volume/reference_score，不使用 match/RMSD/StructureMatcher label、GT-WA、GT-skeleton、official feedback、RF/HGB。
+- 结果 best variant `h10_s10_chem15_donor10_p5`：rows>=7 match@1/5/20/50 = `11.412% / 16.773% / 21.397% / 22.823%`；conversion@50 `27.144%`；valid `82.760%`；formula `99.337%`；SG `98.482%`；exact-cover `99.770%`；collision `3.568%`。
+- oracle 诊断：donor-only match/skelmatch samples `5` / `4`；相对 Exp2j 新增 match/skelmatch `0` / `0`；union upper bound match@50 `23.119%`、conversion `27.429%`。
+- 可信度：中等。donor 只来自 train split，validation 推理不使用禁用标签，所有候选真实 render/parse/SG/StructureMatcher；限制是 donor bundle 仍是 prototype posterior，不是端到端 learned continuous repair head。
+- 和历史实验关系：这是 Exp2h row-wise prior 与 Exp2j chemical assignment 的组合修正，直接检验“跨 row geometry correlation”是否是 Exp3 local optimizer 失败后的剩余瓶颈。
+- gate 判定：minimum_passed=`True`；target_passed=`False`；exp3_line_passed=`False`；conversion delta vs Exp2j `-0.319pp`；match@50 delta vs Exp2j `-0.295pp`。
+- 最终判决：`fail_no_conversion_lift`。Correlated donor geometry preserves the minimum structural gate but does not improve Exp2j conversion.
+- 下一步：Stop prototype donor expansion; next repair must learn continuous aligned free-parameter residuals or upgrade skeleton proposer.
+
+<!-- OPENTRY14_EXP2L_VALID_SKELETON_MISMATCH_AUDIT -->
+## opentry_14 实验 2l：valid skeleton-hit mismatch audit
+
+结果文件：`model/New_model/opentry_14/results/experiment_2l_valid_skeleton_mismatch_audit.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp2l_valid_skeleton_mismatch_audit/`
+
+- 为什么做：Exp2j/3j/3k/2k 都显示 valid/formula/SG/exact 可以保持，但 skeleton-hit 仍不能转成 StructureMatcher match。需要把失败分解为 lattice tolerance、fractional coordinate basin、species/site assignment 或完全不同 geometry basin。
+- 核心假设：如果大量 no-match 在 loose lattice/site/anonymous 条件下能匹配，则下一步应针对对应轴训练 repair；如果仍不能匹配，则当前 predicted skeleton/site assignment 虽命中 skeleton key，但几何 basin 已经不同。
+- 数据规模：从 Exp2j best 中选择 rows>=7、chemical geometry、valid=true、predicted_skeleton_hit=true、match=false 的候选 `233`；成功重建 CIF `233`；审计 records `233`；workers `96`。
+- baseline/关系：审计对象来自 Exp2j best `h10_s10_chem25_p5` 之后的失败样本，不作为新推理候选，不进入 Exp3/official。
+- 方法变化：只做离线归因，重建 CIF 后用 StructureMatcher default/loose_lattice/loose_site/loose_angle/loose_all 和 anonymous matching 检查失败类型；真值 CIF 只用于审计，不进入推理排序或候选选择。
+- 结果分类：`{'different_geometry_basin': 48, 'species_or_site_assignment_mismatch': 107, 'large_lattice_scale_mismatch': 78}`。
+- 关键率：default_match `0.000%`；loose_all_match `33.476%`；anonymous_loose_all `45.923%`；large_lattice_scale_mismatch `33.476%`。
+- lattice 误差：volume_rel median `0.10754402112634892`，p90 `0.3783850907133827`；max_axis_rel median `0.16224780934854818`，p90 `0.6591507705139908`。
+- 可信度：中等。使用真实 CIF 和 StructureMatcher 做离线审计；限制是默认只审计每样本前若干 valid skeleton-hit no-match 候选，不代表所有候选。
+- 最终判决：`species_site_assignment_mismatch_substantial`。Many failures match anonymously under loose tolerance, so element/site assignment remains a major bottleneck.
+- 下一步：Train an assignment-aware geometry model or upgrade chemical assignment; do not spend more on local optimizer.
+
+
+<!-- OPENTRY14_EXP2M_INFERENCE_SAFE_ASSIGNMENT_CRITIC_SWEEP -->
+## opentry_14 实验 2m：inference-safe assignment critic sweep
+
+结果文件：`model/New_model/opentry_14/results/experiment_2m_inference_safe_assignment_critic_sweep.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp2m_inference_safe_assignment_critic_sweep/`
+
+- 为什么做：Exp2l 显示 valid skeleton-hit no-match 中 species/site assignment mismatch 占比高，先检验不使用真值标签的 assignment/structure 字段级 critic 是否足以把 Exp2j chemical candidates 排到更好的 top50。
+- 核心假设：如果正确 assignment 已在 Exp2j candidate pool 内，只是被 structural score 排低，则使用 assignment_score、source-preserved atoms、proposal/assignment rank、valid/SG/exact/min-distance/volume 等 inference-safe 字段应提升 rows>=7 conversion。
+- 数据规模：chemical candidate records `61202`；rows>=7 chemical records `61202`；samples `1904`；sweep formulas `8`。
+- baseline：Exp2j best `h10_s10_chem25_p5` rows>=7 match@50 `23.119%`、conversion `27.463%`、collision `4.246%`。
+- 方法变化：只重排已有 Exp2j chemical candidates，不重新生成 CIF；排序不使用 match/RMSD/StructureMatcher label、GT-WA、GT-skeleton、official feedback、RF/HGB。该实验只作为 critic/headroom 诊断，不作为主 repair。
+- 结果 best sweep `structural_existing`：rows>=7 match@50 `23.119%`；conversion@50 `27.463%`；collision `4.246%`；valid `84.300%`。
+- sweep 结论：最高 match@50 sweep 仍未提升 conversion；best-vs-Exp2j match delta `+0.000pp`，conversion delta `+0.000pp`。
+- 可信度：中等。所有候选已由 Exp2j 真实 render/parse/StructureMatcher 评估，选择阶段只用 inference-safe 字段；限制是没有重建 CIF 做更细局部化学统计。
+- 和历史实验关系：直接回应 Exp2l 的 species/site mismatch 归因，检验“已有候选只需安全 critic 重排”是否成立。
+- 最终判决：`fail_no_conversion_lift`。Field-level inference-safe assignment critic does not improve Exp2j conversion.
+- 下一步：Move beyond existing candidate sorting: train assignment-aware geometry model or upgrade chemical/site assignment generation.
+
+<!-- OPENTRY14_EXP2N_PAIRWISE_LOCAL_CHEMISTRY_ASSIGNMENT_POSTERIOR -->
+## opentry_14 实验 2n：pairwise local-chemistry assignment posterior
+
+结果文件：`model/New_model/opentry_14/results/experiment_2n_pairwise_local_chemistry_assignment.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp2n_pairwise_local_chemistry_assignment/`
+
+- 为什么做：Exp2l 将 valid skeleton-hit no-match 的主要问题定位到 species/site assignment mismatch，Exp2m 又证明仅重排 Exp2j 旧候选不能提升 conversion。因此本实验在生成侧扩大 assignment beam，并引入 train-only 元素对局部距离先验，尝试产生 Exp2j 没有的可匹配 assignment。
+- 核心假设：如果错误来自化学位点分配，而不是 skeleton 或局部优化，则训练集元素对距离分布应能在更宽 exact-cover beam 中挑出更合理的 assignment，从而提高 rows>=7 conversion@50。
+- 数据规模：rows>=7 validation samples `2197`；generated pair-chem assignments `66672`；evaluated candidates `61202`；train pair records `8000`；element-pair priors `2248`；workers gen/eval/prior `128` / `160` / `96`。
+- baseline：Exp2j best `h10_s10_chem25_p5` rows>=7 match@50 `23.119%`、conversion `27.463%`、collision `4.246%`。
+- 方法变化：Exp2j 的 chemical exact-cover beam 从 final limit 扩到 prelimit，再对每个渲染 assignment 解析生成结构，按 train split 元素对距离/半径比的 robust prior 打分，保留 local-chem top assignments；不使用 match/RMSD/StructureMatcher label、GT-WA、GT-skeleton、test true CIF 或 official feedback，也不是 RF/HGB/阈值 scorer。
+- 结果 best variant `h10_s10_chem25_p5`：rows>=7 match@1/5/20/50 = `11.412% / 16.773% / 21.643% / 23.610%`；conversion@50 `28.158%`；valid `84.300%`；formula `99.412%`；SG `98.495%`；exact-cover `99.808%`；collision `4.246%`。
+- oracle 诊断：pair-chem-only match samples `351`；相对 Exp2j 新增 match/skelmatch `56` / `54`；union upper bound match@50 `19.065%`、conversion `22.686%`。
+- 可信度：中等。候选真实 render/parse/SG/StructureMatcher 评估，生成评分只用训练集 CIF 的元素对距离统计和元素半径；限制是仍沿用 source lattice/free params，且局部 pair prior 可能偏向短程配位而非全局 Wyckoff assignment。
+- 和历史实验关系：这是 Exp2j 的生成侧扩展，直接回应 Exp2l/Exp2m；若失败，说明简单 local chemistry prior 不能弥补 assignment/order mismatch，需要训练 joint assignment-geometry 模型。
+- gate 判定：passed=`True`；conversion delta vs Exp2j `+0.695pp`；match delta vs Exp2j `+0.492pp`；target_passed=`True`。
+- 最终判决：`pass_exp2_target_gate`。Pairwise local-chemistry assignment posterior reaches the 28% rows>=7 conversion target.
+- 下一步：Run the gated Exp3 local optimizer relative to Exp2n; keep official frozen until later gates pass.
+
+<!-- OPENTRY14_EXP3N_CHGNET_AFTER_EXP2N_PAIRCHEM -->
+## opentry_14 实验 3n：CHGNet local optimizer after Exp2n pair-chem
+
+结果文件：`model/New_model/opentry_14/results/experiment_3n_chgnet_after_exp2n_pairchem.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp3n_chgnet_after_exp2n_pairchem/`
+
+- 为什么做：Exp2n 已把 rows>=7 conversion 推过 28% target，按 prompt 必须验证 symmetry-preserving local optimizer 是否能在不破坏 SG/exact-cover 的情况下再带来至少 +2pp conversion，并改善 collision/local packing。
+- 核心假设：如果 Exp2n 剩余错误主要来自局部 basin 或短距离 packing，按 inference-safe rank/per-sample top-N 选择 pair-chem candidates 后，CHGNet position-only relaxation 应在保留原候选的 append variant 中新增 rows>=7 match。
+- 数据规模：base rows>=7 candidate records `78125`；eligible selected rows `7803`；regenerated `7803`；accepted `4071`；evaluated optimized `4071`；max_rank `20`；per_sample `5`；CHGNet workers `96`。
+- baseline：Exp2n best `h10_s10_chem25_p5` rows>=7 match@50 `23.610%`、conversion `28.158%`、collision `4.246%`。Exp3 pass line requires conversion `30.158%`。
+- 方法变化：选择只使用 rank、formula_ok、space_group_ok、exact_cover_retained、row_count 和 pair-chem geometry source；不使用 match/RMSD/StructureMatcher label、GT-WA、GT-skeleton 或 official feedback。优化后必须保持 formula/site count/SG，并改善 local proxy；append variant 保留原始 Exp2n 排序。
+- 结果 best variant `append_valid_chgnet_after_selected`：rows>=7 match@1/5/20/50 = `11.412% / 16.773% / 21.643% / 23.610%`；conversion@50 `28.158%`；collision `4.038%`；valid `85.068%`；SG `98.568%`；exact-cover `99.817%`。
+- CHGNet 诊断：tasks `7803`；successful `7797`；accepted `4071`；optimized valid records `4020`；optimized match records `208`；mean min-distance delta `0.045779043561206816`；mean hard-collision delta `-0.025546548759518548`；mean close-pair delta `-0.4603291574551707`。
+- 可信度：中等。选择规则是推理安全的，优化后重新评估 StructureMatcher/SG/formula/site/exact；限制是只测试 Exp2n pair-chem candidates 的 rank/per-sample top-N，不覆盖所有 eligible candidates。
+- 和历史实验关系：这是 Exp2n 通过 target gate 后的正式 Exp3 检验，也复核 Exp3j/3k “局部优化改善 packing 但不改善 conversion”的历史结论是否仍成立。
+- gate 判定：passed=`False`；conversion delta vs Exp2n `+0.000pp`；match@50 delta vs Exp2n `+0.000pp`；collision/local improved=`True`；SG not worse=`True`；exact-cover not worse=`True`。
+- 最终判决：`fail_local_optimizer_not_conversion_limited`。CHGNet relaxation after Exp2n does not deliver the required +2pp conversion lift, so local energy/packing is not the main remaining bottleneck.
+- 下一步：Do not enter Exp4/5/official from local optimizer; return to skeleton/site/free-parameter alignment rather than expanding CHGNet.
+
+
+<!-- OPENTRY14_EXP2O_EXPANDED_PAIRWISE_LOCAL_CHEMISTRY_ASSIGNMENT -->
+## opentry_14 实验 2o：expanded pairwise local-chemistry assignment posterior
+
+结果文件：`model/New_model/opentry_14/results/experiment_2o_expanded_pairwise_local_chemistry_assignment.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp2n_pairwise_local_chemistry_assignment/*exp2o_expand10x12*`
+
+- 为什么做：Exp3n 证明 CHGNet local optimizer 只改善 collision/local packing，不产生新 sample-level match；因此回到 Exp2 的 assignment/free-parameter alignment。Exp2n 已过 28% target，但 oracle 仍显示 assignment 生成侧有新增 match 空间，本实验扩大 skeleton/assignment 覆盖而不改变禁用特征边界。
+- 核心假设：如果 Exp2n 的剩余可修复空间来自 assignment beam 覆盖不足，那么 top_skeletons 从 8 到 10、assignment prelimit 从 32 到 64、per-skeleton retained assignment 从 8 到 12，应产生新的 exact-cover pair-chem candidates，并提升 rows>=7 conversion。
+- 数据规模：rows>=7 validation samples `2197`；generated candidates `102471`；evaluated candidates `73521`；train pair records `8000`；workers gen/eval/prior `160` / `180` / `128`。
+- baseline：Exp2j rows>=7 match@50 `23.119%`、conversion `27.463%`；Exp2n rows>=7 match@50 `23.610%`、conversion `28.158%`。
+- 方法变化：沿用 Exp2n 的 train-only 元素对局部距离 prior，但扩大 proposal/assignment generation；选择仍只用 train prior、元素表、generated structure 的 inference-safe local chemistry/structure 字段，不使用 match/RMSD/StructureMatcher label、GT-WA、GT-skeleton、test true CIF 或 official feedback。
+- 结果 best variant `h10_s5_chem30_p5`：rows>=7 match@1/5/20/50 = `11.412% / 16.773% / 21.446% / 23.906%`；conversion@50 `28.633%`；valid `84.922%`；formula `99.405%`；SG `98.488%`；exact-cover `99.813%`；collision `3.871%`。
+- oracle 诊断：pair-chem-only match/skelmatch samples `360` / `347`；相对 Exp2j 新增 match/skelmatch `72` / `72`；union upper bound match@50 `19.905%`、conversion `23.875%`。
+- 可信度：中等。全量 validation、真实 render/parse/SG/StructureMatcher 评估；推理选择不使用禁用标签。限制是更宽 beam 主要提高 conversion，match@5/20 的收益不稳定，且仍复制 source lattice/free params。
+- 和历史实验关系：这是 Exp2n 的生成侧扩展，也是 Exp3n 失败后的直接回退；结果支持“local optimizer 不是瓶颈，assignment 覆盖仍有小幅空间”。
+- gate 判定：passed=`True`；target_passed=`True`；conversion delta vs Exp2j `+1.170pp`；conversion delta vs Exp2n `+0.476pp`；match delta vs Exp2n `+0.295pp`。
+- 最终判决：`pass_exp2_target_gate_but_exp3_still_required`。Expanded pairwise local-chemistry assignment improves Exp2n and remains above the 28% rows>=7 conversion target, but this is still an assignment-side repair and does not satisfy Exp3 local optimizer gate.
+- 下一步：Run/compare Exp3 local optimizer against Exp2o; if local optimizer still gives no new sample-level match, stop local optimization and move to learned assignment-aware geometry alignment.
+
+
+<!-- OPENTRY14_EXP3O_CHGNET_AFTER_EXP2O_EXPANDED_PAIRCHEM -->
+## opentry_14 实验 3o：CHGNet local optimizer after Exp2o expanded pair-chem
+
+结果文件：`model/New_model/opentry_14/results/experiment_3o_chgnet_after_exp2o_expanded_pairchem.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp3o_chgnet_after_exp2o_expanded_pairchem/`
+
+- 为什么做：Exp2o 成为新的 assignment-side best，rows>=7 conversion 达到 `28.633%`；按顺序必须重新验证 local optimizer 是否能在 Exp2o 基线上再提升 +2pp。
+- 核心假设：如果 Exp2o 剩余误差来自局部 geometry/collision，则 CHGNet position-only relaxation 应新增 sample-level match，同时改善 collision/local packing，且 SG/exact-cover 不恶化。
+- 数据规模：base rows>=7 candidate records `80004`；optimizer tasks `9382`；regenerated `9382`；accepted `4994`；evaluated optimized `4994`；workers regen/chgnet/eval `128` / `96` / `160`；CUDA 在当前 Python sandbox 不可用，因此使用 CPU fallback。
+- baseline：Exp2o best `h10_s5_chem30_p5` rows>=7 match@50 `23.906%`、conversion `28.633%`、collision `3.871%`。Exp3 pass line requires conversion `30.633%`。
+- 方法变化：选择只使用 rank、formula_ok、space_group_ok、exact_cover_retained、row_count 和 pair-chem geometry source；不使用 match/RMSD/StructureMatcher label、GT-WA、GT-skeleton 或 official feedback。CHGNet 优化后必须保持 formula/site count/SG 并改善 local proxy，否则回退。
+- 结果 best variant `append_valid_chgnet_after_selected`：rows>=7 match@1/5/20/50 = `11.412% / 16.773% / 21.348% / 23.807%`；conversion@50 `28.643%`；collision `3.669%`；valid `85.677%`；SG `98.562%`；exact-cover `99.822%`。
+- CHGNet 诊断：successful `9378`；accepted `4994`；optimized valid records `4936`；optimized match records `269`；mean min-distance delta `0.045863385256430585`；mean hard-collision delta `-0.020824989987985584`；mean close-pair delta `-0.4517420905086103`。
+- oracle 诊断：optimized match/skelmatch samples `66` / `60`；相对 Exp2o 新增 match/skelmatch `0` / `0`。
+- 可信度：中等。全量 validation，优化后重新 eval StructureMatcher/SG/formula/site/exact；限制是 CPU fallback 下只用 1-step CHGNet，但 Exp3n/3o 与历史 Exp3j/3k 均显示局部优化不产生新 sample-level match。
+- 和历史实验关系：复核 Exp3n 在更强 Exp2o assignment baseline 下是否仍失败；结果一致，local optimizer 不是 conversion 主瓶颈。
+- gate 判定：passed=`False`；conversion delta vs Exp2o `+0.010pp`；match@50 delta vs Exp2o `-0.098pp`；collision/local improved=`True`；SG not worse=`True`；exact-cover not worse=`True`。
+- 最终判决：`fail_local_optimizer_not_conversion_limited`。CHGNet relaxation after Exp2o improves collision/local packing but produces no meaningful rows>=7 conversion lift and slightly lowers match@50 in the best insertion variant.
+- 下一步：Do not enter Exp4/5/official. Stop local optimizer expansion and move to learned assignment-aware geometry/free-parameter alignment or skeleton source retrieval.
+
+
+<!-- OPENTRY14_EXP2P_EXP2O_VALID_SKELETON_MISMATCH_AUDIT -->
+## opentry_14 实验 2p：Exp2o valid skeleton-hit mismatch audit
+
+结果文件：`model/New_model/opentry_14/results/experiment_2p_exp2o_valid_skeleton_mismatch_audit.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp2p_exp2o_valid_skeleton_mismatch_audit/`
+
+- 为什么做：Exp2o 已把 rows>=7 conversion 推到 `28.633%`，但 Exp3o 证明 CHGNet local optimizer 不产生新 sample-level match。需要重新审计 Exp2o best 中 valid skeleton-hit no-match 的失败类型，决定下一步是 assignment、lattice/free-parameter residual，还是 skeleton/source retrieval。
+- 核心假设：如果 Exp2o 剩余失败大量 anonymous loose match，则 species/site assignment 仍主导；如果 loose_all/default-near miss 多，则应训练连续 lattice+free-parameter residual；如果多数仍不同 basin，则需要更强 skeleton/source retrieval 或 joint generative posterior。
+- 数据规模：source candidate rows `10035`；source samples `964`；selected rows `1779`；regenerated CIF tasks `1779`；audited records `1779`；workers regen/audit `128` / `128`。
+- baseline/关系：审计对象来自 Exp2o best `h10_s5_chem30_p5`，仅用于离线 root-cause，不作为推理候选，不进入 Exp4/5/official。
+- 方法变化：按 Exp2o pair-chem assignment 精确重建 CIF，用 StructureMatcher default/loose_lattice/loose_site/loose_angle/loose_all 与 anonymous matching 分类；target true CIF 只用于审计，不用于候选选择或推理特征。
+- 结果分类：`{'species_or_site_assignment_mismatch': 576, 'large_lattice_scale_mismatch': 753, 'different_geometry_basin': 450}`。
+- 关键率：default_match `0.000%`；loose_all_match `26.363%`；anonymous_loose_all `32.378%`；large_lattice_scale_mismatch `42.327%`。
+- lattice 误差：volume_rel median `0.11990631589040072`，p90 `0.45359198696025516`；max_axis_rel median `0.2545504735924765`，p90 `0.7450426250283628`。
+- 可信度：中等。审计用真实 CIF 和 StructureMatcher，且样本来自 Exp2o full validation top-ranked valid skeleton-hit no-match；限制是按每样本 top-N 抽样，不覆盖全部 no-match。
+- 和历史实验关系：复核 Exp2l 在 Exp2o 后是否仍成立。若 species/site mismatch 仍高，则 Exp2n/2o 的 pair-chem 还没完全解决 assignment；若 large lattice/loose_all 高，则下一轮应学习 alignment-aware lattice/free-param residual。
+- 最终判决：`species_site_assignment_mismatch_remains_dominant`。Anonymous loose matching remains high after Exp2o, so assignment/site identity is still the main residual bottleneck.
+- 下一步：Train assignment-aware geometry model or improve pair-chem assignment generation; do not expand local optimizer.
+
+
+<!-- OPENTRY14_EXP2Q_PAIRCHEM_LATTICE_PARAM_POSTERIOR -->
+## opentry_14 实验 2q：pair-chem lattice/free-parameter posterior
+
+结果文件：`model/New_model/opentry_14/results/experiment_2q_pairchem_lattice_param_posterior_fullnarrow.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp2q_pairchem_lattice_param_posterior/`
+
+- 为什么做：Exp2p 显示 Exp2o valid skeleton-hit no-match 中 large lattice scale mismatch `42.327%`、anonymous loose-all `32.378%`；Exp3o 证明 local optimizer 不新增 match。因此本实验在 Exp2o pair-chem assignment 上同时引入 train-only lattice prior 和 row free-parameter prior。
+- 核心假设：如果剩余瓶颈是 assignment-aware lattice/free-parameter alignment，则对同一 pair-chem assignment 生成 source / SG median / SG+atom median lattice 与 source / train exact mean / blend / top 参数组合，应新增 sample-level match 或提高 rows>=7 conversion。
+- 数据规模：rows>=7 validation samples `2197`；generated posterior candidates `263227`；evaluated candidates `87621`；train pair records `8000`；param-bank usable rows `146596`；workers gen/eval/prior `160` / `180` / `128`。
+- baseline：Exp2o best `h10_s5_chem30_p5` rows>=7 match@50 `23.906%`、conversion `28.633%`、collision `3.871%`。
+- 方法变化：候选生成只用 train split lattice/free-param priors、元素 pair-distance priors、source predicted skeleton/assignment；不使用 match/RMSD/StructureMatcher label、GT-WA、GT-skeleton、test true CIF 或 official feedback。该实验不是 lattice-only：每个候选同时绑定 assignment、lattice variant、row-param variant，并重新 render/eval。
+- 结果 best variant `h10_s10_chem25_p5`：rows>=7 match@1/5/20/50 = `11.412% / 16.773% / 21.249% / 22.971%`；conversion@50 `27.508%`；valid `86.526%`；formula `99.606%`；SG `98.747%`；exact-cover `99.824%`；collision `3.109%`。
+- oracle 诊断：posterior-only match/skelmatch samples `278` / `261`；相对 Exp2o 新增 match/skelmatch `4` / `5`；union upper bound match@50 `24.102%`、conversion `28.589%`。
+- 可信度：中等。全量 validation 真实 render/parse/SG/StructureMatcher；限制是 train prior 仍是 heuristic posterior，尚不是端到端 learned continuous model。
+- 和历史实验关系：直接回应 Exp2p 的 lattice+assignment 混合归因；相对 Exp2h 增加 Exp2o pair-chem assignment，相对 Exp2o 增加 lattice/free-param posterior。
+- gate 判定：passed=`False`；target_passed=`False`；conversion delta vs Exp2o `-1.126pp`；match delta vs Exp2o `-0.935pp`。
+- 最终判决：`fail_ranked_gate_has_oracle_headroom`。Posterior creates some new sample-level matches but ranked mixture does not improve the Exp2o gate.
+- 下一步：Improve generation-side posterior or inference-safe selection; do not use forbidden match labels.
+
+
+<!-- OPENTRY14_EXP2R_DIVERSE_PAIRCHEM_ASSIGNMENT_POSTERIOR -->
+## opentry_14 实验 2r：diverse pair-chem assignment posterior
+
+结果文件：`model/New_model/opentry_14/results/experiment_2r_diverse_pairchem_assignment_posterior.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp2r_diverse_pairchem_assignment_posterior/`
+
+- 为什么做：Exp2p 显示 Exp2o 后 species/site assignment mismatch 仍是主要剩余瓶颈，Exp2q smoke 又显示 lattice/free-param posterior 没有新增 match。因此本实验不继续修 lattice，而是在生成侧提高 exact-cover assignment 多样性。
+- 核心假设：如果正确 site identity 被 Exp2o 单一 balanced scoring-mode 排在 beam 外，则用 prior_strong/source_light/SG-orbit/chem-diverse 多模式生成 assignment，并用 Hamming 多样性保留，应新增 sample-level match 或至少不低于 Exp2o conversion。
+- 数据规模：rows>=7 validation samples `2197`；generated diverse assignments `102471`；evaluated diverse candidates `73521`；input Exp2o pairchem candidates `73521`；combined candidates `85648`；train pair records `8000`；element-pair priors `2248`；workers gen/eval/prior `160` / `180` / `128`。
+- baseline：Exp2o best `h10_s5_chem30_p5` rows>=7 match@50 `23.906%`、conversion `28.633%`、collision `3.871%`。
+- 方法变化：保留 Exp2o pairwise local-chemistry pool，并把 diverse assignment 作为 supplement 与 Exp2o candidates 合并后统一 structural rank；diverse generator 从单一 balanced score 改成 `balanced,prior_strong,source_light,sg_orbit,chem_diverse` 多模式，每个模式先 beam search，再跨模式去重并按 Hamming distance 保留 diversity。推理仍只用 train split 元素/轨道频率、元素表、局部 pair-distance prior 和 generated structure 字段；不使用 match/RMSD/StructureMatcher label、GT-WA、GT-skeleton、test true CIF 或 official feedback，也不是 RF/HGB/阈值 scorer。
+- 结果 best variant `h10_s5_chem30_p5`：rows>=7 match@1/5/20/50 = `11.412% / 16.773% / 21.151% / 23.660%`；conversion@50 `28.474%`；valid `86.402%`；formula `99.382%`；SG `98.525%`；exact-cover `99.824%`；collision `3.011%`。
+- oracle 诊断：diverse pair-chem-only match/skelmatch samples `337` / `320`；相对 Exp2o 新增 match/skelmatch `14` / `14`；union upper bound match@50 `19.643%`、conversion `24.845%`。
+- 可信度：中等。候选真实 render/parse/SG/StructureMatcher 评估，生成评分只用训练集 CIF 的元素/轨道统计、元素半径与 pair-distance prior；限制是 diversity heuristic 仍不是端到端 learned assignment-aware model，且沿用 source lattice/free params。
+- 和历史实验关系：这是 Exp2n/2o 的 assignment 生成侧升级，直接回应 Exp2p 的 species/site mismatch；若失败，说明 heuristic assignment beam 多样性也不足，需要 learned assignment-aware generator 或升级 skeleton/source retrieval。
+- gate 判定：passed=`False`；non_regression_vs_exp2o=`False`；conversion delta vs Exp2o `-0.159pp`；match delta vs Exp2o `-0.246pp`；target_passed=`True`。
+- 最终判决：`fail_ranked_gate_has_oracle_headroom`。Deep source retrieval adds new sample-level matches and slightly improves match@50, but it does not preserve Exp2o conversion@50.
+- 下一步：Use the generated source-retrieval candidates only for slot-policy diagnostics; if no inference-safe slot policy passes, move to learned source/assignment-aware generation.
+
+
+<!-- OPENTRY14_EXP2S_SOURCE_RETRIEVAL_SUPPLEMENT -->
+## opentry_14 实验 2s：source retrieval supplement
+
+结果文件：`model/New_model/opentry_14/results/experiment_2s_source_retrieval_supplement.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp2s_source_retrieval_supplement/`
+
+- 为什么做：Exp2q 证明 lattice/free-param posterior 基本不能新增 match，Exp2r 证明 assignment diversity 有少量 oracle 但 ranked gate 不提升；同时 opentry_13 proposals 平均每样本只有约 3.8 个 source，Exp2o 的 top_skeletons=10 多数已经吃满。下一步需要检查更深 train source retrieval 是否能提供新的 skeleton/source basin。
+- 核心假设：如果当前瓶颈来自 source skeleton basin 覆盖不足，而不是同一 source 内 assignment/lattice 调整，那么用 formula+GT-SG+atom_count 从 train split 检索更多未被 opentry_13 proposer 选中的 source skeleton，再做 exact-cover assignment，应新增 sample-level match 或提高 Exp2o conversion。
+- 数据规模：rows>=7 validation samples `2197`；retrieved source candidates `18584`；generated retrieval assignments `132090`；evaluated retrieval candidates `76346`；input Exp2o pairchem candidates `73521`；combined candidates `87390`；train pair records `8000`；workers gen/eval/prior `160` / `180` / `128`。
+- baseline：Exp2o best `h10_s5_chem30_p5` rows>=7 match@50 `23.906%`、conversion `28.633%`、collision `3.871%`。
+- 方法变化：保留 Exp2o pairwise local-chemistry pool，并把 deep source retrieval candidates 作为 supplement 与 Exp2o candidates 合并后统一 structural rank；retrieval 只用 train split formula/SG/atom_count/row_count，不使用 validation GT skeleton。assignment 使用 `balanced,prior_strong,source_light` 多模式 exact-cover beam。推理不使用 match/RMSD/StructureMatcher label、GT-WA、GT-skeleton、test true CIF 或 official feedback，也不是 RF/HGB/阈值 scorer。
+- 结果 best variant `h10_s5_chem30_p5`：rows>=7 match@1/5/20/50 = `11.412% / 16.773% / 21.545% / 24.004%`；conversion@50 `28.475%`；valid `86.605%`；formula `99.421%`；SG `98.585%`；exact-cover `99.823%`；collision `2.816%`。
+- oracle 诊断：combined pair-chem match/skelmatch samples `353` / `338`；source-retrieval-only match/skelmatch `201` / `191`；相对 Exp2o 新增 match/skelmatch `38` / `35`；union upper bound match@50 `20.903%`、conversion `25.638%`。
+- 可信度：中等。候选真实 render/parse/SG/StructureMatcher 评估，retrieval 与 assignment 只用 train split 和 target composition/GT-SG；限制是仍沿用 source geometry/free params，且 source retrieval 是 heuristic nearest-neighbor 而非 learned proposer。
+- 和历史实验关系：这是 Exp2n/2o/2r 之后从 assignment 内部转向 source skeleton basin 覆盖的实验；若失败，说明简单 train source retrieval 也不足，需要 learned assignment-aware/source-aware generator。
+- gate 判定：passed=`False`；non_regression_vs_exp2o=`False`；conversion delta vs Exp2o `-0.158pp`；match delta vs Exp2o `+0.098pp`；target_passed=`True`。
+- 最终判决：`fail_no_conversion_lift`。Diverse assignment posterior does not improve Exp2o conversion.
+- 下一步：Stop heuristic assignment scoring; move to learned assignment-aware geometry generation or skeleton/source retrieval.
+
+
+<!-- OPENTRY14_EXP2T_SOURCE_RETRIEVAL_SLOT_POLICY_SWEEP -->
+## opentry_14 实验 2t：source retrieval slot-policy sweep
+
+结果文件：`model/New_model/opentry_14/results/experiment_2t_source_retrieval_slot_policy_sweep.json`
+候选 artifact：`model/New_model/opentry_14/artifacts/exp2t_source_retrieval_slot_policy_sweep/`
+
+- 为什么做：Exp2s source retrieval 产生了 `38` 个 Exp2o 外新 match，但默认 structural-rank supplement 让 conversion@50 下降。需要判断问题是否只是 slot policy，还是 source retrieval 候选本身无法 inference-safe 转化。
+- 核心假设：如果 retrieval 的新增 match 只是被过多低质量 skeleton-hit 稀释，那么固定少量 retrieval slots、保留 Exp2o pair-chem slots，应同时维持 Exp2o conversion 并获得 match@50 小幅提升。
+- 数据规模：复用 Exp2o evaluated candidates `73521`、Exp2s retrieval evaluated candidates `76346`、safe-pool records `94544`、site-assignment records `36531`；sweep variants `9`。
+- baseline：Exp2o best `h10_s5_chem30_p5` rows>=7 match@50 `23.906%`、conversion `28.633%`、collision `3.871%`。
+- 方法变化：不重新生成 CIF，不使用 match/RMSD/StructureMatcher label 参与排序；只改变固定 slot 配额：hydrated/site/Exp2o-pairchem/source-retrieval/prototype。各池内部保留原 inference-safe rank 或 structural rank。
+- 结果 best variant `h8_src5_o30_p2`：rows>=7 match@1/5/20/50 = `11.412% / 16.773% / 21.348% / 23.758%`；conversion@50 `28.760%`；valid `85.709%`；formula `99.495%`；SG `98.566%`；exact-cover `99.819%`；collision `3.613%`。
+- oracle 诊断：source-retrieval-only match/skelmatch `201` / `191`；相对 Exp2o 新增 match/skelmatch `46` / `43`。
+- 可信度：中等偏高。所有候选已真实评估，sweep 只改固定配额；限制是 slot policy 仍是 validation-side heuristic，不能作为主方法成功。
+- 和历史实验关系：这是 Exp2s 的排序/slot 归因，不是新 generator；直接判断 retrieval oracle 能否被 inference-safe fixed policy 吃到。
+- gate 判定：passed=`False`；best match delta vs Exp2o `-0.148pp`；best conversion delta vs Exp2o `+0.127pp`；best collision delta vs Exp2o `-0.258pp`。
+- 最终判决：`fail_slot_policy_tradeoff`。No fixed slot policy improves match@50 and preserves Exp2o conversion simultaneously.
+- 下一步：Stop heuristic retrieval/slot tuning; move to learned source/assignment-aware generation or a model-based critic.
