@@ -1,0 +1,272 @@
+{
+  "acceptance_gate": {
+    "any_match5_or_match20_negative": false,
+    "match5_and_match20_plus5pp_vs_true_anchor": false,
+    "reason": "true-anchor-source C2S3C15 does not satisfy the saved acceptance gate.",
+    "rows_ge7_not_degraded": true,
+    "verdict": "not_official_main_method"
+  },
+  "created_at_utc": "2026-06-29T07:07:36+00:00",
+  "dataset": "mpts_52",
+  "experiment": "experiment_1_true_anchor_source_c2s3c15",
+  "paths": {
+    "candidate_eval": [
+      "/data/users/xsw/autodlmini/model/New_model/opentry_13/official_eval/c2s3c15_true_anchor_source_mpts52_test_20260629/candidate_eval.jsonl.gz",
+      "/data/users/xsw/autodlmini/model/New_model/opentry_13/official_eval/c2s3c15_true_anchor_source_mpts52_test_20260629/candidate_eval_resume_from_4100_part1.jsonl.gz",
+      "/data/users/xsw/autodlmini/model/New_model/opentry_13/official_eval/c2s3c15_true_anchor_source_mpts52_test_20260629/candidate_eval_resume_from_7014_part1.jsonl.gz",
+      "/data/users/xsw/autodlmini/model/New_model/opentry_13/official_eval/c2s3c15_true_anchor_source_mpts52_test_20260629/candidate_eval_resume_from_7187_part1.jsonl.gz"
+    ],
+    "candidate_source": "/data/users/xsw/autodlmini/model/New_model/opentry_13/candidates/c2s3c15_true_anchor_source_mpts52_test_k20.jsonl.gz",
+    "old_pure_source_c2s3c15": "/data/users/xsw/autodlmini/model/New_model/opentry_12/results/experiment_1_c2s3c15_official.json",
+    "old_pure_source_c2s3c15_candidates": "/data/users/xsw/autodlmini/model/New_model/opentry_12/candidates/c2s3c15_mpts52_test_k20.jsonl.gz",
+    "sample_metrics": "/data/users/xsw/autodlmini/model/New_model/opentry_13/official_eval/c2s3c15_true_anchor_source_mpts52_test_20260629/sample_metrics.jsonl",
+    "true_anchor_c_source": "/data/users/xsw/autodlmini/model/New_model/opentry_7/generations/crystallm_a_gt_sg_mpts_52_test.tar.gz",
+    "true_anchor_metrics": "/data/users/xsw/autodlmini/model/New_model/opentry_7/metrics/crystallm_a_gt_sg_mpts_52_test_k20.json"
+  },
+  "question": "Fixed C2S3C15 replay using true CrystaLLM-a GT-SG anchor candidates as C source.",
+  "restrictions": [
+    "true CrystaLLM-a GT-SG candidate source for C slots",
+    "SymCIF fullgen test pool for S slots",
+    "fixed C1,C2,S1,S2,S3,C3...C17 order",
+    "no ratio search",
+    "no threshold tuning",
+    "no scorer/reranker"
+  ],
+  "route": "C2S3C15",
+  "route_manifest": {
+    "candidate_file": "/data/users/xsw/autodlmini/model/New_model/opentry_13/candidates/c2s3c15_true_anchor_source_mpts52_test_k20.jsonl.gz",
+    "crystallm_source": "/data/users/xsw/autodlmini/model/New_model/opentry_7/generations/crystallm_a_gt_sg_mpts_52_test.tar.gz",
+    "crystallm_source_kind": "true_crystallm_a_gt_sg_anchor",
+    "missing_crystallm_samples": 1,
+    "missing_symcif_samples_full_crystallm_fallback": 1072,
+    "not_used_for_routing": [
+      "match",
+      "rms",
+      "StructureMatcher result",
+      "test feedback",
+      "GT-WA",
+      "GT-skeleton",
+      "diagnostic skeleton_hit/wa_hit labels"
+    ],
+    "partial_symcif_samples_slot_fallback": 1872,
+    "route": "C2S3C15",
+    "route_records": 161920,
+    "routing_inputs": [
+      "fixed source sequence C2S3C15",
+      "CrystaLLM original candidate order",
+      "SymCIF fullgen pool generation_score order with gen_index tie-break",
+      "sample-level fallback to CrystaLLM when SymCIF has no official candidate"
+    ],
+    "samples": 8096,
+    "sequence": [
+      "C",
+      "C",
+      "S",
+      "S",
+      "S",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C"
+    ],
+    "source_counts": {
+      "C": 142720,
+      "S": 19200
+    },
+    "symcif_generation_source": "/data/users/xsw/autodlmini/runs/symcif_v5_multidataset_test_full/mpts52/test/generations/v5_fullgen_eval_pool.jsonl",
+    "symcif_metric_source_for_nonrouting_diagnostics": "/data/users/xsw/autodlmini/runs/symcif_v5_multidataset_test_full/mpts52/test/metrics/v5_fullgen_eval_pool_metrics.jsonl",
+    "time": "2026-06-29T06:30:01+00:00",
+    "true_anchor_source_note": "C slots use crystallm_a_gt_sg_mpts_52_test.tar.gz, not pure_crystallm_gt_sg_mpts_52_test.tar.gz."
+  },
+  "sequence": [
+    "C",
+    "C",
+    "S",
+    "S",
+    "S",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C",
+    "C"
+  ],
+  "split": "test",
+  "systems": {
+    "old_pure_source_C2S3C15": {
+      "all": {
+        "RMSE@1": 0.16545565377369317,
+        "RMSE@20": 0.12967171157198326,
+        "RMSE@5": 0.11700977981708627,
+        "match@1": 0.17144268774703558,
+        "match@20": 0.4114377470355731,
+        "match@5": 0.36054841897233203,
+        "matched_samples_for_RMSE@1": 1388,
+        "matched_samples_for_RMSE@20": 3331,
+        "matched_samples_for_RMSE@5": 2919,
+        "positive_any": 3331,
+        "positive_any_rate": 0.4114377470355731,
+        "samples": 8096
+      },
+      "candidate_source": "/data/users/xsw/autodlmini/model/New_model/opentry_12/candidates/c2s3c15_mpts52_test_k20.jsonl.gz",
+      "delta_vs_true_anchor_all": {
+        "match@1": -0.08090415019762842,
+        "match@20": -0.028162055335968383,
+        "match@5": -0.0040760869565217295
+      },
+      "delta_vs_true_anchor_rows_ge7": {
+        "match@1": -0.08208759506949909,
+        "match@20": -0.031077891424075577,
+        "match@5": -0.003671649619721995
+      },
+      "rows_ge7": {
+        "RMSE@1": 0.18505425292547562,
+        "RMSE@20": 0.1393844818530717,
+        "RMSE@5": 0.12604647374846972,
+        "match@1": 0.14280094413847363,
+        "match@20": 0.37936008392341986,
+        "match@5": 0.33005507474429585,
+        "matched_samples_for_RMSE@1": 1089,
+        "matched_samples_for_RMSE@20": 2893,
+        "matched_samples_for_RMSE@5": 2517,
+        "positive_any": 2893,
+        "positive_any_rate": 0.37936008392341986,
+        "samples": 7626
+      }
+    },
+    "true_anchor_source_C2S3C15": {
+      "all": {
+        "RMSE@1": 0.12110278576321938,
+        "RMSE@20": 0.11621234727933094,
+        "RMSE@5": 0.10788979970723697,
+        "match@1": 0.252346837944664,
+        "match@20": 0.4838191699604743,
+        "match@5": 0.4136610671936759,
+        "matched_samples_for_RMSE@1": 2043,
+        "matched_samples_for_RMSE@20": 3917,
+        "matched_samples_for_RMSE@5": 3349,
+        "positive_any": 3917,
+        "positive_any_rate": 0.4838191699604743,
+        "samples": 8096
+      },
+      "candidate_quality": {
+        "candidate_eval_segments": [
+          "/data/users/xsw/autodlmini/model/New_model/opentry_13/official_eval/c2s3c15_true_anchor_source_mpts52_test_20260629/candidate_eval.jsonl.gz",
+          "/data/users/xsw/autodlmini/model/New_model/opentry_13/official_eval/c2s3c15_true_anchor_source_mpts52_test_20260629/candidate_eval_resume_from_4100_part1.jsonl.gz",
+          "/data/users/xsw/autodlmini/model/New_model/opentry_13/official_eval/c2s3c15_true_anchor_source_mpts52_test_20260629/candidate_eval_resume_from_7014_part1.jsonl.gz",
+          "/data/users/xsw/autodlmini/model/New_model/opentry_13/official_eval/c2s3c15_true_anchor_source_mpts52_test_20260629/candidate_eval_resume_from_7187_part1.jsonl.gz"
+        ],
+        "evaluated_candidate_records": 161920,
+        "formula_ok_any@1": 0.7046689723320159,
+        "formula_ok_any@20": 0.9693675889328063,
+        "formula_ok_any@5": 0.9528162055335968,
+        "known_exact_cover_any@1": 0.0,
+        "known_exact_cover_any@20": 0.8588191699604744,
+        "known_exact_cover_any@5": 0.8588191699604744,
+        "slot_formula_consistency_rate": 0.729977766798419,
+        "slot_sg_consistency_rate": 0.9725728754940711,
+        "slot_valid_rate": 0.9736289525691699,
+        "source_counts": {
+          "C": 142720,
+          "S": 19200
+        },
+        "space_group_ok_any@1": 0.9722084980237155,
+        "space_group_ok_any@20": 0.9987648221343873,
+        "space_group_ok_any@5": 0.9985177865612648,
+        "symcif_candidates": 19200,
+        "symcif_skeleton_hit_candidates": 4622,
+        "symcif_skeleton_hit_to_match_conversion": 0.19450454348766769,
+        "symcif_slot_exact_cover_feasible_rate": 0.9808854166666666,
+        "valid_any@1": 0.973443675889328,
+        "valid_any@20": 0.9993824110671937,
+        "valid_any@5": 0.9991353754940712
+      },
+      "candidate_source": "/data/users/xsw/autodlmini/model/New_model/opentry_13/candidates/c2s3c15_true_anchor_source_mpts52_test_k20.jsonl.gz",
+      "delta_vs_old_pure_source_C2S3C15_all": {
+        "match@1": 0.08090415019762842,
+        "match@20": 0.07238142292490118,
+        "match@5": 0.05311264822134387
+      },
+      "delta_vs_old_pure_source_C2S3C15_rows_ge7": {
+        "match@1": 0.08208759506949909,
+        "match@20": 0.07723577235772361,
+        "match@5": 0.05546813532651451
+      },
+      "delta_vs_true_anchor_all": {
+        "match@1": 0.0,
+        "match@20": 0.0442193675889328,
+        "match@5": 0.04903656126482214
+      },
+      "delta_vs_true_anchor_rows_ge7": {
+        "match@1": 0.0,
+        "match@20": 0.04615788093364803,
+        "match@5": 0.05179648570679252
+      },
+      "rows_ge7": {
+        "RMSE@1": 0.13103627495241027,
+        "RMSE@20": 0.1247663287484121,
+        "RMSE@5": 0.11530625076690493,
+        "match@1": 0.22488853920797272,
+        "match@20": 0.45659585628114346,
+        "match@5": 0.38552321007081036,
+        "matched_samples_for_RMSE@1": 1715,
+        "matched_samples_for_RMSE@20": 3482,
+        "matched_samples_for_RMSE@5": 2940,
+        "positive_any": 3482,
+        "positive_any_rate": 0.45659585628114346,
+        "samples": 7626
+      }
+    },
+    "true_crystallm_a_gt_sg_C20_anchor": {
+      "all": {
+        "RMSE@1": 0.12110278576321938,
+        "RMSE@20": 0.13340106131432547,
+        "RMSE@5": 0.12573424156501198,
+        "match@1": 0.252346837944664,
+        "match@20": 0.4395998023715415,
+        "match@5": 0.36462450592885376,
+        "matched_samples_for_RMSE@1": 2043,
+        "matched_samples_for_RMSE@20": 3559,
+        "matched_samples_for_RMSE@5": 2952,
+        "positive_any": 3559,
+        "positive_any_rate": 0.4395998023715415,
+        "samples": 8096
+      },
+      "candidate_source": "generations/crystallm_a_gt_sg_mpts_52_test.tar.gz",
+      "rows_ge7": {
+        "RMSE@1": 0.13103627495241027,
+        "RMSE@20": 0.1444271062669175,
+        "RMSE@5": 0.13557703770863538,
+        "match@1": 0.22488853920797272,
+        "match@20": 0.41043797534749543,
+        "match@5": 0.33372672436401785,
+        "matched_samples_for_RMSE@1": 1715,
+        "matched_samples_for_RMSE@20": 3130,
+        "matched_samples_for_RMSE@5": 2545,
+        "positive_any": 3130,
+        "positive_any_rate": 0.41043797534749543,
+        "samples": 7626
+      }
+    }
+  }
+}

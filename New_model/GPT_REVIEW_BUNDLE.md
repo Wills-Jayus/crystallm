@@ -2689,35 +2689,122 @@ rows>=7 关键点：实验 6 显示 CrystaLLM K50 rows>=7 top50=18.431%，SymCIF
 - 最终判决：validation gate 未通过，不能进入 official，也不能作为主结果 claim。它保留为主方法候选的失败/诊断实验。
 - 下一步：训练/微调 geometry repair 以适配 predicted skeleton 与 exact-cover site mapping 噪声，并加入可微或搜索式 local collision repair；在 validation gate 通过前不做 official。
 
+<!-- OPENTRY13_EXP1_TRUE_ANCHOR_C2S3C15 -->
+## opentry_13 实验 1：true-anchor-source C2S3C15 fixed hybrid 重放
+
+结果文件：`model/New_model/opentry_13/results/experiment_1_true_anchor_source_c2s3c15.json`
+
+- 实验逻辑：固定 `C1,C2,S1,S2,S3,C3...C17`，把 C source 从旧 pure CrystaLLM GT-SG 切换为 true CrystaLLM-a GT-SG anchor；SymCIF source 仍用已有 MPTS-52 test fullgen pool。只重放固定候选序列，不搜索比例、不调阈值、不接 scorer。
+- 为什么做：opentry_12 的 C2S3C15 用的是低 baseline/pure candidate source，不能作为主 anchor 比较；本实验直接检查复杂结构互补信号在 true anchor 上是否仍能转化为 match@5/20 增益。
+- 数据规模：MPTS-52 official test 8096 samples；rows>=7 7626 samples；route records=161920；source counts={'C': 142720, 'S': 19200}。
+- baseline：true CrystaLLM-a GT-SG C20 overall match@1/5/20 = `25.235% / 36.462% / 43.960%`，rows>=7 = `22.489% / 33.373% / 41.044%`；RMSE overall = `0.121103 / 0.125734 / 0.133401`，rows>=7 = `0.131036 / 0.135577 / 0.144427`。
+- 比较对象：old pure-source C2S3C15 overall = `17.144% / 36.055% / 41.144%`，rows>=7 = `14.280% / 33.006% / 37.936%`；true-anchor-source C2S3C15 overall = `25.235% / 41.366% / 48.382%`，rows>=7 = `22.489% / 38.552% / 45.660%`。
+- 结果：true-anchor-source C2S3C15 相对 true anchor overall delta = `+0.000pp / +4.904pp / +4.422pp`；rows>=7 delta = `+0.000pp / +5.180pp / +4.616pp`；相对 old pure-source C2S3C15 overall delta = `+8.090pp / +5.311pp / +7.238pp`。
+- RMSE：true-anchor-source C2S3C15 overall RMSE@1/5/20 = `0.121103 / 0.107890 / 0.116212`；rows>=7 RMSE@1/5/20 = `0.131036 / 0.115306 / 0.124766`。
+- valid/formula/SG/exact-cover：valid any@1/5/20 = `97.344%` / `99.914%` / `99.938%`；formula any@1/5/20 = `70.467%` / `95.282%` / `96.937%`；SG any@1/5/20 = `97.221%` / `99.852%` / `99.876%`；known exact-cover any@20 = `85.882%`；SymCIF slot exact-cover feasible = `98.089%`。
+- SymCIF skeleton-to-match：SymCIF candidates=19200，skeleton-hit candidates=4622，skeleton-hit-to-match conversion=`19.450%`。
+- 缺失与 fallback：missing SymCIF samples full-C fallback=1072；partial SymCIF samples slot fallback=1872；missing CrystaLLM samples=1。无 SymCIF artifact 的样本统一回退 true-anchor C20；S 槽不足时该槽回退下一条 C。
+- 可信度：高。候选顺序固定，C/S 路由不使用 match/RMSE/StructureMatcher/test feedback/GT-WA/GT-skeleton；唯一变化是把 C source 改成 true anchor source，并重新跑同一 StructureMatcher evaluator。
+- 和历史实验关系：该实验修正 opentry_12/13 旧报告的 anchor-source 口径；old pure-source C2S3C15 只能说明相对低 baseline 的互补，不再作为主比较。
+- 最终判决：`not_official_main_method`。原因：true-anchor-source C2S3C15 does not satisfy the saved acceptance gate. 无论该结果如何，C2S3C15 仍只能作为 auxiliary/diagnostic，不能写成论文主方法。
+- 下一步：若判决为 stop 或 diagnostic，停止 C2S3C15 调参，把主线继续放在 predicted skeleton renderer/site mapping 与 geometry repair gate。
+
+<!-- OPENTRY13_EXP2_RENDERER_SITE_MAPPING -->
+## opentry_13 实验 2：predicted skeleton renderer / site mapping 稳定性
+
+结果文件：`model/New_model/opentry_13/results/experiment_2_predicted_skeleton_renderer_site_mapping.json`
+
+- 实验逻辑：使用 opentry_13 实验 3 的 validation predicted exact-cover skeleton proposals，固定 composition + GT-SG + predicted skeleton，只检查 skeleton 到 CIF 的 renderer/site mapping 是否保结构。没有训练 scorer，没有看 StructureMatcher match@k，没有使用 test true CIF。
+- 为什么做：predicted skeleton 接 repair 后崩掉的首要风险是渲染链路不保 formula/SG/exact-cover，而不是模型分数；本实验先做结构完整性 gate，决定是否允许进入 learned geometry repair。
+- 数据规模：samples=4727，rows>=7 samples=2197，candidate records=36268，top_k=20。
+- 方法变化：比较两种 site mapping：deterministic composition exact-cover mapping，以及 train-prototype-preferred mapping。几何只作为渲染初始化：deterministic mode 用 train SG/global median lattice + deterministic free params；train-prototype mode 用 train source lattice/free params，不使用 GT-WA 作为推理输入。
+- deterministic overall：valid=18.838%，formula=95.037%，SG=95.274%，exact-cover=95.037%，legal CIF=98.064%，site-count=95.037%，row-count=100.000%，site-mapping failure=0.000%，collision=77.666%。
+- deterministic rows>=7：valid=10.699%，formula=98.882%，SG=95.312%，exact-cover=98.882%，legal CIF=99.376%，site-count=98.882%，row-count=100.000%。
+- train-prototype overall：valid=88.789%，formula=99.548%，SG=95.478%，exact-cover=100.000%，legal CIF=99.548%，site-count=99.548%，row-count=100.000%，site-mapping failure=0.000%，collision=9.430%。
+- train-prototype rows>=7：valid=89.548%，formula=99.699%，SG=96.656%，exact-cover=100.000%，legal CIF=99.699%，site-count=99.699%，row-count=100.000%。
+- renderer/site-mapping fixed selector：只用 inference-safe structural checks 在 top20 中选第一个 legal/formula/SG/exact-cover/site-count/no-collision CIF，不看 match。selected overall valid=97.007%，formula=99.660%，SG=98.436%，exact-cover=100.000%；selected rows>=7 valid=96.458%，formula=99.410%，SG=98.475%，exact-cover=100.000%；fallback_rate=2.993%。
+- gate 判定：passed=True；candidate_level_train_prototype_passed=False；selected_train_prototype_passed=True；deterministic_passed=False；失败原因={'deterministic': ['overall valid 18.838% < 95.000%', 'rows>=7 valid 10.699% < 90.000%'], 'train_prototype': ['overall valid 88.789% < 95.000%', 'rows>=7 valid 89.548% < 90.000%'], 'selected_train_prototype': []}。
+- 可信度：中高。该实验覆盖所有 exp3 proposal 记录并真实 render/parse/SG-detect，但 valid 仍依赖当前 `SpacegroupAnalyzer(symprec=0.1)` 和 0.5A collision 阈值；它是结构 gate，不是 match 指标。
+- 和历史实验关系：承接 opentry_13 实验 3 的 predicted skeleton proposals，并解释 opentry_13 旧 repair 结果中 formula/SG/valid 崩掉是否来自 site mapping/renderer。
+- 最终判决：如果 gate 不过，禁止进入 learned geometry repair 或 official；必须继续修 renderer/site mapping。
+- 下一步：只有当至少一个 mapping mode 过结构 gate，才继续 predicted-skeleton-aware learned geometry repair；否则优先修 SG/rendering、row expansion 或 geometry initializer。
+
+<!-- OPENTRY13_EXP3_PREDICTED_SKELETON_AWARE_REPAIR_AUDIT -->
+## opentry_13 实验 3：predicted-skeleton-aware learned geometry repair
+
+审计结果：`model/New_model/opentry_13/results/experiment_3_predicted_skeleton_aware_geometry_repair_audit.json`
+训练 pilot：`model/New_model/opentry_13/results/experiment_3_predicted_skeleton_lattice_repair_pilot.json`
+
+- 为什么做：目标要求 repair 训练数据必须包含 train split predicted skeleton / exact-cover skeleton 噪声。先前审计证明旧 geometry model 不是这种训练条件；本补充实验构造 train split noisy skeleton pair，并训练一个轻量 lattice MLP repair pilot。
+- 核心假设：如果 predicted skeleton 条件下主要缺 lattice 初始化，train-noisy-skeleton lattice MLP + source prototype free params 应至少改善 K5/K20 或 repair conversion；如果仍不过 gate，说明还需要 free-parameter/site-mapping/collision 联合 repair。
+- 数据规模：train noisy skeleton pairs `7774`；validation samples `4411`，rows>=7 `2033`；candidate records `18134`；topK `20`。
+- 训练设置：PyTorch MLP，输入为 composition + GT-SG + noisy predicted skeleton numeric features，target 为 train true lattice；epochs `40`，best val loss `0.38292357325553894`。没有使用 RF/HGB/scorer，也没有使用 match/RMSD 作为推理特征。
+- baseline：before repair 使用 exp3 predicted skeleton proposer 的 hydrated-existing-eval；after repair 使用 learned lattice MLP + source-prototype free params 重新渲染并按结构自检排序。
+- 结果 overall：before match@1/5/20 = `27.998% / 39.288% / 40.218%`；after match@1/5/20 = `10.066% / 13.172% / 13.308%`；delta = `-17.932pp / -26.117pp / -26.910pp`；repair conversion@1/5/20 = `1.480% / 2.091% / 1.858%`；valid `89.131%`，formula `99.548%`，SG `95.566%`，exact-cover `100.000%`，collision `9.165%`。
+- 结果 rows>=7：before match@1/5/20 = `11.461% / 16.035% / 16.331%`；after match@1/5/20 = `2.312% / 2.804% / 2.951%`；delta = `-9.149pp / -13.232pp / -13.379pp`；repair conversion@1/5/20 = `0.889% / 1.113% / 1.117%`；valid `89.882%`，formula `99.699%`，SG `96.667%`，exact-cover `100.000%`，collision `9.624%`，skeleton-to-match conversion@20 `3.510%`。
+- gate 判定：structure_gate_pass=False；repair_gate_pass=False；passed=False。
+- 可信度：中等。训练数据确实来自 train split noisy exact-cover skeleton，validation 推理不使用 GT-WA/GT-skeleton/test CIF/match label；限制是当前 pilot 只学习 lattice，free parameters 和 collision/local geometry 仍未联合学习。
+- 和历史实验关系：补足了先前实验 3 审计发现的“缺 predicted-skeleton-noise 训练 artifact”问题；结果与旧 repair 一致说明单独 lattice repair 仍不能解决 rows>=7 conversion。
+- 最终判决：`fail_validation_gate`。Train-split noisy-skeleton lattice repair still fails structure and/or repair conversion gates.
+- 下一步：如果继续主线，应训练 full lattice + free-parameter + collision/local optimization repair，而不是 scorer、C/S 比例或 official。
+
+
+<!-- OPENTRY13_EXP4_ROWS_GE7_MULTI_GEOMETRY_PROPOSAL -->
+## opentry_13 实验 4：rows>=7 multi-geometry proposal
+
+结果文件：`model/New_model/opentry_13/results/experiment_4_rows_ge7_multi_geometry_proposal.json`
+候选评估：`model/New_model/opentry_13/artifacts/exp4_rows_ge7_multi_geometry_proposal/evaluated_ranked_candidates.jsonl`
+
+- 为什么做：同一个 predicted exact-cover skeleton 可能对应多个 lattice/free-parameter/site-mapping 解；实验 3 显示单一 learned repair 不能把 skeleton-hit 稳定转成 match，因此这里对每个 skeleton 生成多几何 proposal，并只用 inference-safe structural checks 排序。
+- 核心假设：如果 geometry 多解覆盖是真瓶颈，rows>=7 top50 match coverage 和 skeleton-to-match conversion 应明显超过单一 hydrated/prototype 结果，并超过 CrystaLLM K50 rows>=7 top50 `18.431%` 至少 +5pp。
+- 数据规模：scope=`all`；samples `4411`，rows>=7 samples `2033`；candidate records `71930`；unique predicted skeletons `18134`；平均 geometry proposals/skeleton `3.967`；top output K `50`。
+- baseline：validation CrystaLLM K50 overall match@1/5/20 = `30.020% / 40.480% / 48.000%`；exp3 记录的 CrystaLLM rows>=7 top1/top5/top20/top50 = `5.359% / 10.109% / 14.858% / 18.431%`。
+- 方法变化：对 exp3 predicted skeleton proposals 进行 composition exact-cover site mapping；每个 skeleton 的几何候选来自 train source prototype、同 skeleton / 同 SG+atom_count / 同 SG train prototype、旧 geometry model 初始化与 SG-median+deterministic fallback。排序只使用 legal CIF、formula、SG、site count、exact-cover、collision、volume/atom 和 train-reference score，不使用 match/RMSD/StructureMatcher label。
+- 结果 overall：match@1/5/20 = `20.313% / 26.479% / 27.953%`；RMSE@1/5/20 = `0.06493674573671193 / 0.06546557832369819 / 0.06861300772369208`；valid `82.566%`，formula `98.095%`，SG `93.456%`，exact-cover `100.000%`，collision `14.288%`。
+- 结果 rows>=7：match@1/5/20/50 = `10.428% / 12.592% / 13.035% / 13.084%`；RMSE@1/5/20/50 = `0.06416882205447941 / 0.059610451644205927 / 0.05690601369240405 / 0.057054759831388`；skeleton-hit@50 `82.686%`；skeleton-to-match conversion@50 `15.407%`。
+- rows>=7 结构指标：valid `82.055%`，formula `97.317%`，SG `93.558%`，exact-cover `100.000%`，collision `14.886%`，valid_any@50 `98.032%`。
+- gate 判定：passed=False；rows>=7 top50 delta vs CrystaLLM K50 = `-5.347pp`；rows>=7 match@5 delta = `+2.483pp`；rows>=7 match@20 delta = `-1.823pp`；overall match@5/20 no-drop=False；失败原因=['rows>=7 top50 delta -5.347pp < +5.000pp', 'rows>=7 skeleton-to-match conversion@50 15.407% < 30.000%', 'rows>=7 match@5 delta +2.483pp < +5.000pp', 'rows>=7 match@20 delta -1.823pp < +5.000pp', 'overall match@5 and match@20 both decreased vs validation CrystaLLM K50 baseline']。
+- 可信度：中等。该实验真实 render/parse/SG-detect/StructureMatcher，且排序不看 match；限制是 geometry proposals 仍主要来自 train prototype 和旧 GT-WA-style geometry initializer，没有训练 predicted-skeleton-noise repair。
+- 和历史实验关系：实验 2 证明 selected renderer/site mapping 可过结构 gate；实验 3 证明旧 learned repair 不满足 predicted-skeleton-aware 条件且 conversion 崩掉；本实验测试 multi-geometry 是否能单独提高 rows>=7 hydrated match coverage。
+- 最终判决：`fail_validation_gate`。Multi-geometry did not reach the required rows>=7 top50/conversion and K5/K20 lift gates.
+- 下一步：Do not run official; build predicted-skeleton-noise geometry training or stronger local collision/geometry optimization before rerunning.
+
 <!-- OPENTRY13_EXP5_MAIN_ABLATION_BOUNDARY -->
-## opentry_13 实验 5：主方法消融与最终边界判定
+## opentry_13 实验 5：主方法消融与最终判定
 
 结果文件：`model/New_model/opentry_13/results/experiment_5_main_ablation_and_final_boundary.json`
 
-- 为什么做：把主方法候选、辅助结果和诊断结果拆开，统一报告 overall 与 rows>=7 的 match@1/5/20，避免把 C2S3C15、Track A、hard-negative scorer、oracle union 或 GT-WA oracle 包装成论文主贡献。
-- 核心假设：真正可 claim 的主方法必须是 inference-time `skeleton proposer + learned geometry repair`，并且在 true GT-SG CrystaLLM-a official anchor 上至少两个 match 指标 +5pp，rows>=7 不恶化；否则只能辅助或诊断。
-- 数据规模：official test `8096` 样本、rows>=7 `7626`；validation strict ablation `5000` 样本；exp3 validation repr `4727`；exp4 predicted-skeleton repair subset 有候选样本 `712`；oracle union validation `5000` 样本；GT-WA oracle MPTS-52 test subset `180` 样本。
-- baseline：主 official anchor 是 true GT-SG CrystaLLM-a，match@1/5/20 = `25.235% / 36.462% / 43.960%`，rows>=7 = `22.489% / 33.373% / 41.044%`。低 pure-model baseline 只保留为历史参考，不允许作为主 anchor。
-- 方法变化：本实验不新增方法、不调 C/S 比例、不做 threshold tuning、不训练 scorer；只读取既有 JSON/JSONL 做 replay/audit。oracle union 是 `C@K OR SymCIF@K` coverage upper-bound，最多 2K 候选，不是 ranked topK 方法。
+- 为什么做：把 true official anchor、主方法候选、辅助 hybrid 和 oracle diagnostic 分清楚，避免继续把低 baseline、fusion/scorer 或 GT-WA oracle 写成主贡献。
+- 核心假设：可 claim 的主方法必须是 inference-time `predicted skeleton proposer + renderer/site mapping + learned/multi-geometry repair`，并且相对 true CrystaLLM-a GT-SG official anchor 至少两个 match 指标 +5pp，rows>=7 不恶化。
+- 数据规模：official test anchor/C2S3C15 `8096` samples、rows>=7 `7626`；renderer/skeleton validation `4727` records；lattice repair train noisy pairs `7774`、validation candidates `18134`；multi-geometry validation `4411` samples、rows>=7 `2033`、candidate records `71930`；GT-WA oracle MPTS-52 subset `180` samples。
+- baseline：true CrystaLLM-a GT-SG anchor match@1/5/20 = `25.235% / 36.462% / 43.960%`，rows>=7 = `22.489% / 33.373% / 41.044%`，RMSE@1/5/20 = `0.121103 / 0.125734 / 0.133401`。
 
 主方法候选：
-- rows>=7 train-derived skeleton proposer [skeleton_proposer_validation_gate]: overall 26.127% / 36.662% / 37.529%; rows>=7 10.605% / 14.838% / 15.112%; gate=fail_validation_gate.
-- predicted-skeleton learned geometry repair [skeleton_proposer_plus_learned_repair_validation]: overall 3.792% / 6.461% / 6.742%; rows>=7 0.000% / 0.000% / 0.000%; gate=fail_validation_gate.
-- SymCIF v5 neural skeleton/geometry proposer [symcif_v5_generation_diagnostic]: overall 26.080% / 35.240% / 35.900%; rows>=7 10.501% / 14.292% / 14.553%; gate=fail_main_gate.
+- SymCIF v5 proposer [symcif_v5_generation_diagnostic]: overall 26.080% / 35.240% / 35.900%; rows>=7 10.501% / 14.292% / 14.553%; gate=fail_main_gate.
+- rows>=7 predicted skeleton proposer [predicted_skeleton_proposer_validation]: overall 26.127% / 36.662% / 37.529%; rows>=7 10.605% / 14.838% / 15.112%; gate=fail_validation_gate.
+- predicted-skeleton-aware lattice repair pilot [predicted_skeleton_aware_lattice_repair_pilot]: overall 10.066% / 13.172% / 13.308%; rows>=7 2.312% / 2.804% / 2.951%; gate=fail_structure_and_repair_gate.
+- rows>=7 multi-geometry proposal [rows_ge7_multi_geometry_validation]: overall 20.313% / 26.479% / 27.953%; rows>=7 10.428% / 12.592% / 13.035%; gate=fail_validation_gate.
+
+主方法组件：
+- renderer/site-mapping fixed selector [renderer_site_mapping_structure_gate]: overall NA / NA / NA; rows>=7 NA / NA / NA; gate=pass_structure_gate.
 
 辅助结果：
-- C2S3C15 frozen official [auxiliary_hybrid_official]: overall 17.144% / 36.055% / 41.144%; rows>=7 14.280% / 33.006% / 37.936%; gate=fail_true_anchor_main_gate.
-- baseline + Track A scorer [track_a_scorer]: overall 33.120% / 41.980% / 48.900%; rows>=7 6.501% / 10.777% / 15.794%; gate=fail_main_gate.
-- baseline + hard-negative structural scorer v2 [hard_negative_scorer]: overall 32.540% / 42.180% / 48.960%; rows>=7 7.024% / 12.173% / 15.881%; gate=fail_main_gate.
+- C2S3C15 true-anchor-source hybrid [auxiliary_hybrid_true_anchor_source]: overall 25.235% / 41.366% / 48.382%; rows>=7 22.489% / 38.552% / 45.660%; gate=not_official_main_method.
+- baseline + Track A scorer [track_a_scorer]: overall 33.120% / 41.980% / 48.900%; rows>=7 6.501% / 10.777% / 15.794%; gate=not_main_method.
+- baseline + hard-negative structural scorer v2 [hard_negative_scorer]: overall 32.540% / 42.180% / 48.960%; rows>=7 7.024% / 12.173% / 15.881%; gate=not_main_method.
+- skeleton proposal + geometry repair + structural scorer proxy [combined_proxy]: overall 32.360% / 42.180% / 49.100%; rows>=7 6.937% / 11.824% / 15.707%; gate=not_main_method.
 
 诊断结果：
-- baseline + exact-cover filter/proxy [exact_cover_proxy]: overall 31.980% / 42.080% / 49.160%; rows>=7 6.588% / 11.387% / 15.838%; gate=fail_main_gate.
-- skeleton proposal + geometry repair + structural scorer proxy [combined_proxy]: overall 32.360% / 42.180% / 49.100%; rows>=7 6.937% / 11.824% / 15.707%; gate=fail_main_gate.
-- oracle union coverage C@K OR SymCIF@K [oracle_union_coverage_upper_bound]: overall 39.580% / 49.240% / 54.300%; rows>=7 13.900% / 19.739% / 23.399%; gate=diagnostic_upper_bound_not_ranked_method.
+- old pure-source C2S3C15 [historical_low_anchor_diagnostic]: overall 17.144% / 36.055% / 41.144%; rows>=7 14.280% / 33.006% / 37.936%; gate=diagnostic_only.
+- old GT-WA-style geometry model on predicted skeleton [old_repair_artifact_diagnostic]: overall 3.792% / 6.461% / 6.742%; rows>=7 0.000% / 0.000% / 0.000%; gate=diagnostic_only.
 - GT-WA learned geometry repair oracle [gt_wa_geometry_repair_oracle]: overall 30.000% / 37.778% / 41.667%; rows>=7 25.150% / 32.934% / 37.126%; gate=diagnostic_oracle_only.
+- baseline + exact-cover filter/proxy [exact_cover_proxy]: overall 31.980% / 42.080% / 49.160%; rows>=7 6.588% / 11.387% / 15.838%; gate=not_main_method.
 
-- 关键 official 判定：C2S3C15 相对 true anchor delta = `-8.090pp / -0.408pp / -2.816pp`；rows>=7 delta = `-8.209pp / -0.367pp / -3.108pp`。它没有任何一个 true-anchor 指标达到 +5pp，rows>=7 也全部下降，因此只能是 auxiliary hybrid result。
-- 可信度：高。没有重新跑 official、没有使用 official 反馈回调、没有训练新 scorer；GT-WA 与 oracle union 明确标为 diagnostic。限制是 validation/official/500-sample oracle 的 split 和样本规模不同，表内已用 scope 区分，不做跨 split 主 claim。
-- 和历史实验关系：exp1/2 已证明低 baseline 不能当主 anchor；exp3 说明 skeleton-hit 有信号但 hydrated match/conversion 不够；exp4 说明 predicted-skeleton repair 链路失败；opentry_11/12 的 Track A、hard-negative、exact-cover proxy 继续只作为辅助/诊断。
-- 最终判决：`allowed_main_result_claim=False`。当前没有任何 inference-time 主方法满足 true GT-SG anchor 上至少两个 match 指标 +5pp 且 rows>=7 不恶化。C2S3C15 降级 auxiliary；Track A/hard-negative 停止作为主线；oracle union、GT-WA repair、exact-cover proxy 只作为诊断。
-- 下一步：继续主线只能做 train-data 设计的 rows>=7 skeleton proposer 与适配 predicted skeleton/site-mapping 噪声的 learned/local geometry repair；先过 validation gate，再考虑 official。禁止继续调 C2S3C15 比例、普通 rerank、threshold tuning 或 official 结果回调。
+- C2S3C15 判定：true-anchor-source C2S3C15 相对 true anchor delta = `+0.000pp / +4.904pp / +4.422pp`；rows>=7 delta = `+0.000pp / +5.180pp / +4.616pp`。它只能作为 auxiliary，不能作为论文主方法。
+- renderer 判定：selected train-prototype structural selector 通过结构 gate，overall valid `97.007%`、formula `99.660%`、SG `98.436%`、exact-cover `100.000%`；rows>=7 valid `96.458%`。
+- repair 判定：已补充 train-noisy-skeleton lattice MLP repair pilot；rows>=7 after match@1/5/20 = `2.312% / 2.804% / 2.951%`，delta = `-9.149pp / -13.232pp / -13.379pp`，repair conversion@20 `1.117%`，structure_gate_pass=False。
+- multi-geometry 判定：rows>=7 match@1/5/20/50 = `10.428% / 12.592% / 13.035% / 13.084%`；skeleton-to-match conversion@50 `15.407%`；top50 delta vs CrystaLLM K50 `-5.347pp`。
+- 可信度：高。实验 5 不训练、不重跑 StructureMatcher、不调阈值，只汇总本轮已经写入的 JSON/JSONL 结果；各行明确区分 official test、validation、component gate 和 oracle diagnostic。
+- 和历史实验关系：修正旧 exp5 的低-anchor C2S3C15 口径；exp2 说明 renderer/site mapping 可过结构 gate，exp3 先审计旧 artifact、再补充 train-noisy-skeleton lattice repair pilot但仍失败，exp4 说明 multi-geometry 仍不能把 rows>=7 skeleton-hit 转成足够 match。
+- 最终判决：`allowed_main_result_claim=False`。失败段落不是“geometry 是瓶颈”这个泛结论，而是：renderer 结构 gate 已过；train-noisy-skeleton lattice repair pilot 的 structure/repair gate 失败；旧 repair 的 formula/SG/valid 和 conversion 失败；multi-geometry 的 rows>=7 top50 coverage 与 skeleton-to-match conversion 仍低于验收线。
+- 下一步：不要跑 official，也不要继续调 C2S3C15/scorer/threshold。下一轮若继续主线，应训练 full lattice + free-parameter + collision/local optimization repair，然后重新过 validation gate。

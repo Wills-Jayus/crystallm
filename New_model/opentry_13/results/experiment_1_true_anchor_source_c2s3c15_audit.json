@@ -1,0 +1,61 @@
+{
+  "audit_pass": true,
+  "created_at_utc": "2026-06-29T06:30:12+00:00",
+  "route_manifest": {
+    "candidate_file": "/data/users/xsw/autodlmini/model/New_model/opentry_13/candidates/c2s3c15_true_anchor_source_mpts52_test_k20.jsonl.gz",
+    "crystallm_source": "/data/users/xsw/autodlmini/model/New_model/opentry_7/generations/crystallm_a_gt_sg_mpts_52_test.tar.gz",
+    "crystallm_source_kind": "true_crystallm_a_gt_sg_anchor",
+    "missing_crystallm_samples": 1,
+    "missing_symcif_samples_full_crystallm_fallback": 1072,
+    "not_used_for_routing": [
+      "match",
+      "rms",
+      "StructureMatcher result",
+      "test feedback",
+      "GT-WA",
+      "GT-skeleton",
+      "diagnostic skeleton_hit/wa_hit labels"
+    ],
+    "partial_symcif_samples_slot_fallback": 1872,
+    "route": "C2S3C15",
+    "route_records": 161920,
+    "routing_inputs": [
+      "fixed source sequence C2S3C15",
+      "CrystaLLM original candidate order",
+      "SymCIF fullgen pool generation_score order with gen_index tie-break",
+      "sample-level fallback to CrystaLLM when SymCIF has no official candidate"
+    ],
+    "samples": 8096,
+    "sequence": [
+      "C",
+      "C",
+      "S",
+      "S",
+      "S",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C"
+    ],
+    "source_counts": {
+      "C": 142720,
+      "S": 19200
+    },
+    "symcif_generation_source": "/data/users/xsw/autodlmini/runs/symcif_v5_multidataset_test_full/mpts52/test/generations/v5_fullgen_eval_pool.jsonl",
+    "symcif_metric_source_for_nonrouting_diagnostics": "/data/users/xsw/autodlmini/runs/symcif_v5_multidataset_test_full/mpts52/test/metrics/v5_fullgen_eval_pool_metrics.jsonl",
+    "time": "2026-06-29T06:30:01+00:00",
+    "true_anchor_source_note": "C slots use crystallm_a_gt_sg_mpts_52_test.tar.gz, not pure_crystallm_gt_sg_mpts_52_test.tar.gz."
+  },
+  "true_anchor_metrics": "/data/users/xsw/autodlmini/model/New_model/opentry_7/metrics/crystallm_a_gt_sg_mpts_52_test_k20.json"
+}
